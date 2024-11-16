@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'signup.dart'; // Import the signup page
+import 'signup.dart'; 
 
 class LoginPage extends StatefulWidget {
   @override
@@ -41,12 +41,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       setState(() {
         _isLoading = true;
       });
-      // Simulate a login API call with a delay
       Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _isLoading = false;
         });
-        // Here you can handle successful login or show an error
         _showError("Invalid login credentials");
       });
     }
@@ -75,7 +73,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    'assets/icons/login.png', // Add login logo here
+                    'assets/icons/login.png', 
                     height: 100,
                   ),
                   SizedBox(height: 20),
@@ -177,19 +175,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       IconButton(
                         icon: Image.asset('assets/icons/google.png'),
                         onPressed: () {
-                          // Handle Google login
+                          
                         },
                       ),
                       IconButton(
                         icon: Image.asset('assets/icons/facebook.png'),
                         onPressed: () {
-                          // Handle Facebook login
                         },
                       ),
                       IconButton(
                         icon: Image.asset('assets/icons/apple.png'),
                         onPressed: () {
-                          // Handle Apple login
                         },
                       ),
                     ],
