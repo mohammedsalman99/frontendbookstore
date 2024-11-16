@@ -36,13 +36,11 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
         _isLoading = true;
       });
 
-      // Simulate sending verification code to the email
       Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _isLoading = false;
         });
 
-        // Navigate to the verification page with the email
         Navigator.push(
           context,
           MaterialPageRoute(
