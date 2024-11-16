@@ -26,6 +26,11 @@ flutter:
     - assets/icons/img1.jpg
     - assets/icons/img2.jpg
     - assets/icons/img3.jpg
+    - assets/icons/google.png
+    - assets/icons/facebook.png
+    - assets/icons/apple.png
+    - assets/icons/login.png
+    - assets/icons/signup.png
 
 flutter_icons: # Place flutter_icons at the top level
   android: true

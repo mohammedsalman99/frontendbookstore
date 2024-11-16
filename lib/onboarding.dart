@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/home.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'screens/auth/login.dart';
+import 'screens/auth/signup.dart';
+
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -33,9 +36,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (_currentPage < onboardingData.length - 1) {
       _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
     } else {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,17 +91,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: [
                 TextButton(
                   onPressed: () {
-                    if (_currentPage < onboardingData.length - 1) {
-                      _pageController.jumpToPage(onboardingData.length - 1);
-                    } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-                    }
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: Text(
                     _currentPage == onboardingData.length - 1 ? "" : "Skip",
                     style: TextStyle(color: Color(0xFF5AA5B1)),
                   ),
                 ),
+
                 ElevatedButton(
                   onPressed: _nextPage,
                   style: ElevatedButton.styleFrom(
