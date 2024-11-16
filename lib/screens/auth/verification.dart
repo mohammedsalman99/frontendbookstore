@@ -13,20 +13,17 @@ class _VerificationPageState extends State<VerificationPage> {
   final _codeController = TextEditingController();
   bool _isLoading = false;
 
-  // Simulated function to verify the code (replace with actual backend call)
   Future<bool> _verifyCode(String code) async {
     setState(() {
       _isLoading = true;
     });
 
-    // Simulate a delay for verification (you would replace this with an API call)
     await Future.delayed(Duration(seconds: 2));
 
     setState(() {
       _isLoading = false;
     });
 
-    // For demonstration, let's assume the correct code is "123456"
     return code == "123456";
   }
 
@@ -41,7 +38,6 @@ class _VerificationPageState extends State<VerificationPage> {
     bool isValid = await _verifyCode(_codeController.text);
 
     if (isValid) {
-      // Navigate to the home screen or another protected page upon successful verification
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -100,7 +96,7 @@ class _VerificationPageState extends State<VerificationPage> {
               onPressed: _submitCode,
               child: Text("Verify"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF5AA5B1), // Same color as Sign Up button
+                backgroundColor: Color(0xFF5AA5B1), 
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -109,7 +105,6 @@ class _VerificationPageState extends State<VerificationPage> {
             ),
             TextButton(
               onPressed: () {
-                // Simulate resending verification code logic (replace with actual backend call)
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("Verification code resent to ${widget.email}")),
                 );
