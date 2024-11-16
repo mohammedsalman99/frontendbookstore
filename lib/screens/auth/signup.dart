@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login.dart'; 
+import 'login.dart';
+import 'verification.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -34,10 +35,20 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
       setState(() {
         _isLoading = true;
       });
+
+      // Simulate sending verification code to the email
       Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _isLoading = false;
         });
+
+        // Navigate to the verification page with the email
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerificationPage(email: _emailController.text),
+          ),
+        );
       });
     }
   }
@@ -73,7 +84,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    'assets/icons/signup.png', 
+                    'assets/icons/signup.png',
                     height: 100,
                   ),
                   SizedBox(height: 20),
