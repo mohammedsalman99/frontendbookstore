@@ -15,14 +15,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       "title": "Reading Exercises the Brain",
       "description": "Reading is a workout for your brain that improves memory function.",
+      "image": "assets/icons/img1.jpg",
     },
     {
       "title": "Improves the Ability to Focus",
       "description": "Reading is one of the few activities that requires your undivided attention.",
+      "image": "assets/icons/img2.jpg",
     },
     {
       "title": "All we need is books",
       "description": "Reading a variety of topics can make you a more knowledgeable person.",
+      "image": "assets/icons/img3.jpg",
     },
   ];
 
@@ -37,6 +40,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Expanded(
@@ -51,8 +55,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               itemBuilder: (context, index) => OnboardingPage(
                 title: onboardingData[index]["title"]!,
                 description: onboardingData[index]["description"]!,
+                imagePath: onboardingData[index]["image"]!,
                 pageIndex: index,
                 currentPage: _currentPage,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+            child: Text(
+              "Step ${_currentPage + 1} of ${onboardingData.length}",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -63,9 +79,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   (index) => buildDot(index, context),
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 15),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40.0),
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -79,13 +95,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     _currentPage == onboardingData.length - 1 ? "" : "Skip",
-                    style: TextStyle(color: Colors.green),
+                    style: TextStyle(color: Color(0xFF5AA5B1)),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: _nextPage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color(0xFF5AA5B1),
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -98,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 15),
         ],
       ),
     );
@@ -112,17 +129,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 10,
       width: _currentPage == index ? 20 : 10,
       decoration: BoxDecoration(
-        color: _currentPage == index ? Colors.green : Colors.grey,
+        color: _currentPage == index ? Color(0xFF5AA5B1) : Colors.grey,
         borderRadius: BorderRadius.circular(5),
       ),
     );
   }
 }
 
-// OnboardingPage widget definition with Google Fonts
+
 class OnboardingPage extends StatelessWidget {
   final String title;
   final String description;
+  final String imagePath;
   final int pageIndex;
   final int currentPage;
 
@@ -130,6 +148,7 @@ class OnboardingPage extends StatelessWidget {
     Key? key,
     required this.title,
     required this.description,
+    required this.imagePath,
     required this.pageIndex,
     required this.currentPage,
   }) : super(key: key);
@@ -146,11 +165,12 @@ class OnboardingPage extends StatelessWidget {
           AnimatedContainer(
             duration: Duration(seconds: 1),
             curve: Curves.easeInOut,
-            width: isVisible ? 200 : 100,
-            height: isVisible ? 200 : 100,
-            decoration: BoxDecoration(
-              color: isVisible ? Colors.greenAccent : Colors.grey,
-              borderRadius: BorderRadius.circular(isVisible ? 100 : 10),
+            width: isVisible ? 300 : 200,
+            height: isVisible ? 300 : 200,
+            child: Image.asset(
+              imagePath, // Use the imagePath parameter
+              fit: BoxFit.contain,
+              color: isVisible ? null : Colors.grey,
             ),
           ),
           SizedBox(height: 30),
@@ -159,9 +179,9 @@ class OnboardingPage extends StatelessWidget {
             duration: Duration(milliseconds: 500),
             child: Text(
               title,
-              style: GoogleFonts.lato( // Updated font style for the title
+              style: GoogleFonts.lato(
                 textStyle: TextStyle(
-                  fontSize: 24,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -175,7 +195,7 @@ class OnboardingPage extends StatelessWidget {
             duration: Duration(milliseconds: 500),
             child: Text(
               description,
-              style: GoogleFonts.openSans( // Updated font style for the description
+              style: GoogleFonts.openSans(
                 textStyle: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],

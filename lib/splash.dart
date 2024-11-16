@@ -1,6 +1,7 @@
+// splash.dart
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:frontend/onboarding.dart'; // Import OnboardingScreen
+import 'onboarding.dart'; // Import OnboardingScreen
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -43,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Background color animation
     _backgroundColorAnimation = ColorTween(
       begin: Colors.white,
-      end: Colors.lightBlueAccent,
+      end: Color(0xFF5AA5B1),
     ).animate(_controller);
 
     // Start the animation
@@ -83,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   child: Icon(
                     Icons.book, // Book icon for the bookstore theme
                     size: 100.0,
-                    color: Colors.blueAccent,
+                    color: Color(0xFF5AA5B1),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -93,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   child: LinearProgressIndicator(
                     value: _controller.value, // Synchronizes with the controller
                     backgroundColor: Colors.grey[300], // Color when empty
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent), // Color when filled
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5AA5B1)), // Color when filled
                   ),
                 ),
                 SizedBox(height: 20),
@@ -101,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 FadeTransition(
                   opacity: _fadeAnimation!,
                   child: Text(
-                    "BookStore", // Replace with your app name
+                    "", // Replace with your app name
                     style: GoogleFonts.montserrat(
                       textStyle: TextStyle(
                         fontSize: 28,

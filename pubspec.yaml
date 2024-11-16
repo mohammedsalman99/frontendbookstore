@@ -23,6 +23,9 @@ flutter:
   # Add assets folder to the Flutter project
   assets:
     - assets/icons/icon.jpg
+    - assets/icons/img1.jpg
+    - assets/icons/img2.jpg
+    - assets/icons/img3.jpg
 
 flutter_icons: # Place flutter_icons at the top level
   android: true
