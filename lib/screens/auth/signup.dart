@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login.dart'; // Import the login page
+import 'login.dart'; 
 
 class SignupPage extends StatefulWidget {
   @override
@@ -34,12 +34,10 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
       setState(() {
         _isLoading = true;
       });
-      // Simulate a signup API call with a delay
       Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _isLoading = false;
         });
-        // Handle successful signup
       });
     }
   }
@@ -75,7 +73,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    'assets/icons/signup.png', // Add signup logo here
+                    'assets/icons/signup.png', 
                     height: 100,
                   ),
                   SizedBox(height: 20),
