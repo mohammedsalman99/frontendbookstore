@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'BookStore',
-      home: SplashScreen(), // Start with SplashScreen
+      home: SplashScreen(), 
     );
   }
 }
