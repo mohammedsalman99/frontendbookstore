@@ -122,7 +122,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // Dot indicator for the onboarding pages
   Widget buildDot(int index, BuildContext context) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
@@ -169,7 +168,7 @@ class OnboardingPage extends StatelessWidget {
             width: isVisible ? 300 : 200,
             height: isVisible ? 300 : 200,
             child: Image.asset(
-              imagePath, // Use the imagePath parameter
+              imagePath, 
               fit: BoxFit.contain,
               color: isVisible ? null : Colors.grey,
             ),
