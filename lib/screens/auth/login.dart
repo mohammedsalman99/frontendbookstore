@@ -66,7 +66,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           String token = data['token'];
-          // Handle successful login
         } else {
           final error = jsonDecode(response.body)['error'] ?? 'Login failed';
           _showError(error);
@@ -93,7 +92,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -103,13 +101,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               ),
             ),
           ),
-          // Glassmorphism overlay
           Center(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Glass Card
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 24.0),
                     padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
