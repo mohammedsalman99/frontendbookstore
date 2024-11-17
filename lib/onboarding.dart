@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 fontFamily: 'SF-Pro-Text',
                 color: Colors.black,
                 fontSize: 16,
-                fontWeight: FontWeight.w500, // Medium
+                fontWeight: FontWeight.w500, 
               ),
             ),
           ),
@@ -96,7 +96,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       color: Color(0xFF5AA5B1),
-                      fontWeight: FontWeight.w500, // Medium
+                      fontWeight: FontWeight.w500, 
                     ),
                   ),
                 ),
@@ -113,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _currentPage == onboardingData.length - 1 ? "Start Now" : "Next",
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontWeight: FontWeight.w600, // SemiBold
+                      fontWeight: FontWeight.w600, 
                       color: Colors.white,
                     ),
                   ),
@@ -186,7 +186,7 @@ class OnboardingPage extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'SF-Pro-Text',
                 fontSize: 28,
-                fontWeight: FontWeight.w700, // Bold
+                fontWeight: FontWeight.w700, 
                 color: Colors.black,
               ),
               textAlign: TextAlign.center,
@@ -201,7 +201,7 @@ class OnboardingPage extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'SF-Pro-Text',
                 fontSize: 16,
-                fontWeight: FontWeight.w400, // Regular
+                fontWeight: FontWeight.w400, 
                 color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
