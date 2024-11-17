@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400)),
         backgroundColor: Colors.red,
       ),
     );
@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
       try {
         final response = await http.post(
-          Uri.parse('https://your-backend-host.com/users/login'), 
+          Uri.parse('https://your-backend-host.com/users/login'),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -61,13 +61,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         });
 
         if (response.statusCode == 200) {
-          
           final data = jsonDecode(response.body);
-          String token = data['token']; 
+          String token = data['token'];
 
-          
         } else {
-          
           final error = jsonDecode(response.body)['error'] ?? 'Login failed';
           _showError(error);
         }
@@ -110,8 +107,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   Text(
                     "Welcome Back",
                     style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700, // Bold
                       color: Color(0xFF5AA5B1),
                     ),
                   ),
@@ -119,7 +117,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   Text(
                     "Login to continue",
                     style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
                       fontSize: 16,
+                      fontWeight: FontWeight.w400, // Regular
                       color: Colors.grey[600],
                     ),
                   ),
@@ -128,6 +128,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
+                      labelStyle: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.email),
                     ),
@@ -147,6 +148,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     controller: _passwordController,
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      labelStyle: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock),
                       suffixIcon: IconButton(
@@ -180,7 +182,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     ),
                     child: Text(
                       'Login',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        fontFamily: 'SF-Pro-Text',
+                        fontWeight: FontWeight.w600, // SemiBold
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -193,11 +199,22 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     },
                     child: Text(
                       "Don't have an account? Sign up",
-                      style: TextStyle(color: Color(0xFF5AA5B1)),
+                      style: TextStyle(
+                        fontFamily: 'SF-Pro-Text',
+                        fontWeight: FontWeight.w500, // Medium
+                        color: Color(0xFF5AA5B1),
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
-                  Text("or connect with", style: TextStyle(color: Colors.grey[600])),
+                  Text(
+                    "or connect with",
+                    style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
+                      fontWeight: FontWeight.w400, // Regular
+                      color: Colors.grey[600],
+                    ),
+                  ),
                   SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

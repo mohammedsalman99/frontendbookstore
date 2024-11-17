@@ -35,7 +35,10 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
+        ),
         backgroundColor: Colors.red,
       ),
     );
@@ -49,7 +52,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
       try {
         final response = await http.post(
-          Uri.parse('https://your-backend-host.com/users/register'), 
+          Uri.parse('https://your-backend-host.com/users/register'),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -122,8 +125,9 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   Text(
                     "Create an Account",
                     style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700, // Bold
                       color: Color(0xFF5AA5B1),
                     ),
                   ),
@@ -131,7 +135,9 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   Text(
                     "Sign up to get started",
                     style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
                       fontSize: 16,
+                      fontWeight: FontWeight.w400, // Regular
                       color: Colors.grey[600],
                     ),
                   ),
@@ -140,6 +146,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     controller: _usernameController,
                     decoration: InputDecoration(
                       labelText: 'Username',
+                      labelStyle: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.person),
                     ),
@@ -155,6 +162,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
+                      labelStyle: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.email),
                     ),
@@ -173,6 +181,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     controller: _passwordController,
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      labelStyle: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock),
                       suffixIcon: IconButton(
@@ -197,6 +206,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     controller: _confirmPasswordController,
                     decoration: InputDecoration(
                       labelText: 'Confirm Password',
+                      labelStyle: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock),
                     ),
@@ -222,7 +232,11 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     ),
                     child: Text(
                       'Sign Up',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        fontFamily: 'SF-Pro-Text',
+                        fontWeight: FontWeight.w600, // SemiBold
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -235,7 +249,11 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     },
                     child: Text(
                       "Already have an account? Log in",
-                      style: TextStyle(color: Color(0xFF5AA5B1)),
+                      style: TextStyle(
+                        fontFamily: 'SF-Pro-Text',
+                        fontWeight: FontWeight.w500, // Medium
+                        color: Color(0xFF5AA5B1),
+                      ),
                     ),
                   ),
                 ],

@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   google_fonts: ^4.0.3
-  http: ^0.13.4  
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_launcher_icons: ^0.9.2
@@ -36,3 +36,28 @@ flutter:
     - assets/icons/apple.png
     - assets/icons/login.png
     - assets/icons/signup.png
+
+  fonts:
+    - family: SF-Pro-Text
+      fonts:
+        - asset: assets/fonts/SF-Pro-Text-Black.otf
+          weight: 900
+        - asset: assets/fonts/SF-Pro-Text-Bold.otf
+          weight: 700
+        - asset: assets/fonts/SF-Pro-Text-Heavy.otf
+          weight: 800
+        - asset: assets/fonts/SF-Pro-Text-Light.otf
+          weight: 300
+        - asset: assets/fonts/SF-Pro-Text-Medium.otf
+          weight: 500
+        - asset: assets/fonts/SF-Pro-Text-Regular.otf
+          weight: 400
+        - asset: assets/fonts/SF-Pro-Text-Semibold.otf
+          weight: 600
+        - asset: assets/fonts/SF-Pro-Text-Thin.otf
+          weight: 100
+        - asset: assets/fonts/SF-Pro-Text-ThinItalic.otf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/SF-Pro-Text-Ultralight.otf
+          weight: 200

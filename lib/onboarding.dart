@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/home.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'screens/auth/login.dart';
 import 'screens/auth/signup.dart';
-
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -40,7 +38,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,9 +67,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Text(
               "Step ${_currentPage + 1} of ${onboardingData.length}",
               style: TextStyle(
+                fontFamily: 'SF-Pro-Text',
                 color: Colors.black,
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500, // Medium
               ),
             ),
           ),
@@ -95,10 +93,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     _currentPage == onboardingData.length - 1 ? "" : "Skip",
-                    style: TextStyle(color: Color(0xFF5AA5B1)),
+                    style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
+                      color: Color(0xFF5AA5B1),
+                      fontWeight: FontWeight.w500, // Medium
+                    ),
                   ),
                 ),
-
                 ElevatedButton(
                   onPressed: _nextPage,
                   style: ElevatedButton.styleFrom(
@@ -110,7 +111,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   child: Text(
                     _currentPage == onboardingData.length - 1 ? "Start Now" : "Next",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
+                      fontWeight: FontWeight.w600, // SemiBold
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -135,7 +140,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
-
 
 class OnboardingPage extends StatelessWidget {
   final String title;
@@ -168,7 +172,7 @@ class OnboardingPage extends StatelessWidget {
             width: isVisible ? 300 : 200,
             height: isVisible ? 300 : 200,
             child: Image.asset(
-              imagePath, 
+              imagePath,
               fit: BoxFit.contain,
               color: isVisible ? null : Colors.grey,
             ),
@@ -179,12 +183,11 @@ class OnboardingPage extends StatelessWidget {
             duration: Duration(milliseconds: 500),
             child: Text(
               title,
-              style: GoogleFonts.lato(
-                textStyle: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              style: TextStyle(
+                fontFamily: 'SF-Pro-Text',
+                fontSize: 28,
+                fontWeight: FontWeight.w700, // Bold
+                color: Colors.black,
               ),
               textAlign: TextAlign.center,
             ),
@@ -195,11 +198,11 @@ class OnboardingPage extends StatelessWidget {
             duration: Duration(milliseconds: 500),
             child: Text(
               description,
-              style: GoogleFonts.openSans(
-                textStyle: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+              style: TextStyle(
+                fontFamily: 'SF-Pro-Text',
+                fontSize: 16,
+                fontWeight: FontWeight.w400, // Regular
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
