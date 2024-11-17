@@ -101,7 +101,6 @@ class _VerificationPageState extends State<VerificationPage> {
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -117,7 +116,6 @@ class _VerificationPageState extends State<VerificationPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Glass Card
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 24.0),
                     padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
