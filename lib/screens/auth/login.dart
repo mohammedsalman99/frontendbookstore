@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
       try {
         final response = await http.post(
-          Uri.parse('https://your-backend-host.com/users/login'), // Replace with your actual backend URL
+          Uri.parse('https://your-backend-host.com/users/login'), 
           headers: {
             'Content-Type': 'application/json',
           },
@@ -61,14 +61,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         });
 
         if (response.statusCode == 200) {
-          // Login successful
+          
           final data = jsonDecode(response.body);
-          String token = data['token']; // Assuming a token is returned in the response
+          String token = data['token']; 
 
-          // You can store the token or navigate to the next screen here
-          // Example: Navigator.pushReplacementNamed(context, '/home');
+          
         } else {
-          // Login failed
+          
           final error = jsonDecode(response.body)['error'] ?? 'Login failed';
           _showError(error);
         }
