@@ -127,7 +127,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontSize: 28,
-                      fontWeight: FontWeight.w700, // Bold
+                      fontWeight: FontWeight.w700, 
                       color: Color(0xFF5AA5B1),
                     ),
                   ),
@@ -137,7 +137,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontSize: 16,
-                      fontWeight: FontWeight.w400, // Regular
+                      fontWeight: FontWeight.w400, 
                       color: Colors.grey[600],
                     ),
                   ),
@@ -234,7 +234,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                       'Sign Up',
                       style: TextStyle(
                         fontFamily: 'SF-Pro-Text',
-                        fontWeight: FontWeight.w600, // SemiBold
+                        fontWeight: FontWeight.w600, 
                         color: Colors.white,
                       ),
                     ),
@@ -251,7 +251,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                       "Already have an account? Log in",
                       style: TextStyle(
                         fontFamily: 'SF-Pro-Text',
-                        fontWeight: FontWeight.w500, // Medium
+                        fontWeight: FontWeight.w500, 
                         color: Color(0xFF5AA5B1),
                       ),
                     ),
