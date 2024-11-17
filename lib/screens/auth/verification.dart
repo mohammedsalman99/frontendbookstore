@@ -22,7 +22,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://your-backend-host.com/users/verify_email'), // Replace with your actual backend URL
+        Uri.parse('https://your-backend-host.com/users/verify_email'), 
         headers: {
           'Content-Type': 'application/json',
         },
@@ -37,10 +37,8 @@ class _VerificationPageState extends State<VerificationPage> {
       });
 
       if (response.statusCode == 200) {
-        // Verification successful
         return true;
       } else {
-        // Verification failed
         final error = jsonDecode(response.body)['error'] ?? 'Invalid verification code';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error)),
