@@ -4,7 +4,7 @@ import 'dart:convert';
 
 class VerificationPage extends StatefulWidget {
   final String email;
-  final String tempUserId; // Add tempUserId as a parameter
+  final String tempUserId; 
 
   VerificationPage({required this.email, required this.tempUserId});
 
@@ -28,13 +28,13 @@ class _VerificationPageState extends State<VerificationPage> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'tempUserId': widget.tempUserId, // Use tempUserId here
-          'verificationCode': code, // Use verificationCode here
+          'tempUserId': widget.tempUserId, 
+          'verificationCode': code, 
         }),
       );
 
-      print('Response status: ${response.statusCode}'); // Debugging line
-      print('Response body: ${response.body}'); // Debugging line
+      print('Response status: ${response.statusCode}'); 
+      print('Response body: ${response.body}'); 
 
       setState(() {
         _isLoading = false;
