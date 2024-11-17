@@ -52,12 +52,11 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
       try {
         final response = await http.post(
-          Uri.parse('https://your-backend-host.com/users/register'),
+          Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/auth/register'),
           headers: {
             'Content-Type': 'application/json',
           },
           body: jsonEncode({
-            'username': _usernameController.text,
             'email': _emailController.text,
             'password': _passwordController.text,
           }),
@@ -67,11 +66,20 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
           _isLoading = false;
         });
 
-        if (response.statusCode == 200) {
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          final data = jsonDecode(response.body);
+          String tempUserId = data['tempUserId'];
+
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VerificationPage(email: _emailController.text),
+              builder: (context) => VerificationPage(
+                email: _emailController.text,
+                tempUserId: tempUserId,
+              ),
             ),
           );
         } else {
@@ -277,6 +285,13 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                     borderSide: BorderSide.none,
                                   ),
                                   prefixIcon: Icon(Icons.lock, color: Colors.white70),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                      color: Colors.white70,
+                                    ),
+                                    onPressed: _togglePasswordVisibility,
+                                  ),
                                 ),
                                 obscureText: true,
                                 validator: (value) {

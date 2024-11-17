@@ -4,8 +4,9 @@ import 'dart:convert';
 
 class VerificationPage extends StatefulWidget {
   final String email;
+  final String tempUserId; // Add tempUserId as a parameter
 
-  VerificationPage({required this.email});
+  VerificationPage({required this.email, required this.tempUserId});
 
   @override
   _VerificationPageState createState() => _VerificationPageState();
@@ -22,15 +23,18 @@ class _VerificationPageState extends State<VerificationPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://your-backend-host.com/users/verify_email'),
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/auth/verify-email'),
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'email': widget.email,
-          'code': code,
+          'tempUserId': widget.tempUserId, // Use tempUserId here
+          'verificationCode': code, // Use verificationCode here
         }),
       );
+
+      print('Response status: ${response.statusCode}'); // Debugging line
+      print('Response body: ${response.body}'); // Debugging line
 
       setState(() {
         _isLoading = false;
@@ -39,7 +43,7 @@ class _VerificationPageState extends State<VerificationPage> {
       if (response.statusCode == 200) {
         return true;
       } else {
-        final error = jsonDecode(response.body)['error'] ?? 'Invalid verification code';
+        final error = jsonDecode(response.body)['message'] ?? 'Invalid verification code';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

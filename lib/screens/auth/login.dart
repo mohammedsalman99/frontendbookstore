@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
       try {
         final response = await http.post(
-          Uri.parse('https://your-backend-host.com/users/login'),
+          Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/auth/login'),  // Update URL here if needed
           headers: {
             'Content-Type': 'application/json',
           },
@@ -64,8 +64,20 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         });
 
         if (response.statusCode == 200) {
+          // On successful login, parse the token if needed
           final data = jsonDecode(response.body);
           String token = data['token'];
+
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Login successful!',
+                style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
         } else {
           final error = jsonDecode(response.body)['error'] ?? 'Login failed';
           _showError(error);
