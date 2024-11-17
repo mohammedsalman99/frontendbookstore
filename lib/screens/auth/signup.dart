@@ -102,7 +102,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
