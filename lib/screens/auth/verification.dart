@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class VerificationPage extends StatefulWidget {
   final String email;
@@ -18,13 +20,42 @@ class _VerificationPageState extends State<VerificationPage> {
       _isLoading = true;
     });
 
-    await Future.delayed(Duration(seconds: 2));
+    try {
+      final response = await http.post(
+        Uri.parse('https://your-backend-host.com/users/verify_email'), // Replace with your actual backend URL
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': widget.email,
+          'code': code,
+        }),
+      );
 
-    setState(() {
-      _isLoading = false;
-    });
+      setState(() {
+        _isLoading = false;
+      });
 
-    return code == "123456";
+      if (response.statusCode == 200) {
+        // Verification successful
+        return true;
+      } else {
+        // Verification failed
+        final error = jsonDecode(response.body)['error'] ?? 'Invalid verification code';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+        return false;
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred. Please try again.")),
+      );
+      return false;
+    }
   }
 
   void _submitCode() async {
@@ -96,7 +127,7 @@ class _VerificationPageState extends State<VerificationPage> {
               onPressed: _submitCode,
               child: Text("Verify"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF5AA5B1), 
+                backgroundColor: Color(0xFF5AA5B1),
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),

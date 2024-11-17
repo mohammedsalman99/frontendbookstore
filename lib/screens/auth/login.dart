@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'signup.dart'; 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -36,17 +38,46 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     );
   }
 
-  void _login() {
+  Future<void> _login() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _isLoading = true;
       });
-      Future.delayed(Duration(seconds: 2), () {
+
+      try {
+        final response = await http.post(
+          Uri.parse('https://your-backend-host.com/users/login'), // Replace with your actual backend URL
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'email': _emailController.text,
+            'password': _passwordController.text,
+          }),
+        );
+
         setState(() {
           _isLoading = false;
         });
-        _showError("Invalid login credentials");
-      });
+
+        if (response.statusCode == 200) {
+          // Login successful
+          final data = jsonDecode(response.body);
+          String token = data['token']; // Assuming a token is returned in the response
+
+          // You can store the token or navigate to the next screen here
+          // Example: Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          // Login failed
+          final error = jsonDecode(response.body)['error'] ?? 'Login failed';
+          _showError(error);
+        }
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        _showError('An error occurred. Please try again.');
+      }
     }
   }
 
@@ -73,7 +104,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    'assets/icons/login.png', 
+                    'assets/icons/login.png',
                     height: 100,
                   ),
                   SizedBox(height: 20),
@@ -174,19 +205,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     children: [
                       IconButton(
                         icon: Image.asset('assets/icons/google.png'),
-                        onPressed: () {
-                          
-                        },
+                        onPressed: () {},
                       ),
                       IconButton(
                         icon: Image.asset('assets/icons/facebook.png'),
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                       ),
                       IconButton(
                         icon: Image.asset('assets/icons/apple.png'),
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                       ),
                     ],
                   ),

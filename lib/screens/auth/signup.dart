@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'login.dart';
 import 'verification.dart';
 
@@ -30,24 +32,57 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     });
   }
 
-  void _signup() {
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  Future<void> _signup() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _isLoading = true;
       });
 
-      Future.delayed(Duration(seconds: 2), () {
+      try {
+        final response = await http.post(
+          Uri.parse('https://your-backend-host.com/users/register'), // Replace with your actual backend URL
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'username': _usernameController.text,
+            'email': _emailController.text,
+            'password': _passwordController.text,
+          }),
+        );
+
         setState(() {
           _isLoading = false;
         });
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VerificationPage(email: _emailController.text),
-          ),
-        );
-      });
+        if (response.statusCode == 200) {
+          // Registration successful, navigate to verification page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VerificationPage(email: _emailController.text),
+            ),
+          );
+        } else {
+          // Registration failed
+          final error = jsonDecode(response.body)['error'] ?? 'Registration failed';
+          _showError(error);
+        }
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+        _showError('An error occurred. Please try again.');
+      }
     }
   }
 
