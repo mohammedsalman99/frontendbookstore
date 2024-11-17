@@ -106,7 +106,7 @@ class _VerificationPageState extends State<VerificationPage> {
           "Email Verification",
           style: TextStyle(
             fontFamily: 'SF-Pro-Text',
-            fontWeight: FontWeight.w600, // SemiBold
+            fontWeight: FontWeight.w600, 
             color: Color(0xFF5AA5B1),
           ),
         ),
@@ -130,7 +130,7 @@ class _VerificationPageState extends State<VerificationPage> {
               style: TextStyle(
                 fontFamily: 'SF-Pro-Text',
                 fontSize: 16,
-                fontWeight: FontWeight.w400, // Regular
+                fontWeight: FontWeight.w400, 
                 color: Colors.grey[700],
               ),
             ),
@@ -157,7 +157,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 "Verify",
                 style: TextStyle(
                   fontFamily: 'SF-Pro-Text',
-                  fontWeight: FontWeight.w600, // SemiBold
+                  fontWeight: FontWeight.w600, 
                   color: Colors.white,
                 ),
               ),
@@ -184,7 +184,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 "Resend Code",
                 style: TextStyle(
                   fontFamily: 'SF-Pro-Text',
-                  fontWeight: FontWeight.w500, // Medium
+                  fontWeight: FontWeight.w500, 
                   color: Color(0xFF5AA5B1),
                 ),
               ),
