@@ -49,7 +49,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
       try {
         final response = await http.post(
-          Uri.parse('https://your-backend-host.com/users/register'), // Replace with your actual backend URL
+          Uri.parse('https://your-backend-host.com/users/register'), 
           headers: {
             'Content-Type': 'application/json',
           },
@@ -65,7 +65,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
         });
 
         if (response.statusCode == 200) {
-          // Registration successful, navigate to verification page
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -73,7 +72,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
             ),
           );
         } else {
-          // Registration failed
           final error = jsonDecode(response.body)['error'] ?? 'Registration failed';
           _showError(error);
         }
