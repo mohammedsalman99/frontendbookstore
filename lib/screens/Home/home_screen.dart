@@ -9,23 +9,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> categories = [];
-  bool isLoading = true;  // Track loading state
-  bool hasError = false;  // Track if there was an error fetching data
+  bool isLoading = true;  
+  bool hasError = false;  
   ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _fetchCategories();  // Fetch categories when the screen is initialized
+    _fetchCategories();  
   }
 
-  // Function to fetch categories from the backend
+
   Future<void> _fetchCategories() async {
     try {
       final response = await http.get(Uri.parse('https://your-backend-url.com/categories'));
 
       if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the data
+    
         final data = jsonDecode(response.body);
         setState(() {
           categories = List<Map<String, String>>.from(
@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           isLoading = false;
         });
       } else {
-        // If the server returns an error
+        
         setState(() {
           isLoading = false;
           hasError = true;
@@ -89,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 10),
-            // Search Bar
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               decoration: BoxDecoration(
@@ -111,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 30),
-            // Book Category Section with Arrow Indicator
             Row(
               children: [
                 Text(
@@ -140,13 +138,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             SizedBox(height: 10),
-            // Show loading indicator if the data is still loading
             isLoading
                 ? Center(child: CircularProgressIndicator())
                 : hasError
                 ? Center(child: Text('Failed to load categories'))
                 : Container(
-              height: 220, // Adjust height as needed to fit two items per row properly
+              height: 220, 
               child: ListView.builder(
                 controller: _scrollController,
                 scrollDirection: Axis.horizontal,
@@ -183,7 +180,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper method to build each category card
   Widget categoryCard(String title, String imageUrl) {
     return Container(
       width: 180,
