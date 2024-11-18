@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../Home/home.dart';
 
 class VerificationPage extends StatefulWidget {
   final String email;
+<<<<<<< HEAD
   final String tempUserId; 
+=======
+  final String tempUserId;
+>>>>>>> c0a0d9c (make the setting and search and category)
 
   VerificationPage({required this.email, required this.tempUserId});
 
@@ -28,6 +33,7 @@ class _VerificationPageState extends State<VerificationPage> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
+<<<<<<< HEAD
           'tempUserId': widget.tempUserId, 
           'verificationCode': code, 
         }),
@@ -36,6 +42,13 @@ class _VerificationPageState extends State<VerificationPage> {
       print('Response status: ${response.statusCode}'); 
       print('Response body: ${response.body}'); 
 
+=======
+          'tempUserId': widget.tempUserId,
+          'verificationCode': code,
+        }),
+      );
+
+>>>>>>> c0a0d9c (make the setting and search and category)
       setState(() {
         _isLoading = false;
       });
@@ -44,58 +57,46 @@ class _VerificationPageState extends State<VerificationPage> {
         return true;
       } else {
         final error = jsonDecode(response.body)['message'] ?? 'Invalid verification code';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              error,
-              style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
-            ),
-          ),
-        );
+        _showError(error);
         return false;
       }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "An error occurred. Please try again.",
-            style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
-          ),
-        ),
-      );
+      _showError("An error occurred. Please try again.");
       return false;
     }
   }
 
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
+        ),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
   void _submitCode() async {
     if (_codeController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Please enter the verification code",
-            style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
-          ),
-        ),
-      );
+      _showError("Please enter the verification code");
       return;
     }
 
     bool isValid = await _verifyCode(_codeController.text);
 
     if (isValid) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Invalid verification code",
-            style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
-          ),
-        ),
+      // Navigate to Home (Main Navigation with BottomNavigationBar) on successful verification
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Home()), // Use Home instead of HomeScreen
       );
+    } else {
+      _showError("Invalid verification code");
     }
   }
 
@@ -218,6 +219,7 @@ class _VerificationPageState extends State<VerificationPage> {
                         SizedBox(height: 20),
                         TextButton(
                           onPressed: () {
+                            // Add logic to resend code here if needed
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(

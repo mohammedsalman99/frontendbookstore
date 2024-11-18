@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup.dart';
+import '../Home/home.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -49,7 +50,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
       try {
         final response = await http.post(
+<<<<<<< HEAD
           Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/auth/login'),  
+=======
+          Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/auth/login'),
+>>>>>>> c0a0d9c (make the setting and search and category)
           headers: {
             'Content-Type': 'application/json',
           },
@@ -67,6 +72,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           final data = jsonDecode(response.body);
           String token = data['token'];
 
+<<<<<<< HEAD
+=======
+          // Navigate to Home (Main Navigation with BottomNavigationBar) on successful login
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Home()), // Use Home instead of HomeScreen
+          );
+
+>>>>>>> c0a0d9c (make the setting and search and category)
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
