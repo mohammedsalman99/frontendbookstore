@@ -90,10 +90,9 @@ class _VerificationPageState extends State<VerificationPage> {
     bool isValid = await _verifyCode(_codeController.text);
 
     if (isValid) {
-      // Navigate to Home (Main Navigation with BottomNavigationBar) on successful verification
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Home()), // Use Home instead of HomeScreen
+        MaterialPageRoute(builder: (context) => Home()), 
       );
     } else {
       _showError("Invalid verification code");
@@ -219,7 +218,6 @@ class _VerificationPageState extends State<VerificationPage> {
                         SizedBox(height: 20),
                         TextButton(
                           onPressed: () {
-                            // Add logic to resend code here if needed
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
