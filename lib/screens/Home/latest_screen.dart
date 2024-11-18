@@ -1,4 +1,3 @@
-// latest_screen.dart
 import 'package:flutter/material.dart';
 
 class LatestScreen extends StatelessWidget {
