@@ -74,10 +74,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
 <<<<<<< HEAD
 =======
-          // Navigate to Home (Main Navigation with BottomNavigationBar) on successful login
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Home()), // Use Home instead of HomeScreen
+            MaterialPageRoute(builder: (context) => Home()), 
           );
 
 >>>>>>> c0a0d9c (make the setting and search and category)
