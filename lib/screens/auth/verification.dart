@@ -5,11 +5,7 @@ import '../Home/home.dart';
 
 class VerificationPage extends StatefulWidget {
   final String email;
-<<<<<<< HEAD
-  final String tempUserId; 
-=======
   final String tempUserId;
->>>>>>> c0a0d9c (make the setting and search and category)
 
   VerificationPage({required this.email, required this.tempUserId});
 
@@ -21,6 +17,7 @@ class _VerificationPageState extends State<VerificationPage> {
   final _codeController = TextEditingController();
   bool _isLoading = false;
 
+  // Function to handle API call for verifying code
   Future<bool> _verifyCode(String code) async {
     setState(() {
       _isLoading = true;
@@ -33,29 +30,23 @@ class _VerificationPageState extends State<VerificationPage> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-<<<<<<< HEAD
-          'tempUserId': widget.tempUserId, 
-          'verificationCode': code, 
-        }),
-      );
-
-      print('Response status: ${response.statusCode}'); 
-      print('Response body: ${response.body}'); 
-
-=======
           'tempUserId': widget.tempUserId,
           'verificationCode': code,
         }),
       );
 
->>>>>>> c0a0d9c (make the setting and search and category)
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
       setState(() {
         _isLoading = false;
       });
 
       if (response.statusCode == 200) {
+        // If the response is OK, return true
         return true;
       } else {
+        // If the response is an error, show error message
         final error = jsonDecode(response.body)['message'] ?? 'Invalid verification code';
         _showError(error);
         return false;
@@ -69,6 +60,7 @@ class _VerificationPageState extends State<VerificationPage> {
     }
   }
 
+  // Function to display error messages
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -81,6 +73,7 @@ class _VerificationPageState extends State<VerificationPage> {
     );
   }
 
+  // Function to handle form submission
   void _submitCode() async {
     if (_codeController.text.isEmpty) {
       _showError("Please enter the verification code");
@@ -90,9 +83,10 @@ class _VerificationPageState extends State<VerificationPage> {
     bool isValid = await _verifyCode(_codeController.text);
 
     if (isValid) {
+      // Navigate to home screen if verification is successful
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Home()), 
+        MaterialPageRoute(builder: (context) => Home()),
       );
     } else {
       _showError("Invalid verification code");
