@@ -26,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // Fetch categories from the backend API
   Future<void> _fetchCategories() async {
     try {
       final response = await http.get(Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/categories'));
@@ -65,12 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0), // Reduced vertical padding
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // "Readme" text
-            SizedBox(height: 60), // Space before "Readme"
+            SizedBox(height: 60), 
             Text(
               'Readme',
               style: TextStyle(
@@ -79,11 +77,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 15), // Space between "Readme" and search bar
+            SizedBox(height: 15), 
 
-            // Search bar with reduced padding
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.0), // Reduced padding
+              padding: EdgeInsets.symmetric(horizontal: 12.0), 
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
                 color: Colors.grey[200],
@@ -102,9 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 40), // Reduced space between search bar and category section
+            SizedBox(height: 40), 
 
-            // Category section header with arrows
             Row(
               children: [
                 Text(
@@ -132,9 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 5), // Reduced space before loading spinner
+            SizedBox(height: 5), 
 
-            // Loading spinner or error message
             isLoading
                 ? Center(child: CircularProgressIndicator())
                 : hasError
@@ -152,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Row(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(right: 8.0), // Reduced padding between items
+                        padding: const EdgeInsets.only(right: 8.0), 
                         child: categoryCard(
                           categories[firstIndex]['title']!,
                           categories[firstIndex]['imageUrl']!,
@@ -160,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       if (secondIndex < categories.length)
                         Padding(
-                          padding: const EdgeInsets.only(right: 8.0), // Reduced padding
+                          padding: const EdgeInsets.only(right: 8.0), 
                           child: categoryCard(
                             categories[secondIndex]['title']!,
                             categories[secondIndex]['imageUrl']!,
@@ -177,7 +172,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper method to build each category card
   Widget categoryCard(String title, String imageUrl) {
     return Container(
       width: 180,
@@ -198,7 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Stack(
         children: [
-          // Gradient overlay for better text contrast
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -216,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),  // Adjusted the opacity to be lighter
+                  color: Colors.black.withOpacity(0.3),  
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
