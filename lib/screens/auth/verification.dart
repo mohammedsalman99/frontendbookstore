@@ -43,10 +43,8 @@ class _VerificationPageState extends State<VerificationPage> {
       });
 
       if (response.statusCode == 200) {
-        // If the response is OK, return true
         return true;
       } else {
-        // If the response is an error, show error message
         final error = jsonDecode(response.body)['message'] ?? 'Invalid verification code';
         _showError(error);
         return false;

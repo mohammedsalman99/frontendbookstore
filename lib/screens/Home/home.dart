@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'latest_screen.dart';
@@ -30,28 +29,6 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(
-        title: Text(
-          '',
-          style: TextStyle(
-            fontFamily: 'SF-Pro-Text',
-            fontWeight: FontWeight.w700,
-            fontSize: 24,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF5AA5B1), Color(0xFF3D7A8A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
       body: _screens[_selectedIndex],
       bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: _selectedIndex,
