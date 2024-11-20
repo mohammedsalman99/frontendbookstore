@@ -13,7 +13,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Megan Miranda',
       'price': '50',
       'premium': 'Premium',
-      'rating': 5.0,  // Rating added here
+      'rating': 5.0,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -21,7 +21,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Aparajita Bose',
       'price': 'Free',
       'premium': '',
-      'rating': 3.5,  // Rating added here
+      'rating': 3.5,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -29,7 +29,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Thomas Hardy',
       'price': '50',
       'premium': 'Premium',
-      'rating': 4.0,  // Rating added here
+      'rating': 4.0,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -37,7 +37,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Bertus Aafjes',
       'price': 'Free',
       'premium': '',
-      'rating': 2.5,  // Rating added here
+      'rating': 2.5,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -45,7 +45,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'John Hart',
       'price': '100',
       'premium': '',
-      'rating': 4.5,  // Rating added here
+      'rating': 4.5,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -53,7 +53,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'John Hart',
       'price': '50',
       'premium': 'Premium',
-      'rating': 3.0,  // Rating added here
+      'rating': 3.0,  
     },
   ];
 
@@ -211,7 +211,7 @@ class _LatestScreenState extends State<LatestScreen> {
                       filteredBooks[index]['image']!,
                       filteredBooks[index]['price']!,
                       filteredBooks[index]['premium']!,
-                      filteredBooks[index]['rating'],  // Pass rating here
+                      filteredBooks[index]['rating'],  
                     );
                   },
                 )
@@ -225,7 +225,7 @@ class _LatestScreenState extends State<LatestScreen> {
                         filteredBooks[index]['image']!,
                         filteredBooks[index]['price']!,
                         filteredBooks[index]['premium']!,
-                        filteredBooks[index]['rating'],  // Pass rating here
+                        filteredBooks[index]['rating'],  
                       ),
                     );
                   },
@@ -258,14 +258,13 @@ class _LatestScreenState extends State<LatestScreen> {
           borderRadius: BorderRadius.circular(12),
           child: Stack(
             children: [
-              // Image
+              
               Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 200,
               ),
-              // Gradient overlay for readability
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
@@ -277,7 +276,6 @@ class _LatestScreenState extends State<LatestScreen> {
                   ),
                 ),
               ),
-              // Premium tag at the top-left corner
               if (premium.isNotEmpty)
                 Positioned(
                   top: 10,
@@ -305,7 +303,6 @@ class _LatestScreenState extends State<LatestScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
                     Text(
                       title,
                       style: TextStyle(
@@ -326,7 +323,7 @@ class _LatestScreenState extends State<LatestScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        buildRatingStars(rating), // Display rating stars
+                        buildRatingStars(rating), 
                       ],
                     ),
                   ],
