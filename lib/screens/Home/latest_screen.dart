@@ -13,7 +13,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Megan Miranda',
       'price': '50',
       'premium': 'Premium',
-      'rating': 5.0,  // Rating added here
+      'rating': 5.0,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -21,7 +21,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Aparajita Bose',
       'price': 'Free',
       'premium': '',
-      'rating': 3.5,  // Rating added here
+      'rating': 3.5,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -29,7 +29,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Thomas Hardy',
       'price': '50',
       'premium': 'Premium',
-      'rating': 4.0,  // Rating added here
+      'rating': 4.0,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -37,7 +37,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Bertus Aafjes',
       'price': 'Free',
       'premium': '',
-      'rating': 2.5,  // Rating added here
+      'rating': 2.5,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -45,7 +45,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'John Hart',
       'price': '100',
       'premium': '',
-      'rating': 4.5,  // Rating added here
+      'rating': 4.5,  
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -53,7 +53,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'John Hart',
       'price': '50',
       'premium': 'Premium',
-      'rating': 3.0,  // Rating added here
+      'rating': 3.0,  
     },
   ];
 
@@ -211,8 +211,12 @@ class _LatestScreenState extends State<LatestScreen> {
                       filteredBooks[index]['image']!,
                       filteredBooks[index]['price']!,
                       filteredBooks[index]['premium']!,
+<<<<<<< HEAD
                       filteredBooks[index]['rating'],
                       filteredBooks[index]['author']!, // Add this
+=======
+                      filteredBooks[index]['rating'],  
+>>>>>>> 65ff9ba3f69ecf0056dd7fecd95141157fb30696
                     );
 
                   },
@@ -227,8 +231,12 @@ class _LatestScreenState extends State<LatestScreen> {
                         filteredBooks[index]['image']!,
                         filteredBooks[index]['price']!,
                         filteredBooks[index]['premium']!,
+<<<<<<< HEAD
                         filteredBooks[index]['rating'],
                         filteredBooks[index]['author']!, // Add this
+=======
+                        filteredBooks[index]['rating'],  
+>>>>>>> 65ff9ba3f69ecf0056dd7fecd95141157fb30696
                       ),
                     );
                   },
@@ -271,6 +279,7 @@ class _LatestScreenState extends State<LatestScreen> {
             ),
           ],
         ),
+<<<<<<< HEAD
         child: Stack(
           children: [
             Column(
@@ -358,6 +367,79 @@ class _LatestScreenState extends State<LatestScreen> {
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
+=======
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              
+              Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 200,
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.black.withOpacity(0.5), Colors.transparent],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+              ),
+              if (premium.isNotEmpty)
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      premium,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              Positioned(
+                bottom: 10,
+                left: 10,
+                right: 10,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '\$$price',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        buildRatingStars(rating), 
+                      ],
+>>>>>>> 65ff9ba3f69ecf0056dd7fecd95141157fb30696
                     ),
                   ),
                 ),
