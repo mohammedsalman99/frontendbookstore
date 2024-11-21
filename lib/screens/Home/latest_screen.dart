@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../Details//detailpage.dart';
+import '../Details/detailpage.dart';
+
 class LatestScreen extends StatefulWidget {
   @override
   _LatestScreenState createState() => _LatestScreenState();
@@ -13,7 +14,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Megan Miranda',
       'price': '50',
       'premium': 'Premium',
-      'rating': 5.0,  
+      'rating': 5.0,
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -21,7 +22,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Aparajita Bose',
       'price': 'Free',
       'premium': '',
-      'rating': 3.5,  
+      'rating': 3.5,
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -29,7 +30,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Thomas Hardy',
       'price': '50',
       'premium': 'Premium',
-      'rating': 4.0,  
+      'rating': 4.0,
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -37,7 +38,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'Bertus Aafjes',
       'price': 'Free',
       'premium': '',
-      'rating': 2.5,  
+      'rating': 2.5,
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -45,7 +46,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'John Hart',
       'price': '100',
       'premium': '',
-      'rating': 4.5,  
+      'rating': 4.5,
     },
     {
       'image': 'https://via.placeholder.com/150',
@@ -53,7 +54,7 @@ class _LatestScreenState extends State<LatestScreen> {
       'author': 'John Hart',
       'price': '50',
       'premium': 'Premium',
-      'rating': 3.0,  
+      'rating': 3.0,
     },
   ];
 
@@ -198,7 +199,8 @@ class _LatestScreenState extends State<LatestScreen> {
                 },
                 child: isGridView
                     ? GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate:
+                  SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
@@ -211,14 +213,9 @@ class _LatestScreenState extends State<LatestScreen> {
                       filteredBooks[index]['image']!,
                       filteredBooks[index]['price']!,
                       filteredBooks[index]['premium']!,
-<<<<<<< HEAD
                       filteredBooks[index]['rating'],
-                      filteredBooks[index]['author']!, // Add this
-=======
-                      filteredBooks[index]['rating'],  
->>>>>>> 65ff9ba3f69ecf0056dd7fecd95141157fb30696
+                      filteredBooks[index]['author']!,
                     );
-
                   },
                 )
                     : ListView.builder(
@@ -231,12 +228,8 @@ class _LatestScreenState extends State<LatestScreen> {
                         filteredBooks[index]['image']!,
                         filteredBooks[index]['price']!,
                         filteredBooks[index]['premium']!,
-<<<<<<< HEAD
                         filteredBooks[index]['rating'],
-                        filteredBooks[index]['author']!, // Add this
-=======
-                        filteredBooks[index]['rating'],  
->>>>>>> 65ff9ba3f69ecf0056dd7fecd95141157fb30696
+                        filteredBooks[index]['author']!,
                       ),
                     );
                   },
@@ -250,7 +243,8 @@ class _LatestScreenState extends State<LatestScreen> {
     );
   }
 
-  Widget categoryCard(String title, String imageUrl, String price, String premium, double rating, String author) {
+  Widget categoryCard(String title, String imageUrl, String price,
+      String premium, double rating, String author) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -279,78 +273,65 @@ class _LatestScreenState extends State<LatestScreen> {
             ),
           ],
         ),
-<<<<<<< HEAD
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Book Image
-                ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 150,
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 150,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  SizedBox(height: 4),
+                  Text(
+                    'By $author',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    price == "Free" ? "Free" : '₹ $price',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: price == "Free"
+                          ? Colors.green
+                          : Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Row(
                     children: [
-                      // Title
+                      buildRatingStars(rating),
+                      SizedBox(width: 4),
                       Text(
-                        title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-
-                      // Author
-                      Text(
-                        'By $author',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      SizedBox(height: 4),
-
-                      // Price (or "Free")
-                      Text(
-                        price == "Free" ? "Free" : '₹ $price',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: price == "Free" ? Colors.green : Colors.redAccent,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-
-                      // Rating
-                      Row(
-                        children: [
-                          buildRatingStars(rating),
-                          SizedBox(width: 4),
-                          Text(
-                            '$rating',
-                            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                          ),
-                        ],
+                        '$rating',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-
-            // Premium Tag in the Top-Right Corner
             if (premium.isNotEmpty)
               Positioned(
                 top: 8,
@@ -367,79 +348,6 @@ class _LatestScreenState extends State<LatestScreen> {
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-=======
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Stack(
-            children: [
-              
-              Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 200,
-              ),
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.black.withOpacity(0.5), Colors.transparent],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                    ),
-                  ),
-                ),
-              ),
-              if (premium.isNotEmpty)
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      premium,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              Positioned(
-                bottom: 10,
-                left: 10,
-                right: 10,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '\$$price',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        buildRatingStars(rating), 
-                      ],
->>>>>>> 65ff9ba3f69ecf0056dd7fecd95141157fb30696
                     ),
                   ),
                 ),
@@ -449,13 +357,6 @@ class _LatestScreenState extends State<LatestScreen> {
       ),
     );
   }
-
-
-
-
-
-
-
 
   Widget buildRatingStars(double rating) {
     int fullStars = rating.floor();
@@ -475,9 +376,7 @@ class _LatestScreenState extends State<LatestScreen> {
       stars.add(Icon(Icons.star_border, color: Colors.amber, size: 18));
     }
 
-    return Row(
-      children: stars,
-    );
+    return Row(children: stars);
   }
 }
 
