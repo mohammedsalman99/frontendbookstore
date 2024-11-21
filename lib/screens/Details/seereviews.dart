@@ -55,7 +55,6 @@ class SeeReviewsPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.filter_list),
             onPressed: () {
-              // Show filtering options (e.g., by rating, most recent, etc.)
               print("Filter reviews clicked!");
             },
           ),
@@ -86,7 +85,6 @@ class SeeReviewsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Reviewer Info (Avatar, Name, Date)
                     Row(
                       children: [
                         CircleAvatar(
@@ -115,13 +113,11 @@ class SeeReviewsPage extends StatelessWidget {
                             ],
                           ),
                         ),
-                        // Star Rating
                         buildRatingStars(review['rating']),
                       ],
                     ),
                     SizedBox(height: 12),
 
-                    // Review Text
                     Text(
                       review['review'],
                       style: TextStyle(
@@ -139,7 +135,6 @@ class SeeReviewsPage extends StatelessWidget {
     );
   }
 
-  // Helper to create rating stars
   Widget buildRatingStars(double rating) {
     List<Widget> stars = [];
     for (int i = 0; i < 5; i++) {
