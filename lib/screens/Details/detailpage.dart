@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'report.dart'; // Import the ReportPage
-import 'writereview.dart'; // Import the WriteReviewPage
-import 'seereviews.dart'; // Import the SeeReviewsPage
+import 'report.dart'; 
+import 'writereview.dart'; 
+import 'seereviews.dart'; 
 
 class DetailPage extends StatelessWidget {
   final String title;
@@ -31,7 +31,6 @@ class DetailPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.share),
             onPressed: () {
-              // Add share functionality if needed
             },
           ),
         ],
@@ -42,7 +41,6 @@ class DetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Book Image with Premium Tag
               Stack(
                 children: [
                   ClipRRect(
@@ -78,7 +76,6 @@ class DetailPage extends StatelessWidget {
               ),
               SizedBox(height: 16),
 
-              // Title, Author, and Price Section
               Container(
                 decoration: BoxDecoration(
                   color: Colors.teal.shade50,
@@ -119,7 +116,7 @@ class DetailPage extends StatelessWidget {
                           children: [
                             Icon(Icons.remove_red_eye, size: 16, color: Colors.grey),
                             SizedBox(width: 4),
-                            Text("269"), // Replace with dynamic views count if needed
+                            Text("269"), 
                           ],
                         ),
                       ],
@@ -130,7 +127,6 @@ class DetailPage extends StatelessWidget {
 
               SizedBox(height: 20),
 
-              // Action Buttons (Favourite, Download, etc.)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -141,7 +137,7 @@ class DetailPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReportPage(), // Navigate to ReportPage
+                        builder: (context) => ReportPage(), 
                       ),
                     );
                   }),
@@ -150,7 +146,6 @@ class DetailPage extends StatelessWidget {
 
               SizedBox(height: 20),
 
-              // About Section
               Text(
                 "About this book",
                 style: TextStyle(
@@ -161,7 +156,7 @@ class DetailPage extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                "When you pull up stakes, make sure you don’t get stabbed in the back.", // Replace with dynamic book description
+                "When you pull up stakes, make sure you don’t get stabbed in the back.", 
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[700],
@@ -170,7 +165,6 @@ class DetailPage extends StatelessWidget {
 
               SizedBox(height: 20),
 
-              // Ratings and Reviews
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -188,7 +182,7 @@ class DetailPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SeeReviewsPage(), // Navigate to SeeReviewsPage
+                          builder: (context) => SeeReviewsPage(), 
                         ),
                       );
                     },
@@ -201,7 +195,7 @@ class DetailPage extends StatelessWidget {
                   buildRatingStars(rating),
                   SizedBox(width: 8),
                   Text(
-                    "$rating (1 Review)", // Replace with actual review data
+                    "$rating (1 Review)", 
                     style: TextStyle(fontSize: 16),
                   ),
                 ],
@@ -212,7 +206,7 @@ class DetailPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WriteReviewPage(), // Navigate to WriteReviewPage
+                      builder: (context) => WriteReviewPage(), 
                     ),
                   );
                 },
@@ -225,7 +219,6 @@ class DetailPage extends StatelessWidget {
 
               SizedBox(height: 20),
 
-              // Related Books Section
               Text(
                 "Related Books",
                 style: TextStyle(
@@ -248,12 +241,10 @@ class DetailPage extends StatelessWidget {
 
               SizedBox(height: 20),
 
-              // Buy Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Buy Book action
                   },
                   child: Text("BUY BOOK"),
                   style: ElevatedButton.styleFrom(
@@ -273,7 +264,6 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  // Helper to create action buttons with onPressed
   Widget buildActionButton(IconData icon, String label, VoidCallback onPressed) {
     return GestureDetector(
       onTap: onPressed,
@@ -290,7 +280,6 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  // Helper to create rating stars
   Widget buildRatingStars(double rating) {
     List<Widget> stars = [];
     for (int i = 0; i < 5; i++) {
@@ -303,7 +292,6 @@ class DetailPage extends StatelessWidget {
     return Row(children: stars);
   }
 
-  // Helper to create related book cards
   Widget buildRelatedBookCard() {
     return Container(
       margin: EdgeInsets.only(right: 10),
@@ -314,7 +302,7 @@ class DetailPage extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.network(
-              'https://via.placeholder.com/120', // Replace with dynamic image URL
+              'https://via.placeholder.com/120', 
               fit: BoxFit.cover,
               height: 150,
               width: 120,
@@ -322,12 +310,12 @@ class DetailPage extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            "Book Title", // Replace with dynamic title
+            "Book Title", 
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 4),
           Text(
-            "₹ 499", // Replace with dynamic price
+            "₹ 499", 
             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
         ],
