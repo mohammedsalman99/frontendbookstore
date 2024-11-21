@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../Details//detailpage.dart';
 class LatestScreen extends StatefulWidget {
   @override
   _LatestScreenState createState() => _LatestScreenState();
@@ -211,8 +211,10 @@ class _LatestScreenState extends State<LatestScreen> {
                       filteredBooks[index]['image']!,
                       filteredBooks[index]['price']!,
                       filteredBooks[index]['premium']!,
-                      filteredBooks[index]['rating'],  // Pass rating here
+                      filteredBooks[index]['rating'],
+                      filteredBooks[index]['author']!, // Add this
                     );
+
                   },
                 )
                     : ListView.builder(
@@ -225,7 +227,8 @@ class _LatestScreenState extends State<LatestScreen> {
                         filteredBooks[index]['image']!,
                         filteredBooks[index]['price']!,
                         filteredBooks[index]['premium']!,
-                        filteredBooks[index]['rating'],  // Pass rating here
+                        filteredBooks[index]['rating'],
+                        filteredBooks[index]['author']!, // Add this
                       ),
                     );
                   },
@@ -239,9 +242,23 @@ class _LatestScreenState extends State<LatestScreen> {
     );
   }
 
-  Widget categoryCard(String title, String imageUrl, String price, String premium, double rating) {
+  Widget categoryCard(String title, String imageUrl, String price, String premium, double rating, String author) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailPage(
+              title: title,
+              imageUrl: imageUrl,
+              price: price,
+              premium: premium,
+              rating: rating,
+              author: author,
+            ),
+          ),
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -254,90 +271,108 @@ class _LatestScreenState extends State<LatestScreen> {
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Stack(
-            children: [
-              // Image
-              Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 200,
-              ),
-              // Gradient overlay for readability
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.black.withOpacity(0.5), Colors.transparent],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                    ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Book Image
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 150,
                   ),
                 ),
-              ),
-              // Premium tag at the top-left corner
-              if (premium.isNotEmpty)
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      premium,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              Positioned(
-                bottom: 10,
-                left: 10,
-                right: 10,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '\$$price',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
-                        buildRatingStars(rating), // Display rating stars
-                      ],
+                      ),
+                      SizedBox(height: 4),
+
+                      // Author
+                      Text(
+                        'By $author',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      SizedBox(height: 4),
+
+                      // Price (or "Free")
+                      Text(
+                        price == "Free" ? "Free" : '₹ $price',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: price == "Free" ? Colors.green : Colors.redAccent,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+
+                      // Rating
+                      Row(
+                        children: [
+                          buildRatingStars(rating),
+                          SizedBox(width: 4),
+                          Text(
+                            '$rating',
+                            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            // Premium Tag in the Top-Right Corner
+            if (premium.isNotEmpty)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    premium,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
+
+
+
+
+
+
 
 
   Widget buildRatingStars(double rating) {
