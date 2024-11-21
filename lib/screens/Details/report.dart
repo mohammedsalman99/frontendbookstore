@@ -60,7 +60,7 @@ class _ReportPageState extends State<ReportPage> {
                     ),
                   );
 
-                  Navigator.pop(context); // Close the report page
+                  Navigator.pop(context); 
                 });
               },
               style: ElevatedButton.styleFrom(
@@ -84,7 +84,7 @@ class _ReportPageState extends State<ReportPage> {
           IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
-              Navigator.pop(context); // Close the report page
+              Navigator.pop(context); 
             },
           ),
         ],
