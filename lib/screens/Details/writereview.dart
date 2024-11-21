@@ -6,7 +6,7 @@ class WriteReviewPage extends StatefulWidget {
 }
 
 class _WriteReviewPageState extends State<WriteReviewPage> {
-  int _selectedRating = 0; // Holds the current selected rating (0-5)
+  int _selectedRating = 0; 
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
-              Navigator.pop(context); // Close the Write Review page
+              Navigator.pop(context); 
             },
           ),
         ],
@@ -63,14 +63,14 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
                       icon: Icon(
                         index < _selectedRating
                             ? Icons.star
-                            : Icons.star_border, // Gold if selected, else empty
+                            : Icons.star_border, 
                       ),
                       color: index < _selectedRating
                           ? Colors.amber
-                          : Color(0xFF5AA5B1), // Gold for selected stars
+                          : Color(0xFF5AA5B1), 
                       onPressed: () {
                         setState(() {
-                          _selectedRating = index + 1; // Update the rating
+                          _selectedRating = index + 1; 
                         });
                       },
                     );
@@ -83,8 +83,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle review submission logic
-                  Navigator.pop(context); // Go back after submitting
+                  Navigator.pop(context); 
                   print("Review submitted with rating: $_selectedRating");
                 },
                 style: ElevatedButton.styleFrom(
