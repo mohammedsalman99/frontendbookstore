@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/service/latest_service.dart';
 import '../Details/detailpage.dart';
 
 class LatestScreen extends StatefulWidget {
@@ -7,95 +8,50 @@ class LatestScreen extends StatefulWidget {
 }
 
 class _LatestScreenState extends State<LatestScreen> {
-  List<Map<String, dynamic>> books = [
-    {
-      'image': 'https://via.placeholder.com/150',
-      'title': 'All The Missing Girls',
-      'author': 'Megan Miranda',
-      'price': '50',
-      'premium': 'Premium',
-      'rating': 5.0,
-    },
-    {
-      'image': 'https://via.placeholder.com/150',
-      'title': 'Aranika and the Syamantaka Jewel',
-      'author': 'Aparajita Bose',
-      'price': 'Free',
-      'premium': '',
-      'rating': 3.5,
-    },
-    {
-      'image': 'https://via.placeholder.com/150',
-      'title': 'Fast as the Wind',
-      'author': 'Thomas Hardy',
-      'price': '50',
-      'premium': 'Premium',
-      'rating': 4.0,
-    },
-    {
-      'image': 'https://via.placeholder.com/150',
-      'title': 'The Demon Girl',
-      'author': 'Bertus Aafjes',
-      'price': 'Free',
-      'premium': '',
-      'rating': 2.5,
-    },
-    {
-      'image': 'https://via.placeholder.com/150',
-      'title': 'The Unwilling',
-      'author': 'John Hart',
-      'price': '100',
-      'premium': '',
-      'rating': 4.5,
-    },
-    {
-      'image': 'https://via.placeholder.com/150',
-      'title': 'Himself',
-      'author': 'John Hart',
-      'price': '50',
-      'premium': 'Premium',
-      'rating': 3.0,
-    },
-  ];
-
-  List<Map<String, dynamic>> displayedBooks = [];
-  bool isLoading = false;
-  int currentPage = 1;
-  int totalPages = 3;
-
-  TextEditingController _searchController = TextEditingController();
+  List<dynamic> displayedBooks = [];
+  bool isFetching = true;
   String query = '';
   bool isGridView = true;
+  final LatestService latestService = LatestService(); // Create a service instance
 
   @override
   void initState() {
     super.initState();
-    loadMoreBooks();
+    fetchBooks();
   }
 
-  void loadMoreBooks() {
-    if (isLoading || currentPage > totalPages) return;
-
+  Future<void> fetchBooks() async {
     setState(() {
-      isLoading = true;
+      isFetching = true;
     });
 
-    Future.delayed(Duration(seconds: 2), () {
+    try {
+      final books = await latestService.fetchBooks(); // Use the service method
       setState(() {
-        List<Map<String, dynamic>> newBooks = books;
-        displayedBooks.addAll(newBooks);
-        currentPage++;
-        isLoading = false;
+        displayedBooks = books;
       });
-    });
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      setState(() {
+        isFetching = false;
+      });
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredBooks = displayedBooks
+    List<dynamic> filteredBooks = displayedBooks
         .where((book) =>
-    book['title']!.toLowerCase().contains(query.toLowerCase()) ||
-        book['author']!.toLowerCase().contains(query.toLowerCase()))
+    book['title']
+        .toString()
+        .toLowerCase()
+        .contains(query.toLowerCase()) ||
+        book['author']
+            .toString()
+            .toLowerCase()
+            .contains(query.toLowerCase()))
         .toList();
 
     return Scaffold(
@@ -107,6 +63,7 @@ class _LatestScreenState extends State<LatestScreen> {
         title: Text(
           'Latest',
           style: TextStyle(
+            fontFamily: 'SF-Pro-Text',
             color: Colors.black,
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -120,14 +77,16 @@ class _LatestScreenState extends State<LatestScreen> {
               onPressed: () {
                 showSearch(
                   context: context,
-                  delegate: CustomSearchDelegate(),
+                  delegate: CustomSearchDelegate(displayedBooks),
                 );
               },
             ),
           ),
         ],
       ),
-      body: Padding(
+      body: isFetching
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,76 +147,36 @@ class _LatestScreenState extends State<LatestScreen> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  if (scrollNotification is ScrollEndNotification &&
-                      scrollNotification.metrics.pixels ==
-                          scrollNotification.metrics.maxScrollExtent) {
-                    loadMoreBooks();
-                  }
-                  return false;
-                },
-                child: isGridView
-                    ? GridView.builder(
-                  gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.7,
-                  ),
-                  itemCount: filteredBooks.length,
-                  itemBuilder: (context, index) {
-                    return categoryCard(
-                      filteredBooks[index]['title']!,
-                      filteredBooks[index]['image']!,
-                      filteredBooks[index]['price']!,
-                      filteredBooks[index]['premium']!,
-                      filteredBooks[index]['rating'],
-                      filteredBooks[index]['author']!,
-                    );
-                  },
-                )
-                    : ListView.builder(
-                  itemCount: filteredBooks.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: categoryCard(
-                        filteredBooks[index]['title']!,
-                        filteredBooks[index]['image']!,
-                        filteredBooks[index]['price']!,
-                        filteredBooks[index]['premium']!,
-                        filteredBooks[index]['rating'],
-                        filteredBooks[index]['author']!,
-                      ),
-                    );
-                  },
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // Two cards per row
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.65, // More height for each card
                 ),
+                itemCount: filteredBooks.length,
+                itemBuilder: (context, index) {
+                  return categoryCard(filteredBooks[index]);
+                },
               ),
             ),
-            if (isLoading) CircularProgressIndicator(),
           ],
         ),
       ),
     );
   }
 
-  Widget categoryCard(String title, String imageUrl, String price,
-      String premium, double rating, String author) {
+  Widget categoryCard(dynamic book) {
+    double rating = book['rating'] != null
+        ? double.tryParse(book['rating'].toString()) ?? 0.0
+        : 0.0;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailPage(
-              title: title,
-              imageUrl: imageUrl,
-              price: price,
-              premium: premium,
-              rating: rating,
-              author: author,
-            ),
+            builder: (context) => DetailPage(bookId: book['_id']),
           ),
         );
       },
@@ -276,111 +195,140 @@ class _LatestScreenState extends State<LatestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 150,
-              ),
+            // Image with Gradient Overlay
+            Stack(
+              children: [
+                AspectRatio(
+                  aspectRatio: 16 / 9, // Ensures proportional image display
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                    child: Image.network(
+                      book['image'] ?? 'https://via.placeholder.com/150',
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: Colors.grey[300],
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.broken_image,
+                                    size: 40, color: Colors.grey),
+                                Text(
+                                  'Image not available',
+                                  style: TextStyle(
+                                    fontFamily: 'SF-Pro-Text',
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
+            // Content Section
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Title
                   Text(
-                    title,
+                    book['title'] ?? '',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 20,
                     ),
                   ),
                   SizedBox(height: 4),
+                  // Author
                   Text(
-                    'By $author',
+                    'By ${book['author'] ?? 'Unknown'}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
+                      fontFamily: 'SF-Pro-Text',
+                      fontSize: 12,
+                      color: Colors.grey[700],
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
+                  // Price
                   Text(
-                    price == "Free" ? "Free" : '₹ $price',
+                    book['free'] == true
+                        ? 'Free'
+                        : '₹ ${book['price'] ?? 'Unknown'}',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: price == "Free"
-                          ? Colors.green
-                          : Colors.redAccent,
+                      fontFamily: 'SF-Pro-Text',
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: book['free'] == true ? Colors.green : Colors.red,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
+                  // Rating
                   Row(
                     children: [
-                      buildRatingStars(rating),
+                      ...buildRatingStars(rating, size: 14), // Smaller star size
                       SizedBox(width: 4),
                       Text(
-                        '$rating',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                        '${rating.toStringAsFixed(1)}',
+                        style: TextStyle(
+                          fontFamily: 'SF-Pro-Text',
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[700],
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            if (premium.isNotEmpty)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    premium,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
       ),
     );
   }
 
-  Widget buildRatingStars(double rating) {
-    int fullStars = rating.floor();
-    double fractionalStar = rating - fullStars;
-    int emptyStars = 5 - fullStars - (fractionalStar > 0.0 ? 1 : 0);
-
+  List<Widget> buildRatingStars(double rating, {double size = 25}) {
     List<Widget> stars = [];
-    for (int i = 0; i < fullStars; i++) {
-      stars.add(Icon(Icons.star, color: Colors.amber, size: 18));
+    for (int i = 0; i < 5; i++) {
+      if (i < rating) {
+        stars.add(Icon(Icons.star, color: Colors.amber, size: size));
+      } else {
+        stars.add(Icon(Icons.star_border, color: Colors.amber, size: size));
+      }
     }
-
-    if (fractionalStar > 0.0) {
-      stars.add(Icon(Icons.star_half, color: Colors.amber, size: 18));
-    }
-
-    for (int i = 0; i < emptyStars; i++) {
-      stars.add(Icon(Icons.star_border, color: Colors.amber, size: 18));
-    }
-
-    return Row(children: stars);
+    return stars;
   }
 }
 
-class CustomSearchDelegate extends SearchDelegate {
+
+
+
+class CustomSearchDelegate extends SearchDelegate<String> {
+  final List<dynamic> books;
+
+  CustomSearchDelegate(this.books);
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -388,7 +336,6 @@ class CustomSearchDelegate extends SearchDelegate {
         icon: Icon(Icons.clear),
         onPressed: () {
           query = '';
-          showSuggestions(context);
         },
       ),
     ];
@@ -399,18 +346,72 @@ class CustomSearchDelegate extends SearchDelegate {
     return IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () {
-        close(context, null);
+        close(context, '');
       },
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    return Container();
+    final results = books
+        .where((book) =>
+    book['title']
+        .toString()
+        .toLowerCase()
+        .contains(query.toLowerCase()) ||
+        book['author']
+            .toString()
+            .toLowerCase()
+            .contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final book = results[index];
+        return ListTile(
+          title: Text(book['title']),
+          subtitle: Text('By ${book['author']}'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailPage(bookId: book['_id']),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();
+    final suggestions = books
+        .where((book) =>
+    book['title']
+        .toString()
+        .toLowerCase()
+        .contains(query.toLowerCase()) ||
+        book['author']
+            .toString()
+            .toLowerCase()
+            .contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        final book = suggestions[index];
+        return ListTile(
+          title: Text(book['title']),
+          subtitle: Text('By ${book['author']}'),
+          onTap: () {
+            query = book['title'];
+            showResults(context);
+          },
+        );
+      },
+    );
   }
 }

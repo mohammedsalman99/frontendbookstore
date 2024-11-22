@@ -1,37 +1,106 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'report.dart'; 
-import 'writereview.dart'; 
-import 'seereviews.dart'; 
+import 'package:http/http.dart' as http;
+import 'report.dart';
+import 'writereview.dart';
+import 'seereviews.dart';
 
-class DetailPage extends StatelessWidget {
-  final String title;
-  final String imageUrl;
-  final String price;
-  final String premium;
-  final double rating;
-  final String author;
+class DetailPage extends StatefulWidget {
+  final String bookId;
 
-  const DetailPage({
-    Key? key,
-    required this.title,
-    required this.imageUrl,
-    required this.price,
-    required this.premium,
-    required this.rating,
-    required this.author,
-  }) : super(key: key);
+  const DetailPage({Key? key, required this.bookId}) : super(key: key);
+
+  @override
+  _DetailPageState createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  bool isLoading = true;
+  Map<String, dynamic>? bookData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBookDetails();
+  }
+
+  Future<void> fetchBookDetails() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}'), // Replace with your API URL
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          setState(() {
+            bookData = data['book'];
+            isLoading = false;
+          });
+        } else {
+          throw Exception("Failed to fetch book details");
+        }
+      } else {
+        throw Exception("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Detail Page",
+            style: TextStyle(
+              fontFamily: 'SF-Pro-Text',
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Color(0xFF5AA5B1),
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (bookData == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Detail Page",
+            style: TextStyle(
+              fontFamily: 'SF-Pro-Text',
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Color(0xFF5AA5B1),
+        ),
+        body: Center(child: Text("Failed to load book details.")),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detail page"),
+        title: Text(
+          "Detail Page",
+          style: TextStyle(
+            fontFamily: 'SF-Pro-Text',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Color(0xFF5AA5B1),
         actions: [
           IconButton(
             icon: Icon(Icons.share),
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -41,18 +110,19 @@ class DetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Book Image and Premium Badge
               Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      imageUrl,
+                      bookData!['image'],
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 250,
                     ),
                   ),
-                  if (premium.isNotEmpty)
+                  if (!bookData!['free'])
                     Positioned(
                       top: 10,
                       left: 10,
@@ -63,8 +133,9 @@ class DetailPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          premium,
+                          "Premium",
                           style: TextStyle(
+                            fontFamily: 'SF-Pro-Text',
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -76,6 +147,7 @@ class DetailPage extends StatelessWidget {
               ),
               SizedBox(height: 16),
 
+              // Book Title and Author
               Container(
                 decoration: BoxDecoration(
                   color: Colors.teal.shade50,
@@ -86,16 +158,18 @@ class DetailPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      bookData!['title'],
                       style: TextStyle(
+                        fontFamily: 'SF-Pro-Text',
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'by $author',
+                      'by ${bookData!['author']}',
                       style: TextStyle(
+                        fontFamily: 'SF-Pro-Text',
                         fontSize: 16,
                         color: Colors.grey[700],
                       ),
@@ -105,8 +179,9 @@ class DetailPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '₹ $price',
+                          bookData!['free'] ? "Free" : '₹ ${bookData!['price']}',
                           style: TextStyle(
+                            fontFamily: 'SF-Pro-Text',
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.redAccent,
@@ -114,9 +189,16 @@ class DetailPage extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            Icon(Icons.remove_red_eye, size: 16, color: Colors.grey),
+                            Icon(Icons.remove_red_eye,
+                                size: 16, color: Colors.grey),
                             SizedBox(width: 4),
-                            Text("269"), 
+                            Text(
+                              "${bookData!['numberOfViews']}",
+                              style: TextStyle(
+                                fontFamily: 'SF-Pro-Text',
+                                fontSize: 14,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -124,9 +206,9 @@ class DetailPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               SizedBox(height: 20),
 
+              // Action Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -137,18 +219,19 @@ class DetailPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReportPage(), 
+                        builder: (context) => ReportPage(),
                       ),
                     );
                   }),
                 ],
               ),
-
               SizedBox(height: 20),
 
+              // About Section
               Text(
                 "About this book",
                 style: TextStyle(
+                  fontFamily: 'SF-Pro-Text',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -156,21 +239,23 @@ class DetailPage extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                "When you pull up stakes, make sure you don’t get stabbed in the back.", 
+                bookData!['description'] ?? "No description available.",
                 style: TextStyle(
+                  fontFamily: 'SF-Pro-Text',
                   fontSize: 16,
                   color: Colors.grey[700],
                 ),
               ),
-
               SizedBox(height: 20),
 
+              // Ratings and Reviews
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     "Ratings & Reviews",
                     style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -182,7 +267,7 @@ class DetailPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SeeReviewsPage(), 
+                          builder: (context) => SeeReviewsPage(),
                         ),
                       );
                     },
@@ -192,11 +277,14 @@ class DetailPage extends StatelessWidget {
               SizedBox(height: 8),
               Row(
                 children: [
-                  buildRatingStars(rating),
+                  buildRatingStars(bookData!['rating'].toDouble()),
                   SizedBox(width: 8),
                   Text(
-                    "$rating (1 Review)", 
-                    style: TextStyle(fontSize: 16),
+                    "${bookData!['rating']} (${bookData!['numberOfFavourites']} Favourites)",
+                    style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
+                      fontSize: 16,
+                    ),
                   ),
                 ],
               ),
@@ -206,47 +294,36 @@ class DetailPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WriteReviewPage(), 
+                      builder: (context) => WriteReviewPage(),
                     ),
                   );
                 },
-                child: Text("Write a Review"),
+                child: Text(
+                  "Write a Review",
+                  style: TextStyle(
+                    fontFamily: 'SF-Pro-Text',
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF5AA5B1),
                   foregroundColor: Colors.white,
                 ),
               ),
-
               SizedBox(height: 20),
 
-              Text(
-                "Related Books",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    buildRelatedBookCard(),
-                    buildRelatedBookCard(),
-                    buildRelatedBookCard(),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 20),
-
+              // Buy Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    // Implement the purchase functionality
                   },
-                  child: Text("BUY BOOK"),
+                  child: Text(
+                    "BUY BOOK",
+                    style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.redAccent,
                     foregroundColor: Colors.white,
@@ -273,7 +350,11 @@ class DetailPage extends StatelessWidget {
           SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: Colors.black87),
+            style: TextStyle(
+              fontFamily: 'SF-Pro-Text',
+              fontSize: 12,
+              color: Colors.black87,
+            ),
           ),
         ],
       ),
@@ -290,36 +371,5 @@ class DetailPage extends StatelessWidget {
       }
     }
     return Row(children: stars);
-  }
-
-  Widget buildRelatedBookCard() {
-    return Container(
-      margin: EdgeInsets.only(right: 10),
-      width: 120,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              'https://via.placeholder.com/120', 
-              fit: BoxFit.cover,
-              height: 150,
-              width: 120,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            "Book Title", 
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 4),
-          Text(
-            "₹ 499", 
-            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-          ),
-        ],
-      ),
-    );
   }
 }
