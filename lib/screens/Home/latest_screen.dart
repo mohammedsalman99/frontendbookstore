@@ -12,7 +12,7 @@ class _LatestScreenState extends State<LatestScreen> {
   bool isFetching = true;
   String query = '';
   bool isGridView = true;
-  final LatestService latestService = LatestService(); // Create a service instance
+  final LatestService latestService = LatestService(); 
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _LatestScreenState extends State<LatestScreen> {
     });
 
     try {
-      final books = await latestService.fetchBooks(); // Use the service method
+      final books = await latestService.fetchBooks(); 
       setState(() {
         displayedBooks = books;
       });
@@ -149,10 +149,10 @@ class _LatestScreenState extends State<LatestScreen> {
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Two cards per row
+                  crossAxisCount: 2, 
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 0.65, // More height for each card
+                  childAspectRatio: 0.65, 
                 ),
                 itemCount: filteredBooks.length,
                 itemBuilder: (context, index) {
@@ -195,11 +195,10 @@ class _LatestScreenState extends State<LatestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image with Gradient Overlay
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: 16 / 9, // Ensures proportional image display
+                  aspectRatio: 16 / 9, 
                   child: ClipRRect(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                     child: Image.network(
@@ -240,13 +239,11 @@ class _LatestScreenState extends State<LatestScreen> {
                 ),
               ],
             ),
-            // Content Section
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
                   Text(
                     book['title'] ?? '',
                     maxLines: 2,
@@ -258,7 +255,6 @@ class _LatestScreenState extends State<LatestScreen> {
                     ),
                   ),
                   SizedBox(height: 4),
-                  // Author
                   Text(
                     'By ${book['author'] ?? 'Unknown'}',
                     maxLines: 1,
@@ -270,7 +266,6 @@ class _LatestScreenState extends State<LatestScreen> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  // Price
                   Text(
                     book['free'] == true
                         ? 'Free'
@@ -283,10 +278,9 @@ class _LatestScreenState extends State<LatestScreen> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  // Rating
                   Row(
                     children: [
-                      ...buildRatingStars(rating, size: 14), // Smaller star size
+                      ...buildRatingStars(rating, size: 14), 
                       SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
