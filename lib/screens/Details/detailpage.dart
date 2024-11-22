@@ -27,7 +27,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<void> fetchBookDetails() async {
     try {
       final response = await http.get(
-        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}'), // Replace with your API URL
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}'), 
       );
 
       if (response.statusCode == 200) {
@@ -110,7 +110,6 @@ class _DetailPageState extends State<DetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Book Image and Premium Badge
               Stack(
                 children: [
                   ClipRRect(
@@ -147,7 +146,6 @@ class _DetailPageState extends State<DetailPage> {
               ),
               SizedBox(height: 16),
 
-              // Book Title and Author
               Container(
                 decoration: BoxDecoration(
                   color: Colors.teal.shade50,
@@ -208,7 +206,6 @@ class _DetailPageState extends State<DetailPage> {
               ),
               SizedBox(height: 20),
 
-              // Action Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -227,7 +224,6 @@ class _DetailPageState extends State<DetailPage> {
               ),
               SizedBox(height: 20),
 
-              // About Section
               Text(
                 "About this book",
                 style: TextStyle(
@@ -248,7 +244,6 @@ class _DetailPageState extends State<DetailPage> {
               ),
               SizedBox(height: 20),
 
-              // Ratings and Reviews
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -311,12 +306,10 @@ class _DetailPageState extends State<DetailPage> {
               ),
               SizedBox(height: 20),
 
-              // Buy Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Implement the purchase functionality
                   },
                   child: Text(
                     "BUY BOOK",
