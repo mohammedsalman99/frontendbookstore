@@ -34,10 +34,9 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
     }
   }
 
-  // Function to update a specific review
   void updateReview(Map<String, dynamic> updatedReview, int index) {
     setState(() {
-      reviews[index] = updatedReview;  // Replace the old review with the updated one
+      reviews[index] = updatedReview;  
     });
   }
 
@@ -60,7 +59,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
                 itemBuilder: (context, index) {
                   final review = reviews[index];
 
-                  // Safely access the properties with null checks
                   final fullName = review['user']['fullName'] ?? 'Anonymous';
                   final profilePicture = review['user']['profilePicture'] ?? '';
                   final createdAt = review['createdAt'] ?? 'Unknown Date';
@@ -126,10 +124,8 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
                             ),
                           ),
                           SizedBox(height: 8),
-                          // Add "Update" button to each review
                           ElevatedButton(
                             onPressed: () {
-                              // Navigate to the update review form
                               _showUpdateReviewDialog(review, index);
                             },
                             child: Text("Update Review"),
@@ -150,7 +146,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
     );
   }
 
-  // Function to show the update review dialog
   void _showUpdateReviewDialog(Map<String, dynamic> review, int index) {
     TextEditingController reviewController = TextEditingController(text: review['review']);
     double? rating = review['rating']?.toDouble();
@@ -197,13 +192,12 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog without saving
+                Navigator.pop(context);
               },
               child: Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
-                // Update the review and close the dialog
                 final updatedReview = {
                   'user': review['user'],
                   'createdAt': review['createdAt'],
@@ -211,7 +205,7 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
                   'rating': rating,
                 };
                 updateReview(updatedReview, index);
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context); 
               },
               child: Text("Save"),
             ),
