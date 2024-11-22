@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'signup.dart';
 import '../Home/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -68,10 +69,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           final data = jsonDecode(response.body);
           String token = data['token'];
 
+          // Save the token to SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('auth_token', token);
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Home()), 
+            MaterialPageRoute(builder: (context) => Home()),
           );
 
           ScaffoldMessenger.of(context).showSnackBar(

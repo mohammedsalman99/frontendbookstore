@@ -27,7 +27,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<void> fetchBookDetails() async {
     try {
       final response = await http.get(
-        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}'), 
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}'),
       );
 
       if (response.statusCode == 200) {
@@ -51,6 +51,13 @@ class _DetailPageState extends State<DetailPage> {
         SnackBar(content: Text("Error: $e")),
       );
     }
+  }
+
+  // The updateReviewList function that will be passed to WriteReviewPage
+  void updateReviewList(List<Map<String, dynamic>> newReviews) {
+    setState(() {
+      // Update the reviews list here if you have one, or add functionality as needed
+    });
   }
 
   @override
@@ -286,10 +293,13 @@ class _DetailPageState extends State<DetailPage> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
+                  // Now passing updateReviewList to WriteReviewPage
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WriteReviewPage(),
+                      builder: (context) => WriteReviewPage(
+                        updateReviewList: updateReviewList, // Pass the function here
+                      ),
                     ),
                   );
                 },
@@ -309,8 +319,7 @@ class _DetailPageState extends State<DetailPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   child: Text(
                     "BUY BOOK",
                     style: TextStyle(
