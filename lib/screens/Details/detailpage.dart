@@ -53,10 +53,8 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
-  // The updateReviewList function that will be passed to WriteReviewPage
   void updateReviewList(List<Map<String, dynamic>> newReviews) {
     setState(() {
-      // Update the reviews list here if you have one, or add functionality as needed
     });
   }
 
@@ -293,12 +291,11 @@ class _DetailPageState extends State<DetailPage> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  // Now passing updateReviewList to WriteReviewPage
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => WriteReviewPage(
-                        updateReviewList: updateReviewList, // Pass the function here
+                        updateReviewList: updateReviewList, 
                       ),
                     ),
                   );
