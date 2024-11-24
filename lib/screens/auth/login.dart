@@ -72,24 +72,20 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
 
-          // Extract token and user details from the response
           String token = data['token'];
-          String userId = data['user']['id']; // Updated key
+          String userId = data['user']['id']; 
           String userEmail = data['user']['email'];
 
-          // Store the data in SharedPreferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
           await prefs.setString('user_id', userId);
           await prefs.setString('user_email', userEmail);
 
-          // Navigate to Home page
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => Home()),
           );
 
-          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
@@ -100,13 +96,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             ),
           );
         } else {
-          // Handle errors from the backend
           final error = jsonDecode(response.body)['error'] ?? 'Login failed';
           print("Login Error: $error");
           _showError(error);
         }
       } catch (e) {
-        // Handle any other exceptions
         setState(() {
           _isLoading = false;
         });
@@ -130,7 +124,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Scaffold(
       body: Stack(
         children: [
-          // Background Gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -145,7 +138,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Card Container
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20.0),
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
@@ -163,7 +155,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     ),
                     child: Column(
                       children: [
-                        // Logo/Icon with Animation
                         ScaleTransition(
                           scale: _animationController.drive(
                             Tween(begin: 0.9, end: 1.1).chain(CurveTween(curve: Curves.easeInOut)),
@@ -176,7 +167,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         const SizedBox(height: 15),
 
-                        // Welcome Text
                         const Text(
                           "Welcome Back",
                           style: TextStyle(
@@ -195,7 +185,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         const SizedBox(height: 8),
 
-                        // Subtitle
                         const Text(
                           "Login to continue",
                           style: TextStyle(
@@ -207,12 +196,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         const SizedBox(height: 20),
 
-                        // Login Form
                         Form(
                           key: _formKey,
                           child: Column(
                             children: [
-                              // Email Input
                               TextFormField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
@@ -239,7 +226,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               ),
                               const SizedBox(height: 14),
 
-                              // Password Input
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: !_isPasswordVisible,
@@ -275,7 +261,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               ),
                               const SizedBox(height: 20),
 
-                              // Login Button
                               _isLoading
                                   ? const CircularProgressIndicator(color: Colors.white)
                                   : ElevatedButton(
@@ -300,7 +285,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               ),
                               const SizedBox(height: 12),
 
-                              // Signup Link
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -320,7 +304,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               ),
                               const SizedBox(height: 8),
 
-                              // "or connect with"
                               const Text(
                                 "or connect with",
                                 style: TextStyle(
@@ -332,7 +315,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               ),
                               const SizedBox(height: 8),
 
-                              // Social Icons
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
