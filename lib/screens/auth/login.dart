@@ -16,13 +16,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+
   late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 600));
-    _animationController.forward();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
   }
 
   void _togglePasswordVisibility() {
@@ -36,7 +39,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       SnackBar(
         content: Text(
           message,
-          style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
+          style: const TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
         ),
         backgroundColor: Colors.red,
       ),
@@ -52,9 +55,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       try {
         final response = await http.post(
           Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/auth/login'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: {'Content-Type': 'application/json'},
           body: jsonEncode({
             'email': _emailController.text,
             'password': _passwordController.text,
@@ -69,7 +70,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           final data = jsonDecode(response.body);
           String token = data['token'];
 
-          // Save the token to SharedPreferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
 
@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
+              content: const Text(
                 'Login successful!',
                 style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
               ),
@@ -102,9 +102,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   void dispose() {
-    _animationController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -113,8 +113,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Scaffold(
       body: Stack(
         children: [
+          // Background Gradient
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFF5AA5B1), Color(0xFF3D7A8A)],
                 begin: Alignment.topLeft,
@@ -127,14 +128,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Card Container
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.0),
-                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white.withOpacity(0.3)),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 20,
@@ -144,98 +146,106 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     ),
                     child: Column(
                       children: [
-                        Image.asset(
-                          'assets/icons/login.png',
-                          height: 100,
-                          color: Colors.white.withOpacity(0.8),
+                        // Logo/Icon with Animation
+                        ScaleTransition(
+                          scale: _animationController.drive(
+                            Tween(begin: 0.9, end: 1.1).chain(CurveTween(curve: Curves.easeInOut)),
+                          ),
+                          child: Image.asset(
+                            'assets/icons/login.png',
+                            height: 100,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
                         ),
-                        SizedBox(height: 20),
-                        Text(
+                        const SizedBox(height: 15),
+
+                        // Welcome Text
+                        const Text(
                           "Welcome Back",
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
                             shadows: [
                               Shadow(
                                 offset: Offset(0, 3),
                                 blurRadius: 10,
-                                color: Colors.black.withOpacity(0.5),
+                                color: Colors.black26,
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Text(
+                        const SizedBox(height: 8),
+
+                        // Subtitle
+                        const Text(
                           "Login to continue",
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
-                            fontSize: 18,
+                            fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: Colors.white70,
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 20),
+
+                        // Login Form
                         Form(
                           key: _formKey,
                           child: Column(
                             children: [
+                              // Email Input
                               TextFormField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
                                   labelText: 'Email',
-                                  labelStyle: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white70,
-                                  ),
+                                  labelStyle: const TextStyle(color: Colors.white70, fontSize: 11),
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none,
                                   ),
-                                  prefixIcon: Icon(Icons.email, color: Colors.white70),
+                                  prefixIcon: const Icon(Icons.email, color: Colors.white70),
                                 ),
                                 keyboardType: TextInputType.emailAddress,
-                                textInputAction: TextInputAction.next,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your email';
                                   } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                                    return 'Please enter a valid email address';
+                                    return 'Enter a valid email';
                                   }
                                   return null;
                                 },
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 14),
+
+                              // Password Input
                               TextFormField(
                                 controller: _passwordController,
+                                obscureText: !_isPasswordVisible,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white70,
-                                  ),
+                                  labelStyle: const TextStyle(color: Colors.white70, fontSize: 11),
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none,
                                   ),
-                                  prefixIcon: Icon(Icons.lock, color: Colors.white70),
+                                  prefixIcon: const Icon(Icons.lock, color: Colors.white70),
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                      _isPasswordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
                                       color: Colors.white70,
                                     ),
                                     onPressed: _togglePasswordVisibility,
                                   ),
                                 ),
-                                obscureText: !_isPasswordVisible,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your password';
@@ -244,32 +254,36 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   }
                                   return null;
                                 },
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               ),
-                              SizedBox(height: 30),
+                              const SizedBox(height: 20),
+
+                              // Login Button
                               _isLoading
-                                  ? CircularProgressIndicator(color: Colors.white)
+                                  ? const CircularProgressIndicator(color: Colors.white)
                                   : ElevatedButton(
                                 onPressed: _login,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF5AA5B1),
-                                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 18),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 10),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  shadowColor: Colors.black26,
-                                  elevation: 10,
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Login',
                                   style: TextStyle(
                                     fontFamily: 'SF-Pro-Text',
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
+                                    fontSize: 13,
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 12),
+
+                              // Signup Link
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -277,38 +291,47 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     MaterialPageRoute(builder: (context) => SignupPage()),
                                   );
                                 },
-                                child: Text(
+                                child: const Text(
                                   "Don't have an account? Sign up",
                                   style: TextStyle(
                                     fontFamily: 'SF-Pro-Text',
                                     fontWeight: FontWeight.w500,
                                     color: Colors.white,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20),
-                              Text(
+                              const SizedBox(height: 8),
+
+                              // "or connect with"
+                              const Text(
                                 "or connect with",
                                 style: TextStyle(
                                   fontFamily: 'SF-Pro-Text',
                                   fontWeight: FontWeight.w400,
                                   color: Colors.white70,
+                                  fontSize: 10,
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 8),
+
+                              // Social Icons
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   IconButton(
-                                    icon: Image.asset('assets/icons/google.png', color: Colors.white),
+                                    icon: Image.asset('assets/icons/google.png',
+                                        height: 40, color: Colors.white),
                                     onPressed: () {},
                                   ),
                                   IconButton(
-                                    icon: Image.asset('assets/icons/facebook.png', color: Colors.white),
+                                    icon: Image.asset('assets/icons/facebook.png',
+                                        height: 40, color: Colors.white),
                                     onPressed: () {},
                                   ),
                                   IconButton(
-                                    icon: Image.asset('assets/icons/apple.png', color: Colors.white),
+                                    icon: Image.asset('assets/icons/apple.png',
+                                        height: 40, color: Colors.white),
                                     onPressed: () {},
                                   ),
                                 ],

@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'report.dart';
 import 'writereview.dart';
 import 'seereviews.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'pdf_viewer_page.dart';
 
 class DetailPage extends StatefulWidget {
   final String bookId;
@@ -54,8 +56,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   void updateReviewList(List<Map<String, dynamic>> newReviews) {
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -66,7 +67,9 @@ class _DetailPageState extends State<DetailPage> {
           title: Text(
             "Detail Page",
             style: TextStyle(
+              color: Colors.white,
               fontFamily: 'SF-Pro-Text',
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -82,6 +85,8 @@ class _DetailPageState extends State<DetailPage> {
           title: Text(
             "Detail Page",
             style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
               fontFamily: 'SF-Pro-Text',
               fontWeight: FontWeight.bold,
             ),
@@ -97,6 +102,8 @@ class _DetailPageState extends State<DetailPage> {
         title: Text(
           "Detail Page",
           style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
             fontFamily: 'SF-Pro-Text',
             fontWeight: FontWeight.bold,
           ),
@@ -141,7 +148,7 @@ class _DetailPageState extends State<DetailPage> {
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
                             color: Colors.white,
-                            fontSize: 12,
+                            fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -164,20 +171,20 @@ class _DetailPageState extends State<DetailPage> {
                       bookData!['title'],
                       style: TextStyle(
                         fontFamily: 'SF-Pro-Text',
-                        fontSize: 22,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 7),
                     Text(
                       'by ${bookData!['author']}',
                       style: TextStyle(
                         fontFamily: 'SF-Pro-Text',
-                        fontSize: 16,
+                        fontSize: 12,
                         color: Colors.grey[700],
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 7),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -185,15 +192,14 @@ class _DetailPageState extends State<DetailPage> {
                           bookData!['free'] ? "Free" : '₹ ${bookData!['price']}',
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.redAccent,
                           ),
                         ),
                         Row(
                           children: [
-                            Icon(Icons.remove_red_eye,
-                                size: 16, color: Colors.grey),
+                            Icon(Icons.remove_red_eye, size: 16, color: Colors.grey),
                             SizedBox(width: 4),
                             Text(
                               "${bookData!['numberOfViews']}",
@@ -216,7 +222,16 @@ class _DetailPageState extends State<DetailPage> {
                 children: [
                   buildActionButton(Icons.favorite_border, "Favourite", () {}),
                   buildActionButton(Icons.download, "Download", () {}),
-                  buildActionButton(Icons.book, "Read", () {}),
+                  buildActionButton(Icons.book, "Read", () {
+                    final pdfUrl = "https://drive.google.com/uc?export=download&id=1uThjMvt4jAC3mOiO2B4HQGvJoe4Mu2IJ";
+                    print("Navigating to PDFViewerPage with URL: $pdfUrl");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PDFViewerPage(pdfUrl: pdfUrl),
+                      ),
+                    );
+                  }),
                   buildActionButton(Icons.report, "Report", () {
                     Navigator.push(
                       context,
@@ -233,21 +248,21 @@ class _DetailPageState extends State<DetailPage> {
                 "About this book",
                 style: TextStyle(
                   fontFamily: 'SF-Pro-Text',
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 7),
               Text(
                 bookData!['description'] ?? "No description available.",
                 style: TextStyle(
                   fontFamily: 'SF-Pro-Text',
-                  fontSize: 16,
+                  fontSize: 13,
                   color: Colors.grey[700],
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 19),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -256,7 +271,7 @@ class _DetailPageState extends State<DetailPage> {
                     "Ratings & Reviews",
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontSize: 18,
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -274,7 +289,7 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 7),
               Row(
                 children: [
                   buildRatingStars(bookData!['rating'].toDouble()),
@@ -283,19 +298,19 @@ class _DetailPageState extends State<DetailPage> {
                     "${bookData!['rating']} (${bookData!['numberOfFavourites']} Favourites)",
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontSize: 16,
+                      fontSize: 13,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 9),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => WriteReviewPage(
-                        updateReviewList: updateReviewList, 
+                        updateReviewList: updateReviewList,
                       ),
                     ),
                   );
@@ -311,7 +326,7 @@ class _DetailPageState extends State<DetailPage> {
                   foregroundColor: Colors.white,
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 19),
 
               SizedBox(
                 width: double.infinity,

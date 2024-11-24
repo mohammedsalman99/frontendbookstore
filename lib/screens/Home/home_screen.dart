@@ -68,16 +68,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 60), 
+            SizedBox(height: 45),
             Text(
               'Readme',
               style: TextStyle(
                 color: Colors.black,
-                fontSize: 32,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 15), 
+            SizedBox(height: 13),
 
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.0), 
@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 40), 
+            SizedBox(height: 30),
 
             Row(
               children: [
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontFamily: 'SF-Pro-Text',
                     fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                    fontSize: 14,
                     color: Colors.black87,
                   ),
                 ),
@@ -174,8 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget categoryCard(String title, String imageUrl) {
     return Container(
-      width: 180,
-      height: 200,
+      width: 150,
+      height: 180,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: DecorationImage(
@@ -223,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   title,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 1.2,
                   ),

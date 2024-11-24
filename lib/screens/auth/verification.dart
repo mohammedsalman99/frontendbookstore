@@ -17,7 +17,6 @@ class _VerificationPageState extends State<VerificationPage> {
   final _codeController = TextEditingController();
   bool _isLoading = false;
 
-  // Function to handle API call for verifying code
   Future<bool> _verifyCode(String code) async {
     setState(() {
       _isLoading = true;
@@ -34,9 +33,6 @@ class _VerificationPageState extends State<VerificationPage> {
           'verificationCode': code,
         }),
       );
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       setState(() {
         _isLoading = false;
@@ -58,7 +54,6 @@ class _VerificationPageState extends State<VerificationPage> {
     }
   }
 
-  // Function to display error messages
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -71,7 +66,6 @@ class _VerificationPageState extends State<VerificationPage> {
     );
   }
 
-  // Function to handle form submission
   void _submitCode() async {
     if (_codeController.text.isEmpty) {
       _showError("Please enter the verification code");
@@ -81,7 +75,6 @@ class _VerificationPageState extends State<VerificationPage> {
     bool isValid = await _verifyCode(_codeController.text);
 
     if (isValid) {
-      // Navigate to home screen if verification is successful
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Home()),
@@ -94,9 +87,9 @@ class _VerificationPageState extends State<VerificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
+          // Background Gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -108,72 +101,75 @@ class _VerificationPageState extends State<VerificationPage> {
           ),
           Center(
             child: SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Card Container
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.0),
-                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(15),
                       border: Border.all(color: Colors.white.withOpacity(0.3)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black26,
-                          blurRadius: 20,
-                          offset: Offset(0, 10),
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
                         ),
                       ],
                     ),
                     child: Column(
                       children: [
+                        // Icon
                         Icon(
                           Icons.mail_outline,
-                          size: 100,
+                          size: 70,
                           color: Colors.white.withOpacity(0.8),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 10),
+
+                        // Title
                         Text(
                           "Email Verification",
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
                             shadows: [
                               Shadow(
-                                offset: Offset(0, 3),
-                                blurRadius: 10,
-                                color: Colors.black.withOpacity(0.5),
+                                offset: Offset(0, 2),
+                                blurRadius: 6,
+                                color: Colors.black.withOpacity(0.4),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 8),
+
+                        // Subtitle
                         Text(
                           "A verification code has been sent to ${widget.email}. Please enter the code below to verify your email.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
-                            fontSize: 16,
+                            fontSize: 11,
                             fontWeight: FontWeight.w400,
                             color: Colors.white70,
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 15),
+
+                        // Code Input Field
                         TextField(
                           controller: _codeController,
                           keyboardType: TextInputType.number,
                           maxLength: 6,
                           decoration: InputDecoration(
                             labelText: "Verification Code",
-                            labelStyle: TextStyle(
-                              fontFamily: 'SF-Pro-Text',
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white70,
-                            ),
+                            labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.2),
                             border: OutlineInputBorder(
@@ -182,49 +178,57 @@ class _VerificationPageState extends State<VerificationPage> {
                             ),
                             prefixIcon: Icon(Icons.lock, color: Colors.white70),
                           ),
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 12),
+
+                        // Verify Button
                         _isLoading
                             ? CircularProgressIndicator(color: Colors.white)
                             : ElevatedButton(
                           onPressed: _submitCode,
-                          child: Text(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF5AA5B1),
+                            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
                             "Verify",
                             style: TextStyle(
                               fontFamily: 'SF-Pro-Text',
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
+                              fontSize: 13,
                             ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF5AA5B1),
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            shadowColor: Colors.black26,
-                            elevation: 10,
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 10),
+
+                        // Resend Code Link
                         TextButton(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
                                   "Verification code resent to ${widget.email}",
-                                  style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
+                                  style: TextStyle(
+                                    fontFamily: 'SF-Pro-Text',
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             "Resend Code",
                             style: TextStyle(
                               fontFamily: 'SF-Pro-Text',
                               fontWeight: FontWeight.w500,
                               color: Colors.white,
+                              fontSize: 12,
                             ),
                           ),
                         ),

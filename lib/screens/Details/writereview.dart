@@ -20,8 +20,14 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Write a Review"),
-        backgroundColor: Color(0xFF5AA5B1),
+        title: Text("Write a Review",
+        style: TextStyle(
+         color: Colors.white,
+           fontFamily: 'SF-Pro-Text',
+           fontSize: 18,
+           backgroundColor: Color(0xFF5AA5B1),
+        ),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.close),
@@ -39,7 +45,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
             Text(
               "Write Your Review",
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF5AA5B1),
               ),
@@ -62,7 +68,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
                 Text(
                   "Rate the Book:",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 14,
                     color: Colors.black87,
                   ),
                 ),

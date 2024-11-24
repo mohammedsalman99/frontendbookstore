@@ -17,13 +17,16 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
-  late AnimationController _animationController;
+
+  late AnimationController _iconAnimationController;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 600));
-    _animationController.forward();
+    _iconAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
   }
 
   void _togglePasswordVisibility() {
@@ -66,9 +69,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
           _isLoading = false;
         });
 
-        print('Response status: ${response.statusCode}');
-        print('Response body: ${response.body}');
-
         if (response.statusCode == 200 || response.statusCode == 201) {
           final data = jsonDecode(response.body);
           String tempUserId = data['tempUserId'];
@@ -97,11 +97,11 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
   @override
   void dispose() {
-    _animationController.dispose();
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _iconAnimationController.dispose();
     super.dispose();
   }
 
@@ -110,6 +110,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     return Scaffold(
       body: Stack(
         children: [
+          // Background Gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -124,69 +125,79 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Card Container
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.0),
-                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white.withOpacity(0.3)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black26,
-                          blurRadius: 20,
-                          offset: Offset(0, 10),
+                          blurRadius: 15,
+                          offset: Offset(0, 5),
                         ),
                       ],
                     ),
                     child: Column(
                       children: [
-                        Image.asset(
-                          'assets/icons/signup.png',
-                          height: 100,
-                          color: Colors.white.withOpacity(0.8),
+                        // Animated Logo
+                        ScaleTransition(
+                          scale: _iconAnimationController.drive(
+                            Tween(begin: 0.9, end: 1.1).chain(CurveTween(curve: Curves.easeInOut)),
+                          ),
+                          child: Image.asset(
+                            'assets/icons/signup.png',
+                            height: 80,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 10),
+
+                        // Title
                         Text(
                           "Create an Account",
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
                             shadows: [
                               Shadow(
                                 offset: Offset(0, 3),
-                                blurRadius: 10,
+                                blurRadius: 8,
                                 color: Colors.black.withOpacity(0.5),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 8),
+
+                        // Subtitle
                         Text(
                           "Sign up to get started",
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
-                            fontSize: 18,
+                            fontSize: 10,
                             fontWeight: FontWeight.w400,
                             color: Colors.white70,
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 10),
+
+                        // Signup Form
                         Form(
                           key: _formKey,
                           child: Column(
                             children: [
+                              // Username Input
                               TextFormField(
                                 controller: _usernameController,
                                 decoration: InputDecoration(
                                   labelText: 'Username',
-                                  labelStyle: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white70,
-                                  ),
+                                  labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
@@ -203,16 +214,14 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                 },
                                 style: TextStyle(color: Colors.white),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 10),
+
+                              // Email Input
                               TextFormField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
                                   labelText: 'Email',
-                                  labelStyle: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white70,
-                                  ),
+                                  labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
@@ -226,22 +235,21 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your email';
                                   } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                                    return 'Please enter a valid email address';
+                                    return 'Enter a valid email';
                                   }
                                   return null;
                                 },
                                 style: TextStyle(color: Colors.white),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 10),
+
+                              // Password Input
                               TextFormField(
                                 controller: _passwordController,
+                                obscureText: !_isPasswordVisible,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white70,
-                                  ),
+                                  labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
@@ -251,13 +259,14 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                   prefixIcon: Icon(Icons.lock, color: Colors.white70),
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                      _isPasswordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
                                       color: Colors.white70,
                                     ),
                                     onPressed: _togglePasswordVisibility,
                                   ),
                                 ),
-                                obscureText: !_isPasswordVisible,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your password';
@@ -268,16 +277,15 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                 },
                                 style: TextStyle(color: Colors.white),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 10),
+
+                              // Confirm Password Input
                               TextFormField(
                                 controller: _confirmPasswordController,
+                                obscureText: true,
                                 decoration: InputDecoration(
                                   labelText: 'Confirm Password',
-                                  labelStyle: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white70,
-                                  ),
+                                  labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
                                   filled: true,
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
@@ -285,15 +293,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                     borderSide: BorderSide.none,
                                   ),
                                   prefixIcon: Icon(Icons.lock, color: Colors.white70),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                      color: Colors.white70,
-                                    ),
-                                    onPressed: _togglePasswordVisibility,
-                                  ),
                                 ),
-                                obscureText: true,
                                 validator: (value) {
                                   if (value != _passwordController.text) {
                                     return 'Passwords do not match';
@@ -302,30 +302,34 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                 },
                                 style: TextStyle(color: Colors.white),
                               ),
-                              SizedBox(height: 30),
+                              const SizedBox(height: 20),
+
+                              // Signup Button
                               _isLoading
                                   ? CircularProgressIndicator(color: Colors.white)
                                   : ElevatedButton(
                                 onPressed: _signup,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF5AA5B1),
-                                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 18),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 10),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  shadowColor: Colors.black26,
-                                  elevation: 10,
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Sign Up',
                                   style: TextStyle(
                                     fontFamily: 'SF-Pro-Text',
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
+                                    fontSize: 13,
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 10),
+
+                              // Login Link
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -333,12 +337,13 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                     MaterialPageRoute(builder: (context) => LoginPage()),
                                   );
                                 },
-                                child: Text(
+                                child: const Text(
                                   "Already have an account? Log in",
                                   style: TextStyle(
                                     fontFamily: 'SF-Pro-Text',
                                     fontWeight: FontWeight.w500,
                                     color: Colors.white,
+                                    fontSize: 10,
                                   ),
                                 ),
                               ),

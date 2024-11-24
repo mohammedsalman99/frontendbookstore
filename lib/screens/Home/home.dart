@@ -50,18 +50,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
+      height: 60, // Reduced height for smaller screens
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFF5AA5B1), Color(0xFF3D7A8A)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Reduced radius
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 10,
+            blurRadius: 8,
             offset: Offset(0, -4),
           ),
         ],
@@ -84,11 +84,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
       onTap: () => onItemTapped(index),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12), // Adjusted padding
         decoration: isSelected
             ? BoxDecoration(
           color: Colors.white.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(15),
         )
             : null,
         child: Column(
@@ -96,17 +96,17 @@ class CustomBottomNavigationBar extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: isSelected ? 28 : 24,
+              size: isSelected ? 24 : 20, // Reduced size for icons
               color: isSelected ? Colors.white : Colors.white70,
             ),
             if (isSelected)
               Padding(
-                padding: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.only(top: 2),
                 child: Text(
                   label,
                   style: TextStyle(
                     fontFamily: 'SF-Pro-Text',
-                    fontSize: 12,
+                    fontSize: 10, // Reduced font size for labels
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),

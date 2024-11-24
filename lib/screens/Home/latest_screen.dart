@@ -65,7 +65,7 @@ class _LatestScreenState extends State<LatestScreen> {
           style: TextStyle(
             fontFamily: 'SF-Pro-Text',
             color: Colors.black,
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -91,7 +91,7 @@ class _LatestScreenState extends State<LatestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            SizedBox(height: 18),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -100,7 +100,7 @@ class _LatestScreenState extends State<LatestScreen> {
                   style: TextStyle(
                     fontFamily: 'SF-Pro-Text',
                     fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                    fontSize: 14,
                     color: Colors.black87,
                   ),
                 ),
@@ -251,33 +251,33 @@ class _LatestScreenState extends State<LatestScreen> {
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 14,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 3),
                   Text(
                     'By ${book['author'] ?? 'Unknown'}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontSize: 12,
+                      fontSize: 9,
                       color: Colors.grey[700],
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 7),
                   Text(
                     book['free'] == true
                         ? 'Free'
                         : '₹ ${book['price'] ?? 'Unknown'}',
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontSize: 20,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: book['free'] == true ? Colors.green : Colors.red,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 7),
                   Row(
                     children: [
                       ...buildRatingStars(rating, size: 14), 
@@ -286,7 +286,7 @@ class _LatestScreenState extends State<LatestScreen> {
                         '${rating.toStringAsFixed(1)}',
                         style: TextStyle(
                           fontFamily: 'SF-Pro-Text',
-                          fontSize: 20,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey[700],
                         ),
@@ -302,7 +302,7 @@ class _LatestScreenState extends State<LatestScreen> {
     );
   }
 
-  List<Widget> buildRatingStars(double rating, {double size = 25}) {
+  List<Widget> buildRatingStars(double rating, {double size = 18}) {
     List<Widget> stars = [];
     for (int i = 0; i < 5; i++) {
       if (i < rating) {

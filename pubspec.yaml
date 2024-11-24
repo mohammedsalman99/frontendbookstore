@@ -8,6 +8,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  syncfusion_flutter_pdfviewer: ^20.3.56
   shared_preferences: ^2.0.9
   flutter:
     sdk: flutter
