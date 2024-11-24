@@ -253,8 +253,8 @@ class _DetailPageState extends State<DetailPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ReportPage(
-                            bookId: bookData!['_id'], // Book ID
-                            bookTitle: bookData!['title'], // Book title
+                            bookId: bookData!['_id'], 
+                            bookTitle: bookData!['title'], 
                           ),
                         ),
                       );
@@ -339,12 +339,12 @@ class _DetailPageState extends State<DetailPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => WriteReviewPage(
-                        bookId: widget.bookId, // Pass the correct bookId
-                        refreshBookDetails: fetchBookDetails, // Pass the refreshBookDetails function
+                        bookId: widget.bookId, 
+                        refreshBookDetails: fetchBookDetails, 
                       ),
                     ),
                   );
-                  fetchBookDetails(); // Refresh the book data when returning
+                  fetchBookDetails(); 
                 },
                 child: Text(
                   "Write a Review",
