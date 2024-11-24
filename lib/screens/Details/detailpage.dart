@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'report.dart';
 import 'writereview.dart';
 import 'seereviews.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'pdf_viewer_page.dart';
+
 
 class DetailPage extends StatefulWidget {
   final String bookId;
@@ -232,14 +234,41 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     );
                   }),
-                  buildActionButton(Icons.report, "Report", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReportPage(),
-                      ),
-                    );
+                  buildActionButton(Icons.report, "Report", () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    String? token = prefs.getString('auth_token');
+
+                    if (token == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Authentication token is missing. Please log in again."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (bookData != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReportPage(
+                            bookId: bookData!['_id'], // Book ID
+                            bookTitle: bookData!['title'], // Book title
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Book details are missing."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   }),
+
+
                 ],
               ),
               SizedBox(height: 20),
@@ -305,15 +334,17 @@ class _DetailPageState extends State<DetailPage> {
               ),
               SizedBox(height: 9),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => WriteReviewPage(
-                        updateReviewList: updateReviewList,
+                        bookId: widget.bookId, // Pass the correct bookId
+                        refreshBookDetails: fetchBookDetails, // Pass the refreshBookDetails function
                       ),
                     ),
                   );
+                  fetchBookDetails(); // Refresh the book data when returning
                 },
                 child: Text(
                   "Write a Review",
@@ -326,6 +357,7 @@ class _DetailPageState extends State<DetailPage> {
                   foregroundColor: Colors.white,
                 ),
               ),
+
               SizedBox(height: 19),
 
               SizedBox(

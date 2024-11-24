@@ -18,21 +18,48 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
   }
 
   Future<void> fetchReviews() async {
-    final response = await http.get(Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/673e56ff95b3d0d9e9fb9d34/reviews'));
+    try {
+      final response = await http.get(Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/673e56ff95b3d0d9e9fb9d34/reviews'));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      print(response.body); // Debugging: Log raw response
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        print(data); // Debugging: Log parsed data
+
+        if (data['success'] == true && data['reviews'] != null) {
+          setState(() {
+            reviews = List<Map<String, dynamic>>.from(data['reviews']);
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            reviews = [];
+            isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("No reviews found.")),
+          );
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to fetch reviews: ${response.statusCode}")),
+        );
+      }
+    } catch (e) {
       setState(() {
-        reviews = List<Map<String, dynamic>>.from(data['reviews']);
         isLoading = false;
       });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      throw Exception('Failed to load reviews');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     }
   }
+
 
   void updateReview(Map<String, dynamic> updatedReview, int index) {
     setState(() {

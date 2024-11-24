@@ -62,22 +62,34 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           }),
         );
 
+        print("Response status code: ${response.statusCode}");
+        print("Response body: ${response.body}");
+
         setState(() {
           _isLoading = false;
         });
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          String token = data['token'];
 
+          // Extract token and user details from the response
+          String token = data['token'];
+          String userId = data['user']['id']; // Updated key
+          String userEmail = data['user']['email'];
+
+          // Store the data in SharedPreferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
+          await prefs.setString('user_id', userId);
+          await prefs.setString('user_email', userEmail);
 
+          // Navigate to Home page
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => Home()),
           );
 
+          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
@@ -88,17 +100,22 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             ),
           );
         } else {
+          // Handle errors from the backend
           final error = jsonDecode(response.body)['error'] ?? 'Login failed';
+          print("Login Error: $error");
           _showError(error);
         }
       } catch (e) {
+        // Handle any other exceptions
         setState(() {
           _isLoading = false;
         });
+        print("Exception occurred: $e");
         _showError('An error occurred. Please try again.');
       }
     }
   }
+
 
   @override
   void dispose() {

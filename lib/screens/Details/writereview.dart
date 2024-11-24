@@ -4,9 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WriteReviewPage extends StatefulWidget {
-  final Function(List<Map<String, dynamic>>) updateReviewList;
+  final String bookId; // Add bookId to specify the book for the review
+  final Function() refreshBookDetails; // Function to refresh details in DetailPage
 
-  WriteReviewPage({required this.updateReviewList}); 
+  WriteReviewPage({
+    required this.bookId,
+    required this.refreshBookDetails,
+  });
 
   @override
   _WriteReviewPageState createState() => _WriteReviewPageState();
@@ -14,20 +18,21 @@ class WriteReviewPage extends StatefulWidget {
 
 class _WriteReviewPageState extends State<WriteReviewPage> {
   int _selectedRating = 0;
-  TextEditingController _reviewController = TextEditingController(); 
+  TextEditingController _reviewController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Write a Review",
-        style: TextStyle(
-         color: Colors.white,
-           fontFamily: 'SF-Pro-Text',
-           fontSize: 18,
-           backgroundColor: Color(0xFF5AA5B1),
+        title: Text(
+          "Write a Review",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'SF-Pro-Text',
+            fontSize: 18,
+          ),
         ),
-        ),
+        backgroundColor: Color(0xFF5AA5B1),
         actions: [
           IconButton(
             icon: Icon(Icons.close),
@@ -42,15 +47,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Write Your Review",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF5AA5B1),
-              ),
-            ),
-            SizedBox(height: 16),
+            SizedBox(height: 11),
             TextField(
               controller: _reviewController,
               maxLines: 5,
@@ -68,7 +65,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
                 Text(
                   "Rate the Book:",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 11,
                     color: Colors.black87,
                   ),
                 ),
@@ -79,6 +76,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
                         index < _selectedRating
                             ? Icons.star
                             : Icons.star_border,
+                        size: 18, // Set the size of the icons (adjust as needed)
                       ),
                       color: index < _selectedRating
                           ? Colors.amber
@@ -93,6 +91,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
                 ),
               ],
             ),
+
             SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -131,7 +130,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
     };
 
     final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('auth_token'); 
+    String? token = prefs.getString('auth_token');
 
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -142,33 +141,24 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/673e56ff95b3d0d9e9fb9d34/reviews'),
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/reviews'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token', 
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode(reviewData),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        final newReview = {
-          'rating': data['review']['rating'],
-          'review': data['review']['review'],
-          'user': data['review']['user'],
-        };
-
-        widget.updateReviewList([newReview]); 
-
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Review submitted successfully!"),
           backgroundColor: Colors.green,
         ));
 
-        Navigator.pop(context); 
+        // Refresh book details in the DetailPage
+        widget.refreshBookDetails();
+
+        Navigator.pop(context); // Navigate back after submission
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Failed to submit the review. Please try again."),
