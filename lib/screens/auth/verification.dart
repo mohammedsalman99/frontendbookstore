@@ -89,7 +89,6 @@ class _VerificationPageState extends State<VerificationPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -104,7 +103,6 @@ class _VerificationPageState extends State<VerificationPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Card Container
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20.0),
                     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
@@ -122,7 +120,6 @@ class _VerificationPageState extends State<VerificationPage> {
                     ),
                     child: Column(
                       children: [
-                        // Icon
                         Icon(
                           Icons.mail_outline,
                           size: 70,
@@ -130,7 +127,6 @@ class _VerificationPageState extends State<VerificationPage> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Title
                         Text(
                           "Email Verification",
                           style: TextStyle(
@@ -149,7 +145,6 @@ class _VerificationPageState extends State<VerificationPage> {
                         ),
                         const SizedBox(height: 8),
 
-                        // Subtitle
                         Text(
                           "A verification code has been sent to ${widget.email}. Please enter the code below to verify your email.",
                           textAlign: TextAlign.center,
@@ -162,7 +157,6 @@ class _VerificationPageState extends State<VerificationPage> {
                         ),
                         const SizedBox(height: 15),
 
-                        // Code Input Field
                         TextField(
                           controller: _codeController,
                           keyboardType: TextInputType.number,
@@ -182,7 +176,6 @@ class _VerificationPageState extends State<VerificationPage> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Verify Button
                         _isLoading
                             ? CircularProgressIndicator(color: Colors.white)
                             : ElevatedButton(
@@ -206,7 +199,6 @@ class _VerificationPageState extends State<VerificationPage> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Resend Code Link
                         TextButton(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
