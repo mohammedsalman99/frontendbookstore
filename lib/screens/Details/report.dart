@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReportPage extends StatefulWidget {
-  final String bookId; // Book ID being reported
-  final String bookTitle; // Book title being reported
+  final String bookId; 
+  final String bookTitle; 
 
   ReportPage({
     required this.bookId,
@@ -72,7 +72,7 @@ class _ReportPageState extends State<ReportPage> {
               margin: EdgeInsets.all(12),
             ),
           );
-          Navigator.pop(context); // Navigate back after success
+          Navigator.pop(context);
         } else {
           _showErrorSnackbar("Failed to submit the report.");
         }
