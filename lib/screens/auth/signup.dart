@@ -110,7 +110,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     return Scaffold(
       body: Stack(
         children: [
-          // Background Gradient
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -125,7 +124,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Card Container
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20.0),
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
@@ -143,7 +141,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     ),
                     child: Column(
                       children: [
-                        // Animated Logo
                         ScaleTransition(
                           scale: _iconAnimationController.drive(
                             Tween(begin: 0.9, end: 1.1).chain(CurveTween(curve: Curves.easeInOut)),
@@ -156,7 +153,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         ),
                         const SizedBox(height: 10),
 
-                        // Title
                         Text(
                           "Create an Account",
                           style: TextStyle(
@@ -175,7 +171,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         ),
                         const SizedBox(height: 8),
 
-                        // Subtitle
                         Text(
                           "Sign up to get started",
                           style: TextStyle(
@@ -187,12 +182,10 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                         ),
                         const SizedBox(height: 10),
 
-                        // Signup Form
                         Form(
                           key: _formKey,
                           child: Column(
                             children: [
-                              // Username Input
                               TextFormField(
                                 controller: _usernameController,
                                 decoration: InputDecoration(
@@ -216,7 +209,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                               ),
                               const SizedBox(height: 10),
 
-                              // Email Input
                               TextFormField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
@@ -243,7 +235,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                               ),
                               const SizedBox(height: 10),
 
-                              // Password Input
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: !_isPasswordVisible,
@@ -279,7 +270,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                               ),
                               const SizedBox(height: 10),
 
-                              // Confirm Password Input
                               TextFormField(
                                 controller: _confirmPasswordController,
                                 obscureText: true,
@@ -304,7 +294,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                               ),
                               const SizedBox(height: 20),
 
-                              // Signup Button
                               _isLoading
                                   ? CircularProgressIndicator(color: Colors.white)
                                   : ElevatedButton(
@@ -329,7 +318,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                               ),
                               const SizedBox(height: 10),
 
-                              // Login Link
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
