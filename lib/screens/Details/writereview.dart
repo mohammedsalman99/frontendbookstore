@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WriteReviewPage extends StatefulWidget {
-  final String bookId; // Add bookId to specify the book for the review
-  final Function() refreshBookDetails; // Function to refresh details in DetailPage
+  final String bookId; 
+  final Function() refreshBookDetails; 
 
   WriteReviewPage({
     required this.bookId,
@@ -76,7 +76,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
                         index < _selectedRating
                             ? Icons.star
                             : Icons.star_border,
-                        size: 18, // Set the size of the icons (adjust as needed)
+                        size: 18, 
                       ),
                       color: index < _selectedRating
                           ? Colors.amber
@@ -155,10 +155,9 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
           backgroundColor: Colors.green,
         ));
 
-        // Refresh book details in the DetailPage
         widget.refreshBookDetails();
 
-        Navigator.pop(context); // Navigate back after submission
+        Navigator.pop(context); 
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Failed to submit the review. Please try again."),
