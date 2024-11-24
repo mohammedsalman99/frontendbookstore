@@ -21,12 +21,12 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
     try {
       final response = await http.get(Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/673e56ff95b3d0d9e9fb9d34/reviews'));
 
-      print(response.body); // Debugging: Log raw response
+      print(response.body); 
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        print(data); // Debugging: Log parsed data
+        print(data); 
 
         if (data['success'] == true && data['reviews'] != null) {
           setState(() {
