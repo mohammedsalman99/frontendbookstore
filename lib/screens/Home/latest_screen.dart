@@ -171,10 +171,9 @@ class _LatestScreenState extends State<LatestScreen> {
         ? double.tryParse(book['rating'].toString()) ?? 0.0
         : 0.0;
 
-    // Join multiple authors' names
     String authors = book['authors'] != null && book['authors'] is List
         ? (book['authors'] as List)
-        .map((author) => author['fullName'].toString()) // Ensure String conversion
+        .map((author) => author['fullName'].toString()) 
         .join(", ")
         : "Unknown Author";
 
@@ -207,7 +206,7 @@ class _LatestScreenState extends State<LatestScreen> {
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: 16 / 9, // Maintain consistent aspect ratio
+                  aspectRatio: 16 / 9, 
                   child: ClipRRect(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                     child: Image.network(
@@ -289,7 +288,7 @@ class _LatestScreenState extends State<LatestScreen> {
                   SizedBox(height: 6),
                   Row(
                     children: [
-                      ...buildRatingStars(rating, size: 14), // Rating stars
+                      ...buildRatingStars(rating, size: 14), 
                       SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
