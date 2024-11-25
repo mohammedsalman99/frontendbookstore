@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/service/authors_service.dart';
-import 'package:frontend/screens/authors_details/author_info.dart'; // Import AuthorInfoScreen
+import 'package:frontend/screens/authors_details/author_info.dart'; 
 
 class AuthorsScreen extends StatelessWidget {
-  final AuthorService _authorService = AuthorService(); // Create an instance of the service
+  final AuthorService _authorService = AuthorService(); 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set background color to white
+      backgroundColor: Colors.white, 
       appBar: AppBar(
         title: const Text(
           'Authors',
           style: TextStyle(
             fontSize: 18,
-            fontFamily: 'SF-Pro-Text', // Use SF-Pro-Text font
-            fontWeight: FontWeight.w700, // Bold weight
+            fontFamily: 'SF-Pro-Text', 
+            fontWeight: FontWeight.w700, 
           ),
         ),
-        backgroundColor: Colors.white, // Set AppBar background to white
-        foregroundColor: Colors.black, // Set AppBar text and icon color to black
-        elevation: 0, // Remove shadow for a clean look
+        backgroundColor: Colors.white, 
+        foregroundColor: Colors.black, 
+        elevation: 0, 
       ),
       body: FutureBuilder<List<dynamic>>(
-        future: _authorService.fetchAuthors(), // Use the service to fetch authors
+        future: _authorService.fetchAuthors(), 
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -32,8 +32,8 @@ class AuthorsScreen extends StatelessWidget {
               child: Text(
                 'Error: ${snapshot.error}',
                 style: const TextStyle(
-                  fontFamily: 'SF-Pro-Text', // Use SF-Pro-Text font
-                  fontWeight: FontWeight.w400, // Regular weight
+                  fontFamily: 'SF-Pro-Text', 
+                  fontWeight: FontWeight.w400, 
                   fontSize: 14,
                 ),
               ),
@@ -43,8 +43,8 @@ class AuthorsScreen extends StatelessWidget {
               child: Text(
                 'No authors found.',
                 style: TextStyle(
-                  fontFamily: 'SF-Pro-Text', // Use SF-Pro-Text font
-                  fontWeight: FontWeight.w300, // Light weight
+                  fontFamily: 'SF-Pro-Text', 
+                  fontWeight: FontWeight.w300, 
                   fontSize: 14,
                 ),
               ),
@@ -77,7 +77,6 @@ class AuthorsScreen extends StatelessWidget {
                         radius: 40,
                         backgroundImage: NetworkImage(author['profilePicture']),
                         onBackgroundImageError: (error, stackTrace) {
-                          // Suppress image error
                         },
                       ),
                       const SizedBox(height: 8),
@@ -85,8 +84,8 @@ class AuthorsScreen extends StatelessWidget {
                         author['fullName'],
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                          fontFamily: 'SF-Pro-Text', // Use SF-Pro-Text font
-                          fontWeight: FontWeight.w500, // Medium weight
+                          fontFamily: 'SF-Pro-Text', 
+                          fontWeight: FontWeight.w500, 
                           fontSize: 10,
                         ),
                         overflow: TextOverflow.ellipsis,
