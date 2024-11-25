@@ -59,7 +59,6 @@ class AuthorInfoScreen extends StatelessWidget {
           } else {
             final author = authorSnapshot.data!;
 
-            // Fetch author books and calculate average rating
             return FutureBuilder<List<dynamic>>(
               future: _bookService.fetchAuthorBooks(authorId),
               builder: (context, bookSnapshot) {
@@ -80,7 +79,7 @@ class AuthorInfoScreen extends StatelessWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildAuthorProfile(author, 0.0), // No books -> Rating 0.0
+                      _buildAuthorProfile(author, 0.0), 
                       const SizedBox(height: 16),
                       const Center(
                         child: Text(
@@ -244,7 +243,7 @@ class AuthorInfoScreen extends StatelessWidget {
               book['_id'],
               book['title'] ?? 'Untitled',
               book['image'] ?? '',
-              book['authors'] ?? [], // Updated: Pass authors list
+              book['authors'] ?? [], 
               book['price'],
               book['rating'],
             );
@@ -268,14 +267,13 @@ class AuthorInfoScreen extends StatelessWidget {
       String bookId,
       String title,
       String imageUrl,
-      List<dynamic> authors, // Updated: Accept multiple authors
+      List<dynamic> authors, 
       dynamic price,
       dynamic rating,
       ) {
     final double displayPrice = (price is int ? price.toDouble() : price) ?? 0.0;
     final double displayRating = (rating is int ? rating.toDouble() : rating) ?? 0.0;
 
-    // Combine all authors into a single string
     String authorsText = authors.isNotEmpty
         ? authors.map((author) => author['fullName']).join(', ')
         : 'Unknown Author';
@@ -335,7 +333,7 @@ class AuthorInfoScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'By $authorsText', // Updated: Display all authors
+              'By $authorsText', 
               style: const TextStyle(
                 fontFamily: 'SF-Pro-Text',
                 fontWeight: FontWeight.w400,
