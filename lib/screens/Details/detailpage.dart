@@ -7,6 +7,7 @@ import 'writereview.dart';
 import 'seereviews.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'pdf_viewer_page.dart';
+import 'package:flutter/services.dart'; // For Clipboard functionality
 
 
 class DetailPage extends StatefulWidget {
@@ -115,7 +116,13 @@ class _DetailPageState extends State<DetailPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.share),
-            onPressed: () {},
+            onPressed: () async {
+              final sharableLink = "https://Readme.com/detail?bookId=${widget.bookId}";
+              await Clipboard.setData(ClipboardData(text: sharableLink));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Link copied to clipboard")),
+              );
+            },
           ),
         ],
       ),
