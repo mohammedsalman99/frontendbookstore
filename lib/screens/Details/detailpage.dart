@@ -7,7 +7,7 @@ import 'writereview.dart';
 import 'seereviews.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'pdf_viewer_page.dart';
-import 'package:flutter/services.dart'; // For Clipboard functionality
+import 'package:flutter/services.dart';
 
 
 class DetailPage extends StatefulWidget {
