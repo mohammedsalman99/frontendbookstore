@@ -57,6 +57,7 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
+
   void updateReviewList(List<Map<String, dynamic>> newReviews) {
     setState(() {});
   }
@@ -178,13 +179,32 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     ),
                     SizedBox(height: 7),
-                    Text(
-                      'by ${bookData!['author']}',
-                      style: TextStyle(
-                        fontFamily: 'SF-Pro-Text',
-                        fontSize: 12,
-                        color: Colors.grey[700],
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: 'By ',
+                            style: TextStyle(
+                              fontFamily: 'SF-Pro-Text',
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          ...?bookData!['authors']?.map<TextSpan>((author) {
+                            return TextSpan(
+                              text: '${author['fullName']}, ',
+                              style: const TextStyle(
+                                fontFamily: 'SF-Pro-Text',
+                                fontSize: 12,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }).toList(),
+                        ],
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 7),
                     Row(
@@ -217,6 +237,7 @@ class _DetailPageState extends State<DetailPage> {
                   ],
                 ),
               ),
+
               SizedBox(height: 20),
 
               Row(

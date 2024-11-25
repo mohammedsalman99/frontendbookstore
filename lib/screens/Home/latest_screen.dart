@@ -12,7 +12,7 @@ class _LatestScreenState extends State<LatestScreen> {
   bool isFetching = true;
   String query = '';
   bool isGridView = true;
-  final LatestService latestService = LatestService(); 
+  final LatestService latestService = LatestService();
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _LatestScreenState extends State<LatestScreen> {
     });
 
     try {
-      final books = await latestService.fetchBooks(); 
+      final books = await latestService.fetchBooks();
       setState(() {
         displayedBooks = books;
       });
@@ -149,10 +149,10 @@ class _LatestScreenState extends State<LatestScreen> {
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, 
+                  crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 0.65, 
+                  childAspectRatio: 0.65,
                 ),
                 itemCount: filteredBooks.length,
                 itemBuilder: (context, index) {
@@ -171,6 +171,14 @@ class _LatestScreenState extends State<LatestScreen> {
         ? double.tryParse(book['rating'].toString()) ?? 0.0
         : 0.0;
 
+    // Join multiple authors' names
+    String authors = book['authors'] != null && book['authors'] is List
+        ? (book['authors'] as List)
+        .map((author) => author['fullName'].toString()) // Ensure String conversion
+        .join(", ")
+        : "Unknown Author";
+
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -181,6 +189,7 @@ class _LatestScreenState extends State<LatestScreen> {
         );
       },
       child: Container(
+
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: Colors.white,
@@ -198,7 +207,7 @@ class _LatestScreenState extends State<LatestScreen> {
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: 16 / 9, 
+                  aspectRatio: 16 / 9, // Maintain consistent aspect ratio
                   child: ClipRRect(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                     child: Image.network(
@@ -220,12 +229,12 @@ class _LatestScreenState extends State<LatestScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.broken_image,
-                                    size: 40, color: Colors.grey),
+                                    size: 30, color: Colors.grey),
                                 Text(
                                   'Image not available',
                                   style: TextStyle(
                                     fontFamily: 'SF-Pro-Text',
-                                    fontSize: 12,
+                                    fontSize: 10,
                                     color: Colors.grey,
                                   ),
                                 ),
@@ -251,13 +260,13 @@ class _LatestScreenState extends State<LatestScreen> {
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 11,
                     ),
                   ),
                   SizedBox(height: 3),
                   Text(
-                    'By ${book['author'] ?? 'Unknown'}',
-                    maxLines: 1,
+                    'By $authors',
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
@@ -265,28 +274,28 @@ class _LatestScreenState extends State<LatestScreen> {
                       color: Colors.grey[700],
                     ),
                   ),
-                  SizedBox(height: 7),
+                  SizedBox(height: 6),
                   Text(
                     book['free'] == true
                         ? 'Free'
                         : '₹ ${book['price'] ?? 'Unknown'}',
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontSize: 14,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: book['free'] == true ? Colors.green : Colors.red,
                     ),
                   ),
-                  SizedBox(height: 7),
+                  SizedBox(height: 6),
                   Row(
                     children: [
-                      ...buildRatingStars(rating, size: 14), 
+                      ...buildRatingStars(rating, size: 14), // Rating stars
                       SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
                         style: TextStyle(
                           fontFamily: 'SF-Pro-Text',
-                          fontSize: 14,
+                          fontSize: 11,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey[700],
                         ),
