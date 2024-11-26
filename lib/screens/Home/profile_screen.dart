@@ -29,7 +29,6 @@ class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMix
         children: [
           Column(
             children: [
-              // Reverted Header Section
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 decoration: BoxDecoration(
@@ -79,7 +78,6 @@ class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMix
                   ],
                 ),
               ),
-              // Enhanced TabBar Section
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TabBar(
@@ -95,7 +93,7 @@ class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMix
                     ),
                   ),
                   labelStyle: TextStyle(
-                    fontSize: 10, // Reduced font size
+                    fontSize: 10, 
                     fontWeight: FontWeight.bold,
                   ),
                   unselectedLabelStyle: TextStyle(
@@ -117,7 +115,6 @@ class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMix
                   ],
                 ),
               ),
-              // Tab View Section
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -140,12 +137,11 @@ class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMix
       padding: const EdgeInsets.all(16.0),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: 10, // Replace with actual data count
+        itemCount: 10, 
         separatorBuilder: (context, index) => SizedBox(width: 10),
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Add tap functionality
             },
             child: AnimatedContainer(
               duration: Duration(milliseconds: 300),
@@ -237,11 +233,10 @@ class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMix
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
-        itemCount: 6, // Replace with actual data count
+        itemCount: 6, 
         itemBuilder: (context, index) {
           return GestureDetector(
             onLongPress: () {
-              // Show return options
             },
             child: Card(
               shape: RoundedRectangleBorder(
