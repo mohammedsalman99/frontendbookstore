@@ -12,7 +12,7 @@ class SearchService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success']) {
-          return data['results']; // Returns results object
+          return data['results'];
         } else {
           throw Exception('Search failed: ${data['message']}');
         }
