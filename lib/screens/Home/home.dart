@@ -16,7 +16,7 @@ class _HomeState extends State<Home> {
     HomeScreen(),
     LatestScreen(),
     AuthorsScreen(),
-    ProfileScreen(),
+    ProfileScreen(), // Use the advanced profile screen
   ];
 
   void _onItemTapped(int index) {
