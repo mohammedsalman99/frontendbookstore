@@ -16,7 +16,7 @@ class _HomeState extends State<Home> {
     HomeScreen(),
     LatestScreen(),
     AuthorsScreen(),
-    ProfileScreen(), // Use the advanced profile screen
+    ProfileScreen(), 
   ];
 
   void _onItemTapped(int index) {
@@ -50,14 +50,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60, // Reduced height for smaller screens
+      height: 60, 
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFF5AA5B1), Color(0xFF3D7A8A)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), // Reduced radius
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)), 
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -84,7 +84,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       onTap: () => onItemTapped(index),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
-        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12), // Adjusted padding
+        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12), 
         decoration: isSelected
             ? BoxDecoration(
           color: Colors.white.withOpacity(0.15),
@@ -96,7 +96,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: isSelected ? 24 : 20, // Reduced size for icons
+              size: isSelected ? 24 : 20, 
               color: isSelected ? Colors.white : Colors.white70,
             ),
             if (isSelected)
@@ -106,7 +106,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontFamily: 'SF-Pro-Text',
-                    fontSize: 10, // Reduced font size for labels
+                    fontSize: 10,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
