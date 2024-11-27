@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../providers/ continue_books_provider.dart';
 import 'report.dart';
 import 'writereview.dart';
 import 'seereviews.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'pdf_viewer_page.dart';
 import 'package:flutter/services.dart';
 
@@ -29,6 +30,142 @@ class _DetailPageState extends State<DetailPage> {
     fetchBookDetails();
   }
 
+  Future<void> incrementDownload() async {
+    final downloadUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/download';
+
+    try {
+      // Retrieve the token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token'); // Replace 'auth_token' with your actual token key
+
+      if (token == null) {
+        throw Exception("Authentication token is missing. Please log in again.");
+      }
+
+      // Send a POST request with the Authorization header
+      final response = await http.post(
+        Uri.parse(downloadUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Log the response for debugging
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          setState(() {
+            bookData!['numberOfDownloads'] = data['numberOfDownloads']; // Update locally
+          });
+        } else {
+          throw Exception("Failed to update number of downloads: ${data['message'] ?? 'Unknown error'}");
+        }
+      } else {
+        throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      print('Error during download increment: $e'); // Log error for debugging
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating downloads: $e")),
+      );
+    }
+  }
+
+
+  Future<void> incrementView() async {
+    final viewUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/view';
+
+    try {
+      // Retrieve the token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token'); // Replace 'auth_token' with your actual token key
+
+      if (token == null) {
+        throw Exception("Authentication token is missing. Please log in again.");
+      }
+
+      // Send a POST request with the Authorization header
+      final response = await http.post(
+        Uri.parse(viewUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Log the response for debugging
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          setState(() {
+            bookData!['numberOfViews'] = data['numberOfViews']; // Update locally
+          });
+        } else {
+          throw Exception("Failed to update number of views: ${data['message'] ?? 'Unknown error'}");
+        }
+      } else {
+        throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      print('Error during view increment: $e'); // Log error for debugging
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating views: $e")),
+      );
+    }
+  }
+
+
+  Future<void> incrementReading() async {
+    final readingUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/read';
+
+    try {
+      // Retrieve the token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token'); // Replace 'auth_token' with your actual token key
+
+      if (token == null) {
+        throw Exception("Authentication token is missing. Please log in again.");
+      }
+
+      // Send a POST request with the Authorization header
+      final response = await http.post(
+        Uri.parse(readingUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Log the response for debugging
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] != true) {
+          throw Exception("Failed to update number of readings: ${data['message'] ?? 'Unknown error'}");
+        }
+      } else {
+        throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      print('Error during reading increment: $e'); // Log error for debugging
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating readings: $e")),
+      );
+    }
+  }
+
+
+
+
   Future<void> fetchBookDetails() async {
     try {
       final response = await http.get(
@@ -40,6 +177,18 @@ class _DetailPageState extends State<DetailPage> {
         if (data['success'] == true) {
           setState(() {
             bookData = data['book'];
+
+            // Normalize the PDF URL from bookLink
+            if (bookData != null && bookData!['bookLink'] != null) {
+              String pdfUrl = bookData!['bookLink'];
+              final uri = Uri.parse(pdfUrl);
+              if (uri.host.contains('drive.google.com') && uri.queryParameters.containsKey('id')) {
+                // Ensure the URL has the correct format
+                bookData!['bookLink'] =
+                'https://drive.google.com/uc?export=download&id=${uri.queryParameters['id']}';
+              }
+            }
+
             isLoading = false;
           });
         } else {
@@ -57,6 +206,8 @@ class _DetailPageState extends State<DetailPage> {
       );
     }
   }
+
+
 
 
   void updateReviewList(List<Map<String, dynamic>> newReviews) {
@@ -227,18 +378,25 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(Icons.remove_red_eye, size: 16, color: Colors.grey),
-                            SizedBox(width: 4),
-                            Text(
-                              "${bookData!['numberOfViews']}",
-                              style: TextStyle(
-                                fontFamily: 'SF-Pro-Text',
-                                fontSize: 14,
-                              ),
+                            Row(
+                              children: [
+                                Icon(Icons.remove_red_eye, size: 16, color: Colors.grey),
+                                SizedBox(width: 4),
+                                Text(
+                                  "${bookData!['numberOfViews']}",
+                                  style: TextStyle(
+                                    fontFamily: 'SF-Pro-Text',
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
+
+
                       ],
                     ),
                   ],
@@ -251,17 +409,57 @@ class _DetailPageState extends State<DetailPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   buildActionButton(Icons.favorite_border, "Favourite", () {}),
-                  buildActionButton(Icons.download, "Download", () {}),
-                  buildActionButton(Icons.book, "Read", () {
-                    final pdfUrl = "https://drive.google.com/uc?export=download&id=1uThjMvt4jAC3mOiO2B4HQGvJoe4Mu2IJ";
-                    print("Navigating to PDFViewerPage with URL: $pdfUrl");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PDFViewerPage(pdfUrl: pdfUrl),
-                      ),
+                  buildActionButton(Icons.download, "Download", () async {
+                    await incrementDownload(); // Increment downloads
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Download started!")),
                     );
                   }),
+
+                  buildActionButton(Icons.book, "Read", () async {
+                    if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
+                      try {
+                        // Increment the view count in the database
+                        await incrementView();
+
+                        // Increment the reading count in the database
+                        await incrementReading();
+
+                        // Add the book to the "Continue" list using the Provider
+                        final newBook = {
+                          'title': bookData!['title'],
+                          'author': bookData!['authors'][0]['fullName'], // Assuming the first author is the primary
+                          'id': bookData!['_id'],
+                        };
+
+                        // Access the ContinueBooksProvider and update the list
+                        final continueBooksProvider =
+                        Provider.of<ContinueBooksProvider>(context, listen: false);
+                        continueBooksProvider.addBook(newBook);
+
+                        // Navigate to the PDF viewer
+                        final pdfUrl = bookData!['bookLink'];
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PDFViewerPage(pdfUrl: pdfUrl),
+                          ),
+                        );
+                      } catch (e) {
+                        // Handle any errors
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("An error occurred while reading: $e")),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("PDF URL is unavailable or invalid.")),
+                      );
+                    }
+                  }),
+
+
+
                   buildActionButton(Icons.report, "Report", () async {
                     final prefs = await SharedPreferences.getInstance();
                     String? token = prefs.getString('auth_token');

@@ -13,6 +13,7 @@ class PDFViewerPage extends StatelessWidget {
         title: Text(
           "Read Book",
           style: TextStyle(
+            color: Colors.white,
             fontFamily: 'SF-Pro-Text',
             fontSize: 18,
             fontWeight: FontWeight.bold,
