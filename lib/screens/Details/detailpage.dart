@@ -34,15 +34,13 @@ class _DetailPageState extends State<DetailPage> {
     final downloadUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/download';
 
     try {
-      // Retrieve the token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('auth_token'); // Replace 'auth_token' with your actual token key
+      String? token = prefs.getString('auth_token'); 
 
       if (token == null) {
         throw Exception("Authentication token is missing. Please log in again.");
       }
 
-      // Send a POST request with the Authorization header
       final response = await http.post(
         Uri.parse(downloadUrl),
         headers: {
@@ -51,7 +49,6 @@ class _DetailPageState extends State<DetailPage> {
         },
       );
 
-      // Log the response for debugging
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
@@ -59,7 +56,7 @@ class _DetailPageState extends State<DetailPage> {
         final data = json.decode(response.body);
         if (data['success'] == true) {
           setState(() {
-            bookData!['numberOfDownloads'] = data['numberOfDownloads']; // Update locally
+            bookData!['numberOfDownloads'] = data['numberOfDownloads']; 
           });
         } else {
           throw Exception("Failed to update number of downloads: ${data['message'] ?? 'Unknown error'}");
@@ -68,7 +65,7 @@ class _DetailPageState extends State<DetailPage> {
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
-      print('Error during download increment: $e'); // Log error for debugging
+      print('Error during download increment: $e'); 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error updating downloads: $e")),
       );
@@ -80,15 +77,13 @@ class _DetailPageState extends State<DetailPage> {
     final viewUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/view';
 
     try {
-      // Retrieve the token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('auth_token'); // Replace 'auth_token' with your actual token key
+      String? token = prefs.getString('auth_token');
 
       if (token == null) {
         throw Exception("Authentication token is missing. Please log in again.");
       }
 
-      // Send a POST request with the Authorization header
       final response = await http.post(
         Uri.parse(viewUrl),
         headers: {
@@ -97,7 +92,6 @@ class _DetailPageState extends State<DetailPage> {
         },
       );
 
-      // Log the response for debugging
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
@@ -105,7 +99,7 @@ class _DetailPageState extends State<DetailPage> {
         final data = json.decode(response.body);
         if (data['success'] == true) {
           setState(() {
-            bookData!['numberOfViews'] = data['numberOfViews']; // Update locally
+            bookData!['numberOfViews'] = data['numberOfViews']; 
           });
         } else {
           throw Exception("Failed to update number of views: ${data['message'] ?? 'Unknown error'}");
@@ -114,7 +108,7 @@ class _DetailPageState extends State<DetailPage> {
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
-      print('Error during view increment: $e'); // Log error for debugging
+      print('Error during view increment: $e'); 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error updating views: $e")),
       );
@@ -126,15 +120,13 @@ class _DetailPageState extends State<DetailPage> {
     final readingUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/read';
 
     try {
-      // Retrieve the token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('auth_token'); // Replace 'auth_token' with your actual token key
+      String? token = prefs.getString('auth_token'); 
 
       if (token == null) {
         throw Exception("Authentication token is missing. Please log in again.");
       }
 
-      // Send a POST request with the Authorization header
       final response = await http.post(
         Uri.parse(readingUrl),
         headers: {
@@ -143,7 +135,6 @@ class _DetailPageState extends State<DetailPage> {
         },
       );
 
-      // Log the response for debugging
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
@@ -156,7 +147,7 @@ class _DetailPageState extends State<DetailPage> {
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
-      print('Error during reading increment: $e'); // Log error for debugging
+      print('Error during reading increment: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error updating readings: $e")),
       );
@@ -178,12 +169,10 @@ class _DetailPageState extends State<DetailPage> {
           setState(() {
             bookData = data['book'];
 
-            // Normalize the PDF URL from bookLink
             if (bookData != null && bookData!['bookLink'] != null) {
               String pdfUrl = bookData!['bookLink'];
               final uri = Uri.parse(pdfUrl);
               if (uri.host.contains('drive.google.com') && uri.queryParameters.containsKey('id')) {
-                // Ensure the URL has the correct format
                 bookData!['bookLink'] =
                 'https://drive.google.com/uc?export=download&id=${uri.queryParameters['id']}';
               }
@@ -419,25 +408,17 @@ class _DetailPageState extends State<DetailPage> {
                   buildActionButton(Icons.book, "Read", () async {
                     if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
                       try {
-                        // Increment the view count in the database
                         await incrementView();
-
-                        // Increment the reading count in the database
                         await incrementReading();
-
-                        // Add the book to the "Continue" list using the Provider
                         final newBook = {
                           'title': bookData!['title'],
-                          'author': bookData!['authors'][0]['fullName'], // Assuming the first author is the primary
+                          'author': bookData!['authors'][0]['fullName'],
                           'id': bookData!['_id'],
                         };
-
-                        // Access the ContinueBooksProvider and update the list
                         final continueBooksProvider =
                         Provider.of<ContinueBooksProvider>(context, listen: false);
                         continueBooksProvider.addBook(newBook);
 
-                        // Navigate to the PDF viewer
                         final pdfUrl = bookData!['bookLink'];
                         Navigator.push(
                           context,
@@ -446,7 +427,6 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         );
                       } catch (e) {
-                        // Handle any errors
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("An error occurred while reading: $e")),
                         );
