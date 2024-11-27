@@ -14,7 +14,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Initialize ContinueBooksProvider for state management
         ChangeNotifierProvider(create: (_) => ContinueBooksProvider()),
       ],
       child: MaterialApp(
@@ -22,7 +21,6 @@ class MyApp extends StatelessWidget {
         title: 'Readme',
         initialRoute: '/',
         onGenerateRoute: (settings) {
-          // Handle dynamic routing for detail pages
           if (settings.name != null && settings.name!.startsWith('/detail')) {
             final uri = Uri.parse(settings.name!);
             final bookId = uri.queryParameters['bookId'];
@@ -34,7 +32,6 @@ class MyApp extends StatelessWidget {
             }
           }
 
-          // Default route: SplashScreen
           return MaterialPageRoute(
             builder: (context) => SplashScreen(),
           );
