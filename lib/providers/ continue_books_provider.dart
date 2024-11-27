@@ -12,17 +12,15 @@ class ContinueBooksProvider extends ChangeNotifier {
   }
 
   void addBook(Map<String, dynamic> book) {
-    // Remove any existing entry for the same book
     _continueBooks.removeWhere((b) => b['id'] == book['id']);
-    // Add the book to the top of the list
     _continueBooks.insert(0, book);
-    _saveBooksToStorage(); // Save updated list
+    _saveBooksToStorage(); 
     notifyListeners();
   }
 
   void removeBook(String bookId) {
     _continueBooks.removeWhere((book) => book['id'] == bookId);
-    _saveBooksToStorage(); // Save updated list
+    _saveBooksToStorage(); 
     notifyListeners();
   }
 
@@ -31,14 +29,14 @@ class ContinueBooksProvider extends ChangeNotifier {
     final savedBooks = prefs.getString('continue_books');
     if (savedBooks != null) {
       _continueBooks = List<Map<String, dynamic>>.from(json.decode(savedBooks));
-      print("Loaded books: $_continueBooks"); // Debug log
+      print("Loaded books: $_continueBooks"); 
       notifyListeners();
     }
   }
 
   Future<void> _saveBooksToStorage() async {
     final prefs = await SharedPreferences.getInstance();
-    print("Saving books: ${json.encode(_continueBooks)}"); // Debug log
+    print("Saving books: ${json.encode(_continueBooks)}");
     await prefs.setString('continue_books', json.encode(_continueBooks));
   }
 
