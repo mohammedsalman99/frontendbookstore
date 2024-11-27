@@ -39,9 +39,9 @@ class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMix
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildContinueBookTab(context), // Continue tab
-                    _buildSubscriptionTab(), // Subscription tab
-                    _buildRentTab(), // Rent tab
+                    _buildContinueBookTab(context), 
+                    _buildSubscriptionTab(), 
+                    _buildRentTab(), 
                   ],
                 ),
               ),
