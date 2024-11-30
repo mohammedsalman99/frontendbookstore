@@ -40,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
         final data = json.decode(response.body);
         List<dynamic> books = data['books'];
 
-        // Sort books by views and reads
         books.sort((a, b) {
           int viewsA = a['numberOfViews'] ?? 0;
           int viewsB = b['numberOfViews'] ?? 0;
@@ -146,12 +145,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        physics: BouncingScrollPhysics(), // Smooth scroll for the whole page
+        physics: BouncingScrollPhysics(), 
         children: [
-          // Top Padding
           SizedBox(height: 45),
 
-          // Page Title
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -166,7 +163,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 13),
 
-          // Search Box
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -192,7 +188,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 20),
 
-          // Categories Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Categories"),
@@ -221,7 +216,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 20),
 
-          // Reading History Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Reading History"),
@@ -251,7 +245,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 20),
 
-          // Popular Books Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Popular Books"),
@@ -272,7 +265,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Additional Spacing for Scroll
           SizedBox(height: 50),
         ],
       ),
@@ -372,8 +364,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
       child: Container(
-        width: 160, // Width of the card
-        height: 380, // Explicitly increased height
+        width: 160, 
+        height: 380, 
         margin: EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -389,11 +381,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Book Image
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
               child: Container(
-                height: 90, // Keep image height fixed
+                height: 90, 
                 width: double.infinity,
                 child: Image.network(
                   book['image'] ?? 'https://via.placeholder.com/150',
@@ -401,8 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            // Book Details
-            Expanded( // Expands details to fill remaining space
+            Expanded( 
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
