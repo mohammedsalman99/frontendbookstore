@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../Details/categorydetails.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return {
                 'title': item['title'].toString(),
                 'imageUrl': item['image'].toString(),
+                'id': item['_id'].toString(), // Added ID
               };
             }),
           );
@@ -64,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0), 
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -80,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 13),
 
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.0), 
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
                 color: Colors.grey[200],
@@ -128,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 5), 
+            SizedBox(height: 5),
 
             isLoading
                 ? Center(child: CircularProgressIndicator())
@@ -147,18 +149,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Row(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(right: 8.0), 
+                        padding: const EdgeInsets.only(right: 8.0),
                         child: categoryCard(
                           categories[firstIndex]['title']!,
                           categories[firstIndex]['imageUrl']!,
+                          categories[firstIndex]['id']!, // Pass ID here
                         ),
                       ),
                       if (secondIndex < categories.length)
                         Padding(
-                          padding: const EdgeInsets.only(right: 8.0), 
+                          padding: const EdgeInsets.only(right: 8.0),
                           child: categoryCard(
                             categories[secondIndex]['title']!,
                             categories[secondIndex]['imageUrl']!,
+                            categories[secondIndex]['id']!, // Pass ID here
                           ),
                         ),
                     ],
@@ -172,69 +176,80 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget categoryCard(String title, String imageUrl) {
-    return Container(
-      width: 150,
-      height: 180,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(
-          image: CachedNetworkImageProvider(imageUrl),
-          fit: BoxFit.cover,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            offset: Offset(0, 4),
-            blurRadius: 6,
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.black.withOpacity(0.2), Colors.transparent],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              ),
-              borderRadius: BorderRadius.circular(16),
+  Widget categoryCard(String title, String imageUrl, String categoryId) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BooksScreen(
+              categoryId: categoryId,
+              categoryTitle: title,
             ),
           ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),  
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      offset: Offset(0, 4),
-                      blurRadius: 6,
-                    ),
-                  ],
+        );
+      },
+      child: Container(
+        width: 150,
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(imageUrl),
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              offset: Offset(0, 4),
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(0.2), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
                 ),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.2,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        offset: Offset(0, 4),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-
-
 }

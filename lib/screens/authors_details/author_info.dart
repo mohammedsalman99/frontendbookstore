@@ -214,6 +214,24 @@ class AuthorInfoScreen extends StatelessWidget {
   }
 
   Widget _buildAuthorBooks(BuildContext context, List<dynamic> books) {
+    // Filter books to include only those authored by the selected author
+    final filteredBooks = books.where((book) {
+      return book['authors'].any((author) => author['_id'] == authorId);
+    }).toList();
+
+    if (filteredBooks.isEmpty) {
+      return const Center(
+        child: Text(
+          'No books found for this author.',
+          style: TextStyle(
+            fontFamily: 'SF-Pro-Text',
+            fontWeight: FontWeight.w400,
+            fontSize: 14,
+          ),
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -229,7 +247,7 @@ class AuthorInfoScreen extends StatelessWidget {
         GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: books.length,
+          itemCount: filteredBooks.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 16,
@@ -237,13 +255,13 @@ class AuthorInfoScreen extends StatelessWidget {
             childAspectRatio: 0.7,
           ),
           itemBuilder: (context, index) {
-            final book = books[index];
+            final book = filteredBooks[index];
             return _bookCard(
               context,
               book['_id'],
               book['title'] ?? 'Untitled',
               book['image'] ?? '',
-              book['authors'] ?? [], 
+              book['authors'] ?? [],
               book['price'],
               book['rating'],
             );
@@ -252,6 +270,7 @@ class AuthorInfoScreen extends StatelessWidget {
       ],
     );
   }
+
 
   Widget _socialIcon(IconData icon, Color color, String? url) {
     return IconButton(
