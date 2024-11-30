@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'detailpage.dart'; // Ensure this path is correct
+import 'detailpage.dart'; 
 
 class BooksScreen extends StatefulWidget {
   final String categoryId;
@@ -34,7 +34,6 @@ class _BooksScreenState extends State<BooksScreen> {
         final data = jsonDecode(response.body);
 
         if (data['success'] == true && data['books'] != null) {
-          // Filter books by categoryId
           final filteredBooks = data['books'].where((book) {
             return book['category']['_id'] == widget.categoryId;
           }).toList();
