@@ -28,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Re-fetch reading history when dependencies change
     _fetchReadingHistory();
   }
 
@@ -136,7 +135,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 13),
 
-              // Search Box
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.0),
                 decoration: BoxDecoration(
@@ -159,7 +157,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 20),
 
-              // Categories Section
               sectionHeader("Categories"),
               SizedBox(height: 10),
               isLoading
@@ -185,7 +182,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 20),
 
-              // Reading History Section
               sectionHeader("Reading History"),
               SizedBox(height: 10),
               isReadingHistoryLoading
@@ -245,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
               categoryTitle: title,
             ),
           ),
-        ).then((_) => _fetchReadingHistory()); // Refresh reading history
+        ).then((_) => _fetchReadingHistory()); 
       },
       child: Container(
         width: 120,
@@ -304,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
           MaterialPageRoute(
             builder: (context) => DetailPage(bookId: bookId),
           ),
-        ).then((_) => _fetchReadingHistory()); // Refresh reading history
+        ).then((_) => _fetchReadingHistory()); 
       },
       child: Container(
         width: 120,
