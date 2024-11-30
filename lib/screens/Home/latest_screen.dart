@@ -451,7 +451,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         );
       },
       child: Container(
-        width: 140, // Fixed width for all cards
+        width: 140, 
         margin: EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -467,20 +467,19 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Section with Centering
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
               child: Container(
-                height: 120, // Fixed height for all images
+                height: 120, 
                 width: double.infinity,
-                color: Colors.grey[200], // Placeholder background color
+                color: Colors.grey[200], 
                 child: FittedBox(
-                  fit: BoxFit.cover, // Ensures the image fills the container
+                  fit: BoxFit.cover, 
                   clipBehavior: Clip.hardEdge,
                   child: Image.network(
                     book['image'] ?? 'https://via.placeholder.com/150',
-                    width: 140, // Matches card width
-                    height: 120, // Matches container height
+                    width: 140, 
+                    height: 120, 
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: Colors.grey[300],
@@ -507,7 +506,6 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                 ),
               ),
             ),
-            // Content Section
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
