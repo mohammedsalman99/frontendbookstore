@@ -25,6 +25,13 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchReadingHistory();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Re-fetch reading history when dependencies change
+    _fetchReadingHistory();
+  }
+
   Future<String?> _getAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
@@ -32,8 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchCategories() async {
     try {
-      final response =
-      await http.get(Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/categories'));
+      final response = await http.get(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/categories'),
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -44,11 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return {
                 'title': item['title'].toString(),
                 'imageUrl': item['image'].toString(),
-<<<<<<< HEAD
                 'id': item['_id'].toString(),
-=======
-                'id': item['_id'].toString(), 
->>>>>>> 4e2211e4f76fe6c04525f50d5846505a4554654a
               };
             }),
           );
@@ -70,7 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _fetchReadingHistory() async {
-    final readingHistoryUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/reading-history';
+    final readingHistoryUrl =
+        'https://readme-backend-zdiq.onrender.com/api/v1/reading-history';
 
     try {
       final token = await _getAuthToken();
@@ -94,10 +99,12 @@ class _HomeScreenState extends State<HomeScreen> {
             isReadingHistoryLoading = false;
           });
         } else {
-          throw Exception("Failed to fetch reading history: ${data['message']}");
+          throw Exception(
+              "Failed to fetch reading history: ${data['message']}");
         }
       } else {
-        throw Exception("Error: ${response.statusCode} ${response.reasonPhrase}");
+        throw Exception(
+            "Error: ${response.statusCode} ${response.reasonPhrase}");
       }
     } catch (e) {
       print('Error fetching reading history: $e');
@@ -175,49 +182,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-<<<<<<< HEAD
-=======
-              ],
-            ),
-            SizedBox(height: 5),
-
-            isLoading
-                ? Center(child: CircularProgressIndicator())
-                : hasError
-                ? Center(child: Text('Failed to load categories'))
-                : Container(
-              height: 220,
-              child: ListView.builder(
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                itemCount: (categories.length / 2).ceil(),
-                itemBuilder: (context, index) {
-                  int firstIndex = index * 2;
-                  int secondIndex = firstIndex + 1;
-
-                  return Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: categoryCard(
-                          categories[firstIndex]['title']!,
-                          categories[firstIndex]['imageUrl']!,
-                          categories[firstIndex]['id']!, 
-                        ),
-                      ),
-                      if (secondIndex < categories.length)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: categoryCard(
-                            categories[secondIndex]['title']!,
-                            categories[secondIndex]['imageUrl']!,
-                            categories[secondIndex]['id']!, 
-                          ),
-                        ),
-                    ],
-                  );
-                },
->>>>>>> 4e2211e4f76fe6c04525f50d5846505a4554654a
               ),
               SizedBox(height: 20),
 
@@ -281,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
               categoryTitle: title,
             ),
           ),
-        );
+        ).then((_) => _fetchReadingHistory()); // Refresh reading history
       },
       child: Container(
         width: 120,
@@ -340,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
           MaterialPageRoute(
             builder: (context) => DetailPage(bookId: bookId),
           ),
-        );
+        ).then((_) => _fetchReadingHistory()); // Refresh reading history
       },
       child: Container(
         width: 120,
