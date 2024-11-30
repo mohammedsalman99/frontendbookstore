@@ -44,7 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
               return {
                 'title': item['title'].toString(),
                 'imageUrl': item['image'].toString(),
+<<<<<<< HEAD
                 'id': item['_id'].toString(),
+=======
+                'id': item['_id'].toString(), 
+>>>>>>> 4e2211e4f76fe6c04525f50d5846505a4554654a
               };
             }),
           );
@@ -171,6 +175,49 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
+<<<<<<< HEAD
+=======
+              ],
+            ),
+            SizedBox(height: 5),
+
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : hasError
+                ? Center(child: Text('Failed to load categories'))
+                : Container(
+              height: 220,
+              child: ListView.builder(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                itemCount: (categories.length / 2).ceil(),
+                itemBuilder: (context, index) {
+                  int firstIndex = index * 2;
+                  int secondIndex = firstIndex + 1;
+
+                  return Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: categoryCard(
+                          categories[firstIndex]['title']!,
+                          categories[firstIndex]['imageUrl']!,
+                          categories[firstIndex]['id']!, 
+                        ),
+                      ),
+                      if (secondIndex < categories.length)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: categoryCard(
+                            categories[secondIndex]['title']!,
+                            categories[secondIndex]['imageUrl']!,
+                            categories[secondIndex]['id']!, 
+                          ),
+                        ),
+                    ],
+                  );
+                },
+>>>>>>> 4e2211e4f76fe6c04525f50d5846505a4554654a
               ),
               SizedBox(height: 20),
 
