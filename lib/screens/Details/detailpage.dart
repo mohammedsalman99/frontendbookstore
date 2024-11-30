@@ -29,6 +29,50 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
     fetchBookDetails();
   }
+  Future<void> incrementReadingHistory() async {
+    final readingHistoryUrl =
+        'https://readme-backend-zdiq.onrender.com/api/v1/reading-history//books/${widget.bookId}';
+
+    try {
+      // Retrieve the user's authentication token
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
+
+      if (token == null) {
+        throw Exception("Authentication token is missing. Please log in again.");
+      }
+
+      // Make the POST request
+      final response = await http.post(
+        Uri.parse(readingHistoryUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Reading history updated successfully!")),
+          );
+        } else {
+          throw Exception("Failed to update reading history: ${data['message'] ?? 'Unknown error'}");
+        }
+      } else {
+        throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      print('Error during reading history update: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating reading history: $e")),
+      );
+    }
+  }
 
   Future<void> incrementDownload() async {
     final downloadUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/download';
@@ -408,8 +452,9 @@ class _DetailPageState extends State<DetailPage> {
                   buildActionButton(Icons.book, "Read", () async {
                     if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
                       try {
-                        await incrementView();
-                        await incrementReading();
+                        await incrementView(); // Increment the view count
+                        await incrementReadingHistory(); // Update reading history
+
                         final newBook = {
                           'title': bookData!['title'],
                           'author': bookData!['authors'][0]['fullName'],

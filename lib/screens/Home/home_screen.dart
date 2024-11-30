@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Details/categorydetails.dart';
+import '../Details/detailpage.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,25 +13,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> categories = [];
+  List<dynamic> readingHistory = [];
   bool isLoading = true;
   bool hasError = false;
-  ScrollController _scrollController = ScrollController();
+  bool isReadingHistoryLoading = true;
 
   @override
   void initState() {
     super.initState();
     _fetchCategories();
+    _fetchReadingHistory();
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Future<String?> _getAuthToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
   }
 
   Future<void> _fetchCategories() async {
     try {
-      final response = await http.get(Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/categories'));
+      final response =
+      await http.get(Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/categories'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -40,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return {
                 'title': item['title'].toString(),
                 'imageUrl': item['image'].toString(),
-                'id': item['_id'].toString(), // Added ID
+                'id': item['_id'].toString(),
               };
             }),
           );
@@ -53,10 +57,48 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error fetching categories: $e');
       setState(() {
         isLoading = false;
         hasError = true;
+      });
+    }
+  }
+
+  Future<void> _fetchReadingHistory() async {
+    final readingHistoryUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/reading-history';
+
+    try {
+      final token = await _getAuthToken();
+      if (token == null) {
+        throw Exception('Authorization token is missing');
+      }
+
+      final response = await http.get(
+        Uri.parse(readingHistoryUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          setState(() {
+            readingHistory = data['readingHistory'];
+            isReadingHistoryLoading = false;
+          });
+        } else {
+          throw Exception("Failed to fetch reading history: ${data['message']}");
+        }
+      } else {
+        throw Exception("Error: ${response.statusCode} ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      print('Error fetching reading history: $e');
+      setState(() {
+        isReadingHistoryLoading = false;
       });
     }
   }
@@ -65,114 +107,119 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 45),
-            Text(
-              'Readme',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 45),
+              Text(
+                'Readme',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                ),
               ),
-            ),
-            SizedBox(height: 13),
+              SizedBox(height: 13),
 
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Colors.grey[200],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search book here...',
-                        border: InputBorder.none,
+              // Search Box
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Colors.grey[200],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search book here...',
+                          border: InputBorder.none,
+                        ),
                       ),
                     ),
-                  ),
-                  Icon(Icons.search, color: Color(0xFF5AA5B1)),
-                ],
-              ),
-            ),
-            SizedBox(height: 30),
-
-            Row(
-              children: [
-                Text(
-                  "Category",
-                  style: TextStyle(
-                    fontFamily: 'SF-Pro-Text',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: Colors.black87,
-                  ),
+                    Icon(Icons.search, color: Color(0xFF5AA5B1)),
+                  ],
                 ),
-                Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    _scrollController.animateTo(
-                      _scrollController.position.maxScrollExtent,
-                      duration: Duration(seconds: 1),
-                      curve: Curves.easeInOut,
+              ),
+              SizedBox(height: 20),
+
+              // Categories Section
+              sectionHeader("Categories"),
+              SizedBox(height: 10),
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : hasError
+                  ? Center(child: Text('Failed to load categories'))
+                  : Container(
+                height: 160,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: categoryCard(
+                        categories[index]['title']!,
+                        categories[index]['imageUrl']!,
+                        categories[index]['id']!,
+                      ),
                     );
                   },
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: Color(0xFF5AA5B1),
-                  ),
                 ),
-              ],
-            ),
-            SizedBox(height: 5),
-
-            isLoading
-                ? Center(child: CircularProgressIndicator())
-                : hasError
-                ? Center(child: Text('Failed to load categories'))
-                : Container(
-              height: 220,
-              child: ListView.builder(
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                itemCount: (categories.length / 2).ceil(),
-                itemBuilder: (context, index) {
-                  int firstIndex = index * 2;
-                  int secondIndex = firstIndex + 1;
-
-                  return Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: categoryCard(
-                          categories[firstIndex]['title']!,
-                          categories[firstIndex]['imageUrl']!,
-                          categories[firstIndex]['id']!, // Pass ID here
-                        ),
-                      ),
-                      if (secondIndex < categories.length)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: categoryCard(
-                            categories[secondIndex]['title']!,
-                            categories[secondIndex]['imageUrl']!,
-                            categories[secondIndex]['id']!, // Pass ID here
-                          ),
-                        ),
-                    ],
-                  );
-                },
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+
+              // Reading History Section
+              sectionHeader("Reading History"),
+              SizedBox(height: 10),
+              isReadingHistoryLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : readingHistory.isEmpty
+                  ? Center(child: Text('No reading history found'))
+                  : Container(
+                height: 160,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: readingHistory.length,
+                  itemBuilder: (context, index) {
+                    final book = readingHistory[index]['book'];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: readingHistoryCard(
+                        book['title'],
+                        book['image'],
+                        book['_id'],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget sectionHeader(String title) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        Spacer(),
+        Icon(Icons.arrow_forward, color: Color(0xFF5AA5B1)),
+      ],
     );
   }
 
@@ -190,19 +237,18 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
       child: Container(
-        width: 150,
-        height: 180,
+        width: 120,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           image: DecorationImage(
             image: CachedNetworkImageProvider(imageUrl),
             fit: BoxFit.cover,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withOpacity(0.2),
               offset: Offset(0, 4),
-              blurRadius: 6,
+              blurRadius: 4,
             ),
           ],
         ),
@@ -211,39 +257,84 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.2), Colors.transparent],
+                  colors: [Colors.black.withOpacity(0.3), Colors.transparent],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        offset: Offset(0, 4),
-                        blurRadius: 6,
-                      ),
-                    ],
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.2,
-                    ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget readingHistoryCard(String title, String imageUrl, String bookId) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailPage(bookId: bookId),
+          ),
+        );
+      },
+      child: Container(
+        width: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(imageUrl),
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              offset: Offset(0, 4),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),

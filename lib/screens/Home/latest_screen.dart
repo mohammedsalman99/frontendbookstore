@@ -451,88 +451,86 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         );
       },
       child: Container(
+        width: 140, // Fixed width for all cards
+        margin: EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 6),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: ClipRRect(
-                    borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.network(
-                      book['image'] ?? 'https://via.placeholder.com/150',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.grey[300],
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[300],
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.broken_image,
-                                    size: 30, color: Colors.grey),
-                                Text(
-                                  'Image not available',
-                                  style: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontSize: 10,
-                                    color: Colors.grey,
-                                  ),
+            // Image Section with Centering
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              child: Container(
+                height: 120, // Fixed height for all images
+                width: double.infinity,
+                color: Colors.grey[200], // Placeholder background color
+                child: FittedBox(
+                  fit: BoxFit.cover, // Ensures the image fills the container
+                  clipBehavior: Clip.hardEdge,
+                  child: Image.network(
+                    book['image'] ?? 'https://via.placeholder.com/150',
+                    width: 140, // Matches card width
+                    height: 120, // Matches container height
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.broken_image,
+                                  size: 30, color: Colors.grey),
+                              Text(
+                                'Image not available',
+                                style: TextStyle(
+                                  fontFamily: 'SF-Pro-Text',
+                                  fontSize: 10,
+                                  color: Colors.grey,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ],
+              ),
             ),
+            // Content Section
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    book['title'] ?? '',
+                    book['title'] ?? 'Unknown Title',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontWeight: FontWeight.bold,
-                      fontSize: 11,
+                      fontSize: 12,
                     ),
                   ),
-                  SizedBox(height: 3),
+                  SizedBox(height: 4),
                   Text(
                     'By $authors',
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontSize: 9,
+                      fontSize: 10,
                       color: Colors.grey[700],
                     ),
                   ),
@@ -572,6 +570,8 @@ class CustomSearchDelegate extends SearchDelegate<String> {
       ),
     );
   }
+
+
 
   List<Widget> buildRatingStars(double rating, {double size = 18}) {
     List<Widget> stars = [];
