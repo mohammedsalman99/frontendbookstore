@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return {
                 'title': item['title'].toString(),
                 'imageUrl': item['image'].toString(),
-                'id': item['_id'].toString(), // Added ID
+                'id': item['_id'].toString(), 
               };
             }),
           );
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: categoryCard(
                           categories[firstIndex]['title']!,
                           categories[firstIndex]['imageUrl']!,
-                          categories[firstIndex]['id']!, // Pass ID here
+                          categories[firstIndex]['id']!, 
                         ),
                       ),
                       if (secondIndex < categories.length)
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: categoryCard(
                             categories[secondIndex]['title']!,
                             categories[secondIndex]['imageUrl']!,
-                            categories[secondIndex]['id']!, // Pass ID here
+                            categories[secondIndex]['id']!, 
                           ),
                         ),
                     ],
