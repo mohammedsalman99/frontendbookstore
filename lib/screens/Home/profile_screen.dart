@@ -1,263 +1,356 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/ continue_books_provider.dart';
-import '../Details/pdf_viewer_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Details/editprofile.dart';
+import '../auth/login.dart';
 
-class ProfileScreen extends StatefulWidget {
+class AdvancedProfileScreen extends StatefulWidget {
+  const AdvancedProfileScreen({Key? key}) : super(key: key);
+
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _AdvancedProfileScreenState createState() => _AdvancedProfileScreenState();
 }
 
-class _ProfilePageState extends State<ProfileScreen> with TickerProviderStateMixin {
-  late TabController _tabController;
-
-  final Color primaryColor = Color(0xFF5AA5B1);
-  final Color secondaryColor = Color(0xFF3D7A8A);
+class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
+  String? email;
+  String? token;
+  String? fullName;
+  String? gender;
+  String? phoneNumber;
+  String? profilePicture;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    fetchUserDetails();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  /// Fetch user details from local storage
+  Future<void> fetchUserDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      email = prefs.getString('user_email');
+      token = prefs.getString('auth_token');
+      fullName = prefs.getString('full_name') ?? "None";
+      gender = prefs.getString('gender') ?? "Not Specified";
+      phoneNumber = prefs.getString('phone_number') ?? "Not Provided";
+      profilePicture = prefs.getString('profile_picture') ?? 'assets/images/user_placeholder.png';
+      isLoading = false;
+    });
+  }
+
+  /// Update user profile and send to backend
+  Future<void> updateUserProfile({
+    required String updatedFullName,
+    required String updatedGender,
+    required String updatedPhoneNumber,
+    required String updatedProfilePicture,
+    required String updatedEmail,
+    required String updatedPassword,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() => isLoading = true);
+
+    try {
+      final response = await http.put(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/${prefs.getString('user_id')}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${prefs.getString('auth_token')}',
+        },
+        body: jsonEncode({
+          'fullName': updatedFullName,
+          'gender': updatedGender,
+          'phoneNumber': updatedPhoneNumber,
+          'profilePicture': updatedProfilePicture,
+          'email': updatedEmail,
+          if (updatedPassword.isNotEmpty) 'password': updatedPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true) {
+          await prefs.setString('full_name', updatedFullName);
+          await prefs.setString('gender', updatedGender);
+          await prefs.setString('phone_number', updatedPhoneNumber);
+          await prefs.setString('profile_picture', updatedProfilePicture);
+          await prefs.setString('user_email', updatedEmail);
+
+          setState(() {
+            fullName = updatedFullName;
+            gender = updatedGender;
+            phoneNumber = updatedPhoneNumber;
+            profilePicture = updatedProfilePicture;
+            email = updatedEmail;
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Profile updated successfully!')),
+          );
+        } else {
+          throw Exception('Failed to update profile.');
+        }
+      } else {
+        throw Exception('Server Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  /// Logout and clear user data
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              _buildProfileHeader(),
-              _buildTabBar(),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildContinueBookTab(context), 
-                    _buildSubscriptionTab(), 
-                    _buildRentTab(), 
-                  ],
-                ),
-              ),
-            ],
+      backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('Profile', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: logout,
           ),
         ],
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.purple],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildProfileHeader(),
+            const SizedBox(height: 10),
+            DefaultTabController(
+              length: 2,
+              child: Column(
+                children: [
+                  _buildCustomTabBar(),
+                  SizedBox(
+                    height: 250,
+                    child: TabBarView(
+                      children: [
+                        _buildHorizontalBooksTab(),
+                        _buildHorizontalSubscriptionTab(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            _buildUserOptions(context),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 60,
+          backgroundColor: Colors.white,
+          backgroundImage: profilePicture != null
+              ? NetworkImage(profilePicture!)
+              : const AssetImage('assets/images/user_placeholder.png') as ImageProvider,
+        ),
+        const SizedBox(height: 20),
+        Text(
+          fullName ?? "Loading full name...",
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          email ?? "Loading email...",
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          "Gender: ${gender ?? "Not Specified"}",
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          "Phone: ${phoneNumber ?? "Not Provided"}",
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomTabBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [primaryColor, secondaryColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
-        ),
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(25),
       ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.white,
-            child: Icon(Icons.person, size: 40, color: primaryColor),
-          ),
-          SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "demo",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              Text(
-                "demoapp@gmail.com",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
-                ),
-              ),
-            ],
-          ),
-          Spacer(),
-          Icon(Icons.more_vert, color: Colors.white),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TabBar(
-        controller: _tabController,
-        labelColor: Colors.white,
-        unselectedLabelColor: primaryColor,
         indicator: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            colors: [primaryColor, secondaryColor],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(20),
         ),
-        tabs: [
-          Tab(icon: Icon(Icons.book), text: 'Continue'),
-          Tab(icon: Icon(Icons.subscriptions), text: 'Subscription'),
-          Tab(icon: Icon(Icons.money), text: 'Rent'),
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.grey[700],
+        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        unselectedLabelStyle: const TextStyle(fontSize: 13),
+        tabs: const [
+          Tab(
+            icon: Icon(Icons.book, size: 18),
+            child: Text(
+              'Purchased Books',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+          Tab(
+            icon: Icon(Icons.subscriptions, size: 18),
+            child: Text(
+              'Subscription',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildContinueBookTab(BuildContext context) {
-    return Consumer<ContinueBooksProvider>(
-      builder: (context, provider, child) {
-        final continueBooks = provider.continueBooks;
-
-        if (continueBooks.isEmpty) {
-          return Center(
-            child: Text(
-              "No books to display yet.",
-              style: TextStyle(color: primaryColor, fontSize: 16),
-            ),
-          );
-        }
-
-        return GridView.builder(
-          padding: const EdgeInsets.all(16.0),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-          ),
-          itemCount: continueBooks.length,
-          itemBuilder: (context, index) {
-            final book = continueBooks[index];
-            return _categoryCard(context, book);
-          },
-        );
-      },
+  Widget _buildHorizontalBooksTab() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [],
+      ),
     );
   }
 
-  Widget _categoryCard(BuildContext context, Map<String, dynamic> book) {
-    String authors = book['author'] ?? "Unknown Author";
-    String imageUrl = book['image'] ?? 'https://via.placeholder.com/150';
+  Widget _buildHorizontalSubscriptionTab() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [],
+      ),
+    );
+  }
 
-    return GestureDetector(
-      onTap: () {
-        if (book['bookLink'] != null && book['bookLink'].isNotEmpty) {
+  Widget _buildUserOptions(BuildContext context) {
+    return Column(
+      children: [
+        _buildOption(context, Icons.favorite, 'My Favorites', () {
+          print('Navigating to My Favorites');
+        }),
+        _buildOption(context, Icons.download, 'My Downloads', () {
+          print('Navigating to My Downloads');
+        }),
+        _buildOption(context, Icons.edit, 'Edit Profile', () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PDFViewerPage(pdfUrl: book['bookLink']),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("PDF link is unavailable.")),
-          );
-        }
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 6)),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.grey[300],
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        print('Error loading image for book: $imageUrl');
-                        return Container(
-                          color: Colors.grey[300],
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.broken_image, size: 30, color: Colors.grey),
-                                Text(
-                                  'Image not available',
-                                  style: TextStyle(fontSize: 10, color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    book['title'] ?? '',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    'By $authors',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 9, color: Colors.grey[700]),
-                  ),
-                ],
+              builder: (context) => EditProfileScreen(
+                fullName: fullName,
+                gender: gender,
+                phoneNumber: phoneNumber,
+                profilePicture: profilePicture,
+                email: email,
+                userId: "YOUR_USER_ID", // Replace with appropriate logic to get User ID
               ),
             ),
-          ],
-        ),
+          );
+        }),
+        _buildOption(context, Icons.delete, 'Delete My Account', () {
+          _showConfirmationDialog(context, 'Delete My Account');
+        }),
+        _buildOption(context, Icons.logout, 'Logout', logout),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildOption(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      elevation: 2,
+      child: ListTile(
+        leading: Icon(icon, color: Colors.blue),
+        title: Text(label),
+        onTap: onTap,
       ),
     );
   }
 
-  Widget _buildSubscriptionTab() {
-    return Center(child: Text("Subscription content here."));
-  }
-
-  Widget _buildRentTab() {
-    return Center(child: Text("Rent content here."));
+  void _showConfirmationDialog(BuildContext context, String action) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Action'),
+          content: Text('Are you sure you want to $action?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                print('$action confirmed.');
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

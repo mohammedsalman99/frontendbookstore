@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../providers/ continue_books_provider.dart';
 import 'report.dart';
 import 'writereview.dart';
 import 'seereviews.dart';
@@ -455,14 +453,7 @@ class _DetailPageState extends State<DetailPage> {
                         await incrementView(); // Increment the view count
                         await incrementReadingHistory(); // Update reading history
 
-                        final newBook = {
-                          'title': bookData!['title'],
-                          'author': bookData!['authors'][0]['fullName'],
-                          'id': bookData!['_id'],
-                        };
-                        final continueBooksProvider =
-                        Provider.of<ContinueBooksProvider>(context, listen: false);
-                        continueBooksProvider.addBook(newBook);
+
 
                         final pdfUrl = bookData!['bookLink'];
                         Navigator.push(
