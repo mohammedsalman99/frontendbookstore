@@ -12,7 +12,7 @@ class EditProfileScreen extends StatefulWidget {
   final String? phoneNumber;
   final String? email;
   final String? profilePicture;
-  final String userId; // User ID for backend identification
+  final String userId; 
 
   EditProfileScreen({
     required this.fullName,
@@ -47,8 +47,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _emailController = TextEditingController(text: widget.email);
     _passwordController = TextEditingController();
 
-    // Ensure the gender matches one of the dropdown values
-    _selectedGender = widget.gender?.toLowerCase() ?? 'not specified'; // Convert to lowercase for consistency
+    _selectedGender = widget.gender?.toLowerCase() ?? 'not specified'; 
     _profilePictureUrl = widget.profilePicture ?? '';
   }
 
@@ -83,7 +82,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             await http.MultipartFile.fromPath(
               'profilePicture',
               _imageFile!.path,
-              contentType: MediaType('image', 'jpeg'), // Set MIME type explicitly
+              contentType: MediaType('image', 'jpeg'),
             ),
           );
         } else {
@@ -136,7 +135,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
 
 
-  /// Pick image using image picker
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
@@ -148,7 +146,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  /// Show dialog to choose between camera and gallery
   void _changeProfilePicture() {
     showDialog(
       context: context,
@@ -205,13 +202,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              // Profile Picture
               GestureDetector(
                 onTap: _changeProfilePicture,
                 child: CircleAvatar(
                   radius: 60,
                   backgroundImage: _imageFile != null
-                      ? FileImage(_imageFile!) // Show picked image
+                      ? FileImage(_imageFile!) 
                       : (_profilePictureUrl.startsWith('http')
                       ? NetworkImage(_profilePictureUrl)
                       : const AssetImage('assets/images/user_placeholder.png')) as ImageProvider,
@@ -219,7 +215,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Full Name Field
               TextFormField(
                 controller: _fullNameController,
                 decoration: const InputDecoration(
@@ -235,7 +230,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Email Field
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -255,7 +249,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Phone Number Field
               TextFormField(
                 controller: _phoneNumberController,
                 decoration: const InputDecoration(
@@ -275,9 +268,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Gender Dropdown
               DropdownButtonFormField<String>(
-                value: _selectedGender, // Ensure this value exists in the items array
+                value: _selectedGender, 
                 decoration: const InputDecoration(
                   labelText: "Gender",
                   border: OutlineInputBorder(),
@@ -285,7 +277,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 items: ['male', 'female', 'not specified']
                     .map((gender) => DropdownMenuItem(
                   value: gender,
-                  child: Text(gender[0].toUpperCase() + gender.substring(1)), // Capitalize for display
+                  child: Text(gender[0].toUpperCase() + gender.substring(1)), 
                 ))
                     .toList(),
                 onChanged: (value) {
@@ -296,9 +288,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Save Button
               ElevatedButton(
-                onPressed: _isLoading ? null : _saveProfile, // Disable button if loading
+                onPressed: _isLoading ? null : _saveProfile, 
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
