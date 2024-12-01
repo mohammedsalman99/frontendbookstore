@@ -27,7 +27,6 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     fetchUserDetails();
   }
 
-  /// Fetch user details from local storage
   Future<void> fetchUserDetails() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -41,7 +40,6 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     });
   }
 
-  /// Update user profile and send to backend
   Future<void> updateUserProfile({
     required String updatedFullName,
     required String updatedGender,
@@ -105,7 +103,6 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     }
   }
 
-  /// Logout and clear user data
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -301,7 +298,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                 phoneNumber: phoneNumber,
                 profilePicture: profilePicture,
                 email: email,
-                userId: "YOUR_USER_ID", // Replace with appropriate logic to get User ID
+                userId: "YOUR_USER_ID", 
               ),
             ),
           );
