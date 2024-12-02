@@ -29,16 +29,52 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
   Future<void> fetchUserDetails() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      email = prefs.getString('user_email');
-      token = prefs.getString('auth_token');
-      fullName = prefs.getString('full_name') ?? "None";
-      gender = prefs.getString('gender') ?? "Not Specified";
-      phoneNumber = prefs.getString('phone_number') ?? "Not Provided";
-      profilePicture = prefs.getString('profile_picture') ?? 'assets/images/user_placeholder.png';
-      isLoading = false;
-    });
+    token = prefs.getString('auth_token'); // Retrieve the token from shared preferences
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No auth token found. Please log in again.')),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/me'), // Replace with the correct endpoint
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data['success'] == true) {
+          setState(() {
+            email = data['user']['email'];
+            fullName = data['user']['fullName'];
+            gender = data['user']['gender'];
+            phoneNumber = data['user']['phoneNumber'];
+            profilePicture = data['user']['profilePicture'];
+            isLoading = false;
+          });
+        } else {
+          throw Exception('Failed to fetch user details.');
+        }
+      } else {
+        throw Exception('Server Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    }
   }
+
 
   Future<void> updateUserProfile({
     required String updatedFullName,
@@ -174,90 +210,104 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       ),
     );
   }
-
   Widget _buildProfileHeader() {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 60,
-          backgroundColor: Colors.white,
-          backgroundImage: profilePicture != null
-              ? NetworkImage(profilePicture!)
-              : const AssetImage('assets/images/user_placeholder.png') as ImageProvider,
-        ),
-        const SizedBox(height: 20),
-        Text(
-          fullName ?? "Loading full name...",
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          email ?? "Loading email...",
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          "Gender: ${gender ?? "Not Specified"}",
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          "Phone: ${phoneNumber ?? "Not Provided"}",
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCustomTabBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: TabBar(
-        indicator: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          colors: [Colors.blue, Colors.purple],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.grey[700],
-        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        unselectedLabelStyle: const TextStyle(fontSize: 13),
-        tabs: const [
-          Tab(
-            icon: Icon(Icons.book, size: 18),
-            child: Text(
-              'Purchased Books',
-              style: TextStyle(fontSize: 12),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            radius: 60,
+            backgroundColor: Colors.white,
+            backgroundImage: profilePicture != null && profilePicture!.startsWith('http')
+                ? NetworkImage(profilePicture!)
+                : const AssetImage('assets/images/user_placeholder.png') as ImageProvider,
+          ),
+          const SizedBox(height: 15),
+          Text(
+            fullName ?? "Loading full name...",
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
-          Tab(
-            icon: Icon(Icons.subscriptions, size: 18),
-            child: Text(
-              'Subscription',
-              style: TextStyle(fontSize: 12),
+          const SizedBox(height: 5),
+          Text(
+            email ?? "Loading email...",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: Colors.white70,
             ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildCustomTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TabBar(
+        indicator: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Colors.pink, Colors.orange],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.grey[600],
+        labelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 13,
+        ),
+        tabs: const [
+          Tab(
+            icon: Icon(Icons.book, size: 20),
+            text: 'Books',
+          ),
+          Tab(
+            icon: Icon(Icons.subscriptions, size: 20),
+            text: 'Subscriptions',
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildHorizontalBooksTab() {
     return SingleChildScrollView(
@@ -298,16 +348,18 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                 phoneNumber: phoneNumber,
                 profilePicture: profilePicture,
                 email: email,
-                userId: "YOUR_USER_ID", 
+                userId: "YOUR_USER_ID",
+                onProfileUpdated: fetchUserDetails, // Refresh profile after editing
               ),
             ),
           );
+
         }),
         _buildOption(context, Icons.delete, 'Delete My Account', () {
           _showConfirmationDialog(context, 'Delete My Account');
         }),
         _buildOption(context, Icons.logout, 'Logout', logout),
-        const SizedBox(height: 20),
+        const SizedBox(height: 65),
       ],
     );
   }

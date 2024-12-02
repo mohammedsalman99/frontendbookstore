@@ -7,21 +7,25 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  final VoidCallback onProfileUpdated; // Callback for profile updates
   final String? fullName;
   final String? gender;
   final String? phoneNumber;
   final String? email;
   final String? profilePicture;
-  final String userId; 
+  final String userId;
 
-  EditProfileScreen({
+  const EditProfileScreen({
+    Key? key,
+    required this.onProfileUpdated, // Ensure this is required
     required this.fullName,
     required this.gender,
     required this.phoneNumber,
     required this.email,
     required this.profilePicture,
     required this.userId,
-  });
+  }) : super(key: key);
+
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -97,19 +101,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (response.statusCode == 200) {
           final responseData = jsonDecode(responseBody);
           if (responseData['success'] == true) {
-            setState(() {
-              _profilePictureUrl = responseData['user']['profilePicture'] ?? '';
-            });
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Profile updated successfully!')),
+              const SnackBar(content: Text('Profile updated successfully!')),
             );
+
+            // Trigger the callback to refresh the profile page
+            widget.onProfileUpdated();
+            Navigator.pop(context); // Return to profile page
           } else {
-            print('Backend error: ${responseData['message']}');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Failed to update profile: ${responseData['message']}')),
             );
           }
-        } else if (response.statusCode == 401) {
+        }
+
+       else if (response.statusCode == 401) {
           print('Authorization error: $responseBody');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Unauthorized. Please log in again.')),
@@ -185,9 +191,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _fullNameController.dispose();
     _phoneNumberController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
+
 
   @override
   @override
