@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  final VoidCallback onProfileUpdated; // Callback for profile updates
+  final VoidCallback onProfileUpdated; 
   final String? fullName;
   final String? gender;
   final String? phoneNumber;
@@ -17,7 +17,7 @@ class EditProfileScreen extends StatefulWidget {
 
   const EditProfileScreen({
     Key? key,
-    required this.onProfileUpdated, // Ensure this is required
+    required this.onProfileUpdated, 
     required this.fullName,
     required this.gender,
     required this.phoneNumber,
@@ -105,9 +105,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SnackBar(content: Text('Profile updated successfully!')),
             );
 
-            // Trigger the callback to refresh the profile page
             widget.onProfileUpdated();
-            Navigator.pop(context); // Return to profile page
+            Navigator.pop(context);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Failed to update profile: ${responseData['message']}')),
