@@ -29,7 +29,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
   Future<void> fetchUserDetails() async {
     final prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('auth_token'); // Retrieve the token from shared preferences
+    token = prefs.getString('auth_token'); 
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No auth token found. Please log in again.')),
@@ -43,7 +43,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/me'), // Replace with the correct endpoint
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/me'), 
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -349,7 +349,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                 profilePicture: profilePicture,
                 email: email,
                 userId: "YOUR_USER_ID",
-                onProfileUpdated: fetchUserDetails, // Refresh profile after editing
+                onProfileUpdated: fetchUserDetails, 
               ),
             ),
           );
