@@ -13,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Map<String, dynamic>? bestAuthor; // Variable to hold the best author details
+  Map<String, dynamic>? bestAuthor; 
   List<Map<String, String>> categories = [];
   List<dynamic> readingHistory = [];
   List<dynamic> popularBooks = [];
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return prefs.getString('auth_token');
   }
 
-  List<dynamic> topAuthors = []; // List to store the top 5 authors
+  List<dynamic> topAuthors = []; 
 
   Future<void> fetchBestAuthor() async {
     const String authorsUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/authors/with-book-count';
@@ -46,13 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
         final data = json.decode(response.body);
         List<dynamic> authors = data['authors'];
 
-        // Sort authors by number of books in descending order
         authors.sort((a, b) => b['numberOfBooks'].compareTo(a['numberOfBooks']));
-        // Get the top 5 authors
         final topAuthorsList = authors.take(5).toList();
 
         setState(() {
-          topAuthors = topAuthorsList; // Store the top authors in state
+          topAuthors = topAuthorsList;
         });
       } else {
         throw Exception('Failed to load authors');
@@ -179,8 +177,6 @@ class _HomeScreenState extends State<HomeScreen> {
         physics: BouncingScrollPhysics(),
         children: [
           SizedBox(height: 45),
-
-          // Title
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -195,7 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 13),
 
-          // Search Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -221,7 +216,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 20),
 
-          // Categories Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Categories"),
@@ -249,8 +243,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           SizedBox(height: 20),
-
-          // Reading History Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Reading History"),
@@ -280,7 +272,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 20),
 
-          // Popular Books Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Popular Books"),
@@ -301,7 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Add Top Authors Section at the Bottom
           buildBestAuthorSection(),
           SizedBox(height: 50),
         ],
@@ -313,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildBestAuthorSection() {
     if (topAuthors.isEmpty) {
-      return SizedBox.shrink(); // Return an empty widget if no authors are available
+      return SizedBox.shrink(); 
     }
 
     return Padding(
@@ -324,14 +314,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             'Top Authors',
             style: TextStyle(
-              fontSize: 18, // Suitable size for section title
+              fontSize: 18, 
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
           SizedBox(height: 10),
           Container(
-            height: 130, // Adjust height for the horizontal list
+            height: 130, 
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: topAuthors.length,
@@ -343,35 +333,35 @@ class _HomeScreenState extends State<HomeScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => AuthorInfoScreen(
-                          authorId: author['_id'], // Pass author ID
+                          authorId: author['_id'],
                         ),
                       ),
                     );
                   },
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 12.0), // Adjust spacing between authors
+                    padding: const EdgeInsets.only(right: 12.0), 
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ClipOval(
                           child: CachedNetworkImage(
                             imageUrl: author['profilePicture'],
-                            width: 60, // Profile picture size
+                            width: 60, 
                             height: 60,
                             fit: BoxFit.cover,
                           ),
                         ),
-                        SizedBox(height: 8), // Space between image and name
+                        SizedBox(height: 8), 
                         Container(
-                          width: 70, // Fixed width to prevent overflow
+                          width: 70, 
                           child: Text(
                             author['fullName'],
                             style: TextStyle(
-                              fontSize: 10, // Reduced font size for names
+                              fontSize: 10, 
                               fontWeight: FontWeight.bold,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 2, // Allow names to wrap to two lines
+                            maxLines: 2,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -483,16 +473,16 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         width: 160,
-        height: 110, // Adjusted height for added rating section
+        height: 110, 
         margin: EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300, width: 1), // Edge border
+          border: Border.all(color: Colors.grey.shade300, width: 1), 
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
-              offset: Offset(0, 2), // Slight shadow for elevation
+              offset: Offset(0, 2),
               blurRadius: 4,
             ),
           ],
@@ -500,11 +490,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Book Image
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
               child: Container(
-                height: 100, // Adjusted height for the image
+                height: 100, 
                 width: double.infinity,
                 child: Image.network(
                   book['image'] ?? 'https://via.placeholder.com/150',
@@ -512,13 +501,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            // Book Details
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Book Title
                   Text(
                     book['title'] ?? 'Unknown Title',
                     maxLines: 2,
@@ -526,7 +513,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 3),
-                  // Author(s)
                   Text(
                     'By ${(book['authors'] as List).map((e) => e['fullName']).join(", ")}',
                     maxLines: 1,
@@ -534,12 +520,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 9, color: Colors.grey),
                   ),
                   SizedBox(height: 5),
-                  // Rating Section
                   Row(
                     children: List.generate(5, (index) {
                       return Icon(
                         Icons.star,
-                        size: 11, // Suitable size for the stars
+                        size: 11, 
                         color: index < rating ? Colors.amber : Colors.grey.shade300,
                       );
                     }),
