@@ -46,15 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         List<dynamic> authors = data['authors'];
-
-        // Sort by bookCount in descending order
         authors.sort((a, b) => b['bookCount'].compareTo(a['bookCount']));
-
-        // Take the top 5 authors
         final topAuthorsList = authors.take(5).toList();
 
         setState(() {
-          topAuthors = topAuthorsList; // Update the state variable
+          topAuthors = topAuthorsList; 
         });
       } else {
         throw Exception('Failed to load authors');
@@ -72,16 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         List<dynamic> books = data['books'];
-
-        // Sort for Popular Books (by numberOfReadings)
         List<dynamic> sortedByReadings = List.from(books)
           ..sort((a, b) {
             int readsA = a['numberOfReadings'] ?? 0;
             int readsB = b['numberOfReadings'] ?? 0;
             return readsB.compareTo(readsA);
           });
-
-        // Sort for Trending Books (by numberOfViews)
         List<dynamic> sortedByViews = List.from(books)
           ..sort((a, b) {
             int viewsA = a['numberOfViews'] ?? 0;
@@ -90,8 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
           });
 
         setState(() {
-          popularBooks = sortedByReadings.take(10).toList(); // Top 10 popular books
-          trendingBooks = sortedByViews.take(10).toList();  // Top 10 trending books
+          popularBooks = sortedByReadings.take(10).toList(); 
+          trendingBooks = sortedByViews.take(10).toList();  
           isLoading = false;
         });
       } else {
@@ -284,12 +276,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: readingHistoryCard(
                   book['title'] ?? 'Untitled',
                   book['image'] ??
-                      'https://via.placeholder.com/150', // Fallback image
+                      'https://via.placeholder.com/150', 
                   book['_id'] ?? '',
                 ),
               );
             } else {
-              return SizedBox.shrink(); // Safeguard against missing book
+              return SizedBox.shrink(); 
             }
           },
         ),
@@ -612,7 +604,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Stack(
           children: [
-            // Gradient overlay for better text visibility
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -626,7 +617,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            // Title at the bottom of the card
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
