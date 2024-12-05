@@ -28,20 +28,13 @@ class _BooksScreenState extends State<BooksScreen> {
     final apiUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books';
 
     try {
-      // Step 1: Fetch data from API
       print('Fetching books from API: $apiUrl');
       final response = await http.get(Uri.parse(apiUrl));
-
-      // Step 2: Check response status code
       if (response.statusCode == 200) {
         print('Response received. Parsing JSON...');
         try {
           final data = jsonDecode(response.body);
-
-          // Log raw response for debugging
           print('Raw response data: $data');
-
-          // Check if 'books' exists and is a list
           if (data['books'] != null && data['books'] is List) {
             print('Filtering books by category...');
             final filteredBooks = data['books'].where((book) {
