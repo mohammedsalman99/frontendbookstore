@@ -73,14 +73,20 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Future<void> incrementDownload() async {
-    final downloadUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/download';
+    final downloadUrl =
+        'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/download';
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('auth_token'); 
+      String? token = prefs.getString('auth_token');
 
       if (token == null) {
-        throw Exception("Authentication token is missing. Please log in again.");
+        _showAdvancedMessage(
+          "Authentication Error",
+          "Please log in to download this book.",
+          isError: true,
+        );
+        return;
       }
 
       final response = await http.post(
@@ -96,23 +102,99 @@ class _DetailPageState extends State<DetailPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+
+        // Handle successful download
         if (data['success'] == true) {
           setState(() {
-            bookData!['numberOfDownloads'] = data['numberOfDownloads']; 
+            bookData!['numberOfDownloads'] = data['numberOfDownloads'];
           });
+          _showAdvancedMessage(
+            "Download Started",
+            "Your download has started successfully.",
+            isError: false,
+          );
+        } else if (data.containsKey('message')) {
+          _showAdvancedMessage(
+            "Subscription Required",
+            data['message'], // Use the message from the response
+            isError: true,
+          );
         } else {
-          throw Exception("Failed to update number of downloads: ${data['message'] ?? 'Unknown error'}");
+          _showAdvancedMessage(
+            "Unknown Error",
+            "Unable to process your download request. Please try again.",
+            isError: true,
+          );
         }
+      } else if (response.statusCode == 403) {
+        final data = json.decode(response.body);
+        _showAdvancedMessage(
+          "Access Denied",
+          data['message'] ?? "This book requires an active subscription.",
+          isError: true,
+        );
       } else {
-        throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
+        _showAdvancedMessage(
+          "Server Error",
+          "Unable to process your download request. Please try again later.",
+          isError: true,
+        );
       }
     } catch (e) {
-      print('Error during download increment: $e'); 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error updating downloads: $e")),
+      print('Error during download increment: $e');
+      _showAdvancedMessage(
+        "Network Error",
+        "An error occurred. Please check your internet connection and try again.",
+        isError: true,
       );
     }
   }
+
+  void _showAdvancedMessage(String title, String message, {required bool isError}) {
+    final backgroundColor = isError ? Colors.red.shade100 : Colors.green.shade100;
+    final icon = isError ? Icons.error : Icons.check_circle;
+    final iconColor = isError ? Colors.red : Colors.green;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(icon, color: iconColor, size: 24),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: iconColor,
+                    ),
+                  ),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        elevation: 8.0,
+        margin: EdgeInsets.all(12),
+        duration: Duration(seconds: 4),
+      ),
+    );
+  }
+
 
 
   Future<void> incrementView() async {
@@ -122,10 +204,12 @@ class _DetailPageState extends State<DetailPage> {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('auth_token');
 
+      // Check for authentication token
       if (token == null) {
         throw Exception("Authentication token is missing. Please log in again.");
       }
 
+      // Make the API request
       final response = await http.post(
         Uri.parse(viewUrl),
         headers: {
@@ -137,20 +221,23 @@ class _DetailPageState extends State<DetailPage> {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
+      // Check the response status
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['success'] == true) {
+
+        // Check if `numberOfViews` is present in the response
+        if (data.containsKey('numberOfViews') && data['numberOfViews'] != null) {
           setState(() {
-            bookData!['numberOfViews'] = data['numberOfViews']; 
+            bookData!['numberOfViews'] = data['numberOfViews'];
           });
         } else {
-          throw Exception("Failed to update number of views: ${data['message'] ?? 'Unknown error'}");
+          throw Exception("Response missing 'numberOfViews' key");
         }
       } else {
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
-      print('Error during view increment: $e'); 
+      print('Error during view increment: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error updating views: $e")),
       );
@@ -163,10 +250,15 @@ class _DetailPageState extends State<DetailPage> {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('auth_token'); 
+      String? token = prefs.getString('auth_token');
 
       if (token == null) {
-        throw Exception("Authentication token is missing. Please log in again.");
+        _showAdvancedMessage(
+          "Authentication Error",
+          "Please log in to access this book.",
+          isError: true,
+        );
+        return;
       }
 
       final response = await http.post(
@@ -182,20 +274,50 @@ class _DetailPageState extends State<DetailPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['success'] != true) {
-          throw Exception("Failed to update number of readings: ${data['message'] ?? 'Unknown error'}");
+
+        // Handle valid response
+        if (data['success'] == true) {
+          _showAdvancedMessage(
+            "Access Granted",
+            "You can now read this book.",
+            isError: false,
+          );
+        } else if (data.containsKey('message')) {
+          _showAdvancedMessage(
+            "Subscription Required",
+            data['message'], // Use the message from the response
+            isError: true,
+          );
+        } else {
+          _showAdvancedMessage(
+            "Unknown Error",
+            "Unable to process your request. Please try again.",
+            isError: true,
+          );
         }
+      } else if (response.statusCode == 403) {
+        final data = json.decode(response.body);
+        _showAdvancedMessage(
+          "Access Denied",
+          data['message'] ?? "This book requires an active subscription.",
+          isError: true,
+        );
       } else {
-        throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
+        _showAdvancedMessage(
+          "Server Error",
+          "Unable to process your request. Please try again later.",
+          isError: true,
+        );
       }
     } catch (e) {
       print('Error during reading increment: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error updating readings: $e")),
+      _showAdvancedMessage(
+        "Network Error",
+        "An error occurred. Please check your internet connection and try again.",
+        isError: true,
       );
     }
   }
-
 
 
 
@@ -207,10 +329,13 @@ class _DetailPageState extends State<DetailPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['success'] == true) {
+
+        // Check if the 'book' key exists in the response
+        if (data.containsKey('book')) {
           setState(() {
             bookData = data['book'];
 
+            // Check and modify the 'bookLink' if needed
             if (bookData != null && bookData!['bookLink'] != null) {
               String pdfUrl = bookData!['bookLink'];
               final uri = Uri.parse(pdfUrl);
@@ -223,23 +348,20 @@ class _DetailPageState extends State<DetailPage> {
             isLoading = false;
           });
         } else {
-          throw Exception("Failed to fetch book details");
+          throw Exception("Invalid response: 'book' key missing");
         }
       } else {
-        throw Exception("Error: ${response.statusCode}");
+        throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
       setState(() {
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
+        SnackBar(content: Text("Error fetching book details: $e")),
       );
     }
   }
-
-
-
 
   void updateReviewList(List<Map<String, dynamic>> newReviews) {
     setState(() {});

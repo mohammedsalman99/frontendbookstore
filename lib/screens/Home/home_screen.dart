@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
   bool hasError = false;
   bool isReadingHistoryLoading = true;
+  List<dynamic> trendingBooks = [];
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return prefs.getString('auth_token');
   }
 
-  List<dynamic> topAuthors = []; 
+  List<dynamic> topAuthors = [];
 
   Future<void> fetchBestAuthor() async {
     const String authorsUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/authors/with-book-count';
@@ -46,11 +47,14 @@ class _HomeScreenState extends State<HomeScreen> {
         final data = json.decode(response.body);
         List<dynamic> authors = data['authors'];
 
-        authors.sort((a, b) => b['numberOfBooks'].compareTo(a['numberOfBooks']));
+        // Sort by bookCount in descending order
+        authors.sort((a, b) => b['bookCount'].compareTo(a['bookCount']));
+
+        // Take the top 5 authors
         final topAuthorsList = authors.take(5).toList();
 
         setState(() {
-          topAuthors = topAuthorsList;
+          topAuthors = topAuthorsList; // Update the state variable
         });
       } else {
         throw Exception('Failed to load authors');
@@ -69,16 +73,25 @@ class _HomeScreenState extends State<HomeScreen> {
         final data = json.decode(response.body);
         List<dynamic> books = data['books'];
 
-        books.sort((a, b) {
-          int viewsA = a['numberOfViews'] ?? 0;
-          int viewsB = b['numberOfViews'] ?? 0;
-          int readsA = a['numberOfReadings'] ?? 0;
-          int readsB = b['numberOfReadings'] ?? 0;
-          return (viewsB.compareTo(viewsA) != 0) ? viewsB.compareTo(viewsA) : readsB.compareTo(readsA);
-        });
+        // Sort for Popular Books (by numberOfReadings)
+        List<dynamic> sortedByReadings = List.from(books)
+          ..sort((a, b) {
+            int readsA = a['numberOfReadings'] ?? 0;
+            int readsB = b['numberOfReadings'] ?? 0;
+            return readsB.compareTo(readsA);
+          });
+
+        // Sort for Trending Books (by numberOfViews)
+        List<dynamic> sortedByViews = List.from(books)
+          ..sort((a, b) {
+            int viewsA = a['numberOfViews'] ?? 0;
+            int viewsB = b['numberOfViews'] ?? 0;
+            return viewsB.compareTo(viewsA);
+          });
 
         setState(() {
-          popularBooks = books;
+          popularBooks = sortedByReadings.take(10).toList(); // Top 10 popular books
+          trendingBooks = sortedByViews.take(10).toList();  // Top 10 trending books
           isLoading = false;
         });
       } else {
@@ -91,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
 
   Future<void> _fetchCategories() async {
     try {
@@ -127,7 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
-
   Future<void> _fetchReadingHistory() async {
     final readingHistoryUrl =
         'https://readme-backend-zdiq.onrender.com/api/v1/reading-history';
@@ -146,28 +159,33 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
 
+      print('API Status Code: ${response.statusCode}');
+      print('API Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success'] == true) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        if (data.containsKey('readingHistory') && data['readingHistory'] is List) {
           setState(() {
             readingHistory = data['readingHistory'];
             isReadingHistoryLoading = false;
           });
         } else {
-          throw Exception(
-              "Failed to fetch reading history: ${data['message']}");
+          print('Error: Invalid or missing readingHistory key');
         }
       } else {
-        throw Exception(
-            "Error: ${response.statusCode} ${response.reasonPhrase}");
+        print('HTTP Error: ${response.statusCode} ${response.reasonPhrase}');
       }
     } catch (e) {
       print('Error fetching reading history: $e');
+    } finally {
       setState(() {
         isReadingHistoryLoading = false;
       });
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -248,28 +266,35 @@ class _HomeScreenState extends State<HomeScreen> {
             child: sectionHeader("Reading History"),
           ),
           SizedBox(height: 10),
-          isReadingHistoryLoading
-              ? Center(child: CircularProgressIndicator())
-              : readingHistory.isEmpty
-              ? Center(child: Text('No reading history found'))
-              : Container(
-            height: 160,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: readingHistory.length,
-              itemBuilder: (context, index) {
-                final book = readingHistory[index]['book'];
-                return Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: readingHistoryCard(
-                    book['title'],
-                    book['image'],
-                    book['_id'],
-                  ),
-                );
-              },
-            ),
-          ),
+      isReadingHistoryLoading
+          ? Center(child: CircularProgressIndicator())
+          : readingHistory.isEmpty
+          ? Center(child: Text('No reading history found'))
+          : Container(
+        height: 160,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: readingHistory.length,
+          itemBuilder: (context, index) {
+            final historyItem = readingHistory[index];
+            final book = historyItem['book'];
+            if (book != null) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: readingHistoryCard(
+                  book['title'] ?? 'Untitled',
+                  book['image'] ??
+                      'https://via.placeholder.com/150', // Fallback image
+                  book['_id'] ?? '',
+                ),
+              );
+            } else {
+              return SizedBox.shrink(); // Safeguard against missing book
+            }
+          },
+        ),
+      ),
+
           SizedBox(height: 20),
 
           Padding(
@@ -291,6 +316,27 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: sectionHeader("Trending Books"),
+          ),
+          SizedBox(height: 10),
+          isLoading
+              ? Center(child: CircularProgressIndicator())
+              : trendingBooks.isEmpty
+              ? Center(child: Text('No trending books found'))
+              : Container(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: trendingBooks.length,
+              itemBuilder: (context, index) {
+                return bookCard(trendingBooks[index]);
+              },
+            ),
+          ),
+          SizedBox(height: 20),
+
 
           buildBestAuthorSection(),
           SizedBox(height: 50),
@@ -566,16 +612,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Stack(
           children: [
+            // Gradient overlay for better text visibility
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+                  colors: [
+                    Colors.black.withOpacity(0.4),
+                    Colors.transparent,
+                  ],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
+            // Title at the bottom of the card
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -588,6 +639,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ),
             ),
@@ -596,4 +648,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+
 }

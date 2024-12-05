@@ -61,83 +61,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _isLoading = true;
       });
 
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        final token = prefs.getString('auth_token');
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
 
-        if (token == null) {
-          throw Exception('Authentication token not found. Please log in again.');
-        }
+      final uri = Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/profile');
+      final request = http.MultipartRequest('PUT', uri)
+        ..fields['fullName'] = _fullNameController.text
+        ..fields['phoneNumber'] = _phoneNumberController.text
+        ..fields['gender'] = _selectedGender ?? 'not specified'
+        ..headers['Authorization'] = 'Bearer $token';
 
-        print('Token: $token');
-
-        final uri = Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/profile');
-        final request = http.MultipartRequest('PUT', uri)
-          ..fields['fullName'] = _fullNameController.text
-          ..fields['phoneNumber'] = _phoneNumberController.text
-          ..fields['gender'] = _selectedGender ?? 'not specified'
-          ..headers['Authorization'] = 'Bearer $token';
-
-        print('Request fields: ${request.fields}');
-
-        if (_imageFile != null) {
-          print('Adding image file: ${_imageFile!.path}');
-          request.files.add(
-            await http.MultipartFile.fromPath(
-              'profilePicture',
-              _imageFile!.path,
-              contentType: MediaType('image', 'jpeg'),
-            ),
-          );
-        } else {
-          print('No image file selected.');
-        }
-
-        final response = await request.send();
-        print('Response status: ${response.statusCode}');
-        final responseBody = await response.stream.bytesToString();
-        print('Response body: $responseBody');
-
-        if (response.statusCode == 200) {
-          final responseData = jsonDecode(responseBody);
-          if (responseData['success'] == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Profile updated successfully!')),
-            );
-
-            widget.onProfileUpdated();
-            Navigator.pop(context);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to update profile: ${responseData['message']}')),
-            );
-          }
-        }
-
-       else if (response.statusCode == 401) {
-          print('Authorization error: $responseBody');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Unauthorized. Please log in again.')),
-          );
-        } else {
-          print('HTTP error: ${response.statusCode}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${response.statusCode}')),
-          );
-        }
-      } catch (error) {
-        print('Exception occurred: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An error occurred: $error')),
+      if (_imageFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'profilePicture',
+            _imageFile!.path,
+            contentType: MediaType('image', 'jpeg'),
+          ),
         );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
       }
+
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(responseBody);
+        if (responseData['success'] == true) {
+          widget.onProfileUpdated(); // Notify parent to refresh
+          Navigator.pop(context, true); // Return success
+        } else {
+          Navigator.pop(context, false); // Return failure
+        }
+      } else {
+        Navigator.pop(context, false); // Return failure
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
-
 
 
   Future<void> _pickImage(ImageSource source) async {

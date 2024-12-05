@@ -28,34 +28,54 @@ class _BooksScreenState extends State<BooksScreen> {
     final apiUrl = 'https://readme-backend-zdiq.onrender.com/api/v1/books';
 
     try {
+      // Step 1: Fetch data from API
+      print('Fetching books from API: $apiUrl');
       final response = await http.get(Uri.parse(apiUrl));
 
+      // Step 2: Check response status code
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        print('Response received. Parsing JSON...');
+        try {
+          final data = jsonDecode(response.body);
 
-        if (data['success'] == true && data['books'] != null) {
-          final filteredBooks = data['books'].where((book) {
-            return book['category']['_id'] == widget.categoryId;
-          }).toList();
+          // Log raw response for debugging
+          print('Raw response data: $data');
 
-          setState(() {
-            books = filteredBooks;
-            isLoading = false;
-          });
-        } else {
+          // Check if 'books' exists and is a list
+          if (data['books'] != null && data['books'] is List) {
+            print('Filtering books by category...');
+            final filteredBooks = data['books'].where((book) {
+              return book['category']['_id'] == widget.categoryId;
+            }).toList();
+
+            setState(() {
+              books = filteredBooks;
+              isLoading = false;
+            });
+            print('Books successfully filtered and state updated.');
+          } else {
+            print('No books field or books is not a list.');
+            setState(() {
+              hasError = true;
+              isLoading = false;
+            });
+          }
+        } catch (jsonError) {
+          print('Error decoding JSON response: $jsonError');
           setState(() {
             hasError = true;
             isLoading = false;
           });
         }
       } else {
+        print('HTTP error: ${response.statusCode} - ${response.reasonPhrase}');
         setState(() {
           hasError = true;
           isLoading = false;
         });
       }
-    } catch (e) {
-      print('Error fetching books: $e');
+    } catch (networkError) {
+      print('Network error occurred: $networkError');
       setState(() {
         hasError = true;
         isLoading = false;
@@ -63,6 +83,7 @@ class _BooksScreenState extends State<BooksScreen> {
     }
   }
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

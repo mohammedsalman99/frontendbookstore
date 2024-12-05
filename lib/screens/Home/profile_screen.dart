@@ -29,7 +29,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
   Future<void> fetchUserDetails() async {
     final prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('auth_token'); 
+    token = prefs.getString('auth_token');
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No auth token found. Please log in again.')),
@@ -43,7 +43,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/me'), 
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/me'),
         headers: {
           'Authorization': 'Bearer $token',
         },
@@ -52,7 +52,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        if (data['success'] == true) {
+        if (data.containsKey('user')) {
           setState(() {
             email = data['user']['email'];
             fullName = data['user']['fullName'];
@@ -62,18 +62,21 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
             isLoading = false;
           });
         } else {
-          throw Exception('Failed to fetch user details.');
+          throw Exception('Invalid response: user key not found.');
         }
       } else {
-        throw Exception('Server Error: ${response.statusCode}');
+        throw Exception('Server Error: ${response.statusCode}, Message: ${response.reasonPhrase}');
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      print('Error in fetchUserDetails: $error');
+      print('StackTrace: $stackTrace');
       setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $error')),
+        SnackBar(content: Text('Error in fetching user details: $error')),
       );
     }
   }
+
 
 
   Future<void> updateUserProfile({
@@ -85,14 +88,25 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     required String updatedPassword,
   }) async {
     final prefs = await SharedPreferences.getInstance();
+
+    final String? userId = prefs.getString('user_id');
+    final String? authToken = prefs.getString('auth_token');
+
+    if (userId == null || authToken == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User ID or Auth Token not found. Please log in again.')),
+      );
+      return;
+    }
+
     setState(() => isLoading = true);
 
     try {
       final response = await http.put(
-        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/${prefs.getString('user_id')}'),
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/$userId'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${prefs.getString('auth_token')}',
+          'Authorization': 'Bearer $authToken',
         },
         body: jsonEncode({
           'fullName': updatedFullName,
@@ -106,13 +120,16 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        if (responseData['success'] == true) {
+
+        if (responseData.containsKey('user')) {
+          // Save updated values in SharedPreferences
           await prefs.setString('full_name', updatedFullName);
           await prefs.setString('gender', updatedGender);
           await prefs.setString('phone_number', updatedPhoneNumber);
           await prefs.setString('profile_picture', updatedProfilePicture);
           await prefs.setString('user_email', updatedEmail);
 
+          // Update local state
           setState(() {
             fullName = updatedFullName;
             gender = updatedGender;
@@ -122,22 +139,26 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Profile updated successfully!')),
+            const SnackBar(content: Text('Profile updated successfully!')),
           );
         } else {
-          throw Exception('Failed to update profile.');
+          throw Exception('Unexpected response: User data not found in response.');
         }
       } else {
-        throw Exception('Server Error: ${response.statusCode}');
+        throw Exception('Server Error: ${response.statusCode}, Message: ${response.reasonPhrase}');
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      print('Error in updateUserProfile: $error');
+      print('StackTrace: $stackTrace');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $error')),
+        SnackBar(content: Text('Error in updating profile: $error')),
       );
     } finally {
       setState(() => isLoading = false);
     }
   }
+
+
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -151,7 +172,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -172,7 +193,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blue, Colors.purple],
+              colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -215,7 +236,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Colors.blue, Colors.purple],
+          colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -279,7 +300,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       child: TabBar(
         indicator: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Colors.pink, Colors.orange],
+            colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -338,7 +359,10 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         _buildOption(context, Icons.download, 'My Downloads', () {
           print('Navigating to My Downloads');
         }),
-        _buildOption(context, Icons.edit, 'Edit Profile', () {
+        _buildOption(context, Icons.edit, 'Edit Profile', () async {
+          final prefs = await SharedPreferences.getInstance();
+          final userId = prefs.getString('user_id') ?? "";
+
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -348,13 +372,13 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                 phoneNumber: phoneNumber,
                 profilePicture: profilePicture,
                 email: email,
-                userId: "YOUR_USER_ID",
-                onProfileUpdated: fetchUserDetails, 
+                userId: userId,
+                onProfileUpdated: fetchUserDetails,
               ),
             ),
           );
-
         }),
+
         _buildOption(context, Icons.delete, 'Delete My Account', () {
           _showConfirmationDialog(context, 'Delete My Account');
         }),
@@ -375,6 +399,8 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       ),
     );
   }
+
+
 
   void _showConfirmationDialog(BuildContext context, String action) {
     showDialog(

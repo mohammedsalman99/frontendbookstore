@@ -8,18 +8,33 @@ class LatestService {
     try {
       final response = await http.get(Uri.parse(baseUrl));
 
+      // Check if the response is successful
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success'] && data['books'] != null) {
-          return data['books'];
-        } else {
-          throw Exception('Failed to fetch books');
+        try {
+          final data = json.decode(response.body);
+
+          // Check if 'books' key exists and is a list
+          if (data.containsKey('books') && data['books'] is List) {
+            return data['books'];
+          } else {
+            throw Exception('Books data missing or invalid in response');
+          }
+        } catch (jsonError) {
+          throw Exception('Error decoding JSON: $jsonError');
         }
+      } else if (response.statusCode >= 500) {
+        throw Exception('Server error: ${response.statusCode}');
+      } else if (response.statusCode >= 400) {
+        throw Exception('Client error: ${response.statusCode}');
       } else {
-        throw Exception('Failed with status code: ${response.statusCode}');
+        throw Exception('Unexpected status code: ${response.statusCode}');
       }
+    } on http.ClientException catch (clientError) {
+      throw Exception('Network issue: $clientError');
+    } on FormatException catch (formatError) {
+      throw Exception('Invalid response format: $formatError');
     } catch (e) {
-      throw Exception('Error fetching books: $e');
+      throw Exception('Unexpected error: $e');
     }
   }
 }

@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReportPage extends StatefulWidget {
-  final String bookId; 
-  final String bookTitle; 
+  final String bookId;
+  final String bookTitle;
 
   ReportPage({
     required this.bookId,
@@ -19,31 +19,50 @@ class ReportPage extends StatefulWidget {
 class _ReportPageState extends State<ReportPage> {
   final TextEditingController _descriptionController = TextEditingController();
   bool _isSubmitting = false;
+  String? _errorText;
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
+  }
 
   Future<void> _submitReport() async {
-    if (_descriptionController.text.trim().length <= 10) {
-      _showErrorSnackbar("Description must be more than 10 characters.");
+    final description = _descriptionController.text.trim();
+
+    // Validate the description length
+    if (description.length <= 10) {
+      setState(() {
+        _errorText = "Description must be more than 10 characters.";
+      });
       return;
     }
 
-    final reportData = {
-      "description": _descriptionController.text.trim(),
-    };
-
-    final String apiUrl = "https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/reports";
+    final reportData = {"description": description};
+    final String apiUrl =
+        "https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/reports";
 
     setState(() {
       _isSubmitting = true;
+      _errorText = null;
     });
 
     try {
+      // Retrieve the authentication token
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
       if (token == null) {
-        throw Exception("Authentication token is missing. Please log in again.");
+        _showAdvancedMessage(
+          context,
+          "Authentication Error",
+          "Please log in to submit a report.",
+          isError: true,
+        );
+        return;
       }
 
+      // Send the POST request
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -53,34 +72,59 @@ class _ReportPageState extends State<ReportPage> {
         body: json.encode(reportData),
       );
 
+      // Handle different response cases
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
 
-        if (responseData['success']) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.green),
-                  SizedBox(width: 8),
-                  Text("Report submitted successfully."),
-                ],
-              ),
-              backgroundColor: Colors.white,
-              behavior: SnackBarBehavior.floating,
-              elevation: 6.0,
-              margin: EdgeInsets.all(12),
-            ),
+        if (responseData['success'] == true) {
+          _showAdvancedMessage(
+            context,
+            "Report Submitted",
+            "Your report has been submitted successfully.",
+            isError: false,
           );
-          Navigator.pop(context);
-        } else {
-          _showErrorSnackbar("Failed to submit the report.");
+          Navigator.pop(context); // Close the report screen
         }
+      } else if (response.statusCode == 400) {
+        final responseData = json.decode(response.body);
+
+        if (responseData['message'] == "You have already reported this book") {
+          _showAdvancedMessage(
+            context,
+            "Duplicate Report",
+            "You have already reported this book.",
+            isError: true,
+          );
+        } else {
+          _showAdvancedMessage(
+            context,
+            "Invalid Data",
+            "Invalid report data. Please try again.",
+            isError: true,
+          );
+        }
+      } else if (response.statusCode >= 500) {
+        _showAdvancedMessage(
+          context,
+          "Server Error",
+          "There was a problem on our end. Please try again later.",
+          isError: true,
+        );
       } else {
-        _showErrorSnackbar("Error: ${response.statusCode}");
+        _showAdvancedMessage(
+          context,
+          "Unexpected Error",
+          "Something went wrong. Please try again.",
+          isError: true,
+        );
       }
     } catch (e) {
-      _showErrorSnackbar("An error occurred: $e");
+      _showAdvancedMessage(
+        context,
+        "Network Error",
+        "Please check your internet connection and try again.",
+        isError: true,
+      );
     } finally {
       setState(() {
         _isSubmitting = false;
@@ -88,23 +132,49 @@ class _ReportPageState extends State<ReportPage> {
     }
   }
 
-  void _showErrorSnackbar(String message) {
+  void _showAdvancedMessage(
+      BuildContext context, String title, String message,
+      {required bool isError}) {
+    final backgroundColor = isError ? Colors.red.shade100 : Colors.green.shade100;
+    final icon = isError ? Icons.error : Icons.check_circle;
+    final iconColor = isError ? Colors.red : Colors.green;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.error, color: Colors.red),
-            SizedBox(width: 8),
-            Text(
-              message,
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            Icon(icon, color: iconColor, size: 24),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: iconColor,
+                    ),
+                  ),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor,
         behavior: SnackBarBehavior.floating,
-        elevation: 6.0,
+        elevation: 8.0,
         margin: EdgeInsets.all(12),
+        duration: Duration(seconds: 4),
       ),
     );
   }
@@ -144,8 +214,10 @@ class _ReportPageState extends State<ReportPage> {
             TextField(
               controller: _descriptionController,
               maxLines: 5,
+              enabled: !_isSubmitting,
               decoration: InputDecoration(
                 hintText: "Write details here...",
+                errorText: _errorText,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -155,7 +227,7 @@ class _ReportPageState extends State<ReportPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _submitReport,
+                onPressed: _isSubmitting ? null : _submitReport,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF5AA5B1),
                   padding: EdgeInsets.symmetric(vertical: 12),
