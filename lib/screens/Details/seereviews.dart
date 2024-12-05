@@ -108,9 +108,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
     }
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -270,7 +267,7 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
                   'review': reviewController.text,
                   'rating': rating,
                 };
-                await updateReviewOnServer(widget.bookId, review['_id'], updatedReview); // Pass bookId
+                await updateReviewOnServer(widget.bookId, review['_id'], updatedReview); 
                 updateReview(updatedReview, index);
                 Navigator.pop(context);
               },
@@ -281,7 +278,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
       },
     );
   }
-
 
   Widget buildRatingStars(double rating) {
     return Row(
