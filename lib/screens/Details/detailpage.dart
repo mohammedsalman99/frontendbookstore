@@ -32,15 +32,12 @@ class _DetailPageState extends State<DetailPage> {
         'https://readme-backend-zdiq.onrender.com/api/v1/reading-history//books/${widget.bookId}';
 
     try {
-      // Retrieve the user's authentication token
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('auth_token');
 
       if (token == null) {
         throw Exception("Authentication token is missing. Please log in again.");
       }
-
-      // Make the POST request
       final response = await http.post(
         Uri.parse(readingHistoryUrl),
         headers: {
@@ -102,8 +99,6 @@ class _DetailPageState extends State<DetailPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
-        // Handle successful download
         if (data['success'] == true) {
           setState(() {
             bookData!['numberOfDownloads'] = data['numberOfDownloads'];
@@ -116,7 +111,7 @@ class _DetailPageState extends State<DetailPage> {
         } else if (data.containsKey('message')) {
           _showAdvancedMessage(
             "Subscription Required",
-            data['message'], // Use the message from the response
+            data['message'], 
             isError: true,
           );
         } else {
@@ -203,13 +198,9 @@ class _DetailPageState extends State<DetailPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('auth_token');
-
-      // Check for authentication token
       if (token == null) {
         throw Exception("Authentication token is missing. Please log in again.");
       }
-
-      // Make the API request
       final response = await http.post(
         Uri.parse(viewUrl),
         headers: {
@@ -220,12 +211,8 @@ class _DetailPageState extends State<DetailPage> {
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
-
-      // Check the response status
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
-        // Check if `numberOfViews` is present in the response
         if (data.containsKey('numberOfViews') && data['numberOfViews'] != null) {
           setState(() {
             bookData!['numberOfViews'] = data['numberOfViews'];
@@ -274,8 +261,6 @@ class _DetailPageState extends State<DetailPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
-        // Handle valid response
         if (data['success'] == true) {
           _showAdvancedMessage(
             "Access Granted",
@@ -285,7 +270,7 @@ class _DetailPageState extends State<DetailPage> {
         } else if (data.containsKey('message')) {
           _showAdvancedMessage(
             "Subscription Required",
-            data['message'], // Use the message from the response
+            data['message'], 
             isError: true,
           );
         } else {
@@ -329,13 +314,9 @@ class _DetailPageState extends State<DetailPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
-        // Check if the 'book' key exists in the response
         if (data.containsKey('book')) {
           setState(() {
             bookData = data['book'];
-
-            // Check and modify the 'bookLink' if needed
             if (bookData != null && bookData!['bookLink'] != null) {
               String pdfUrl = bookData!['bookLink'];
               final uri = Uri.parse(pdfUrl);
@@ -563,7 +544,7 @@ class _DetailPageState extends State<DetailPage> {
                 children: [
                   buildActionButton(Icons.favorite_border, "Favourite", () {}),
                   buildActionButton(Icons.download, "Download", () async {
-                    await incrementDownload(); // Increment downloads
+                    await incrementDownload(); 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Download started!")),
                     );
@@ -572,8 +553,8 @@ class _DetailPageState extends State<DetailPage> {
                   buildActionButton(Icons.book, "Read", () async {
                     if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
                       try {
-                        await incrementView(); // Increment the view count
-                        await incrementReadingHistory(); // Update reading history
+                        await incrementView(); 
+                        await incrementReadingHistory(); 
 
 
 
