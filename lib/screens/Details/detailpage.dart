@@ -653,13 +653,14 @@ class _DetailPageState extends State<DetailPage> {
                   IconButton(
                     icon: Icon(Icons.arrow_forward, color: Color(0xFF5AA5B1)),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SeeReviewsPage(),
-                        ),
-                      );
-                    },
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => SeeReviewsPage(bookId: widget.bookId),
+    ),
+  );
+},
+
                   ),
                 ],
               ),
