@@ -81,8 +81,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
 
     try {
       print('Making DELETE request to: $url');
-
-      // Get the token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('auth_token');
 
@@ -110,8 +108,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Review deleted successfully.")),
         );
-
-        // Remove the review from the list locally
         setState(() {
           reviews.removeWhere((review) => review['_id'] == reviewId);
         });
@@ -138,8 +134,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
     try {
       print('Making PUT request to: $url');
       print('Request Body: ${jsonEncode(updatedReview)}');
-
-      // Get the token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('auth_token');
 
