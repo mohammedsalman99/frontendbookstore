@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           final data = jsonDecode(response.body);
 
           String token = data['token'];
-          String userId = data['user']['id']; 
+          String userId = data['user']['id'];
           String userEmail = data['user']['email'];
 
           final prefs = await SharedPreferences.getInstance();

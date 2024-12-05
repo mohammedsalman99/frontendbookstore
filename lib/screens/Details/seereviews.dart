@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class SeeReviewsPage extends StatefulWidget {
@@ -15,20 +16,26 @@ class SeeReviewsPage extends StatefulWidget {
 class _SeeReviewsPageState extends State<SeeReviewsPage> {
   List<Map<String, dynamic>> reviews = [];
   bool isLoading = true;
+  String? loggedInUserId;
 
   @override
   void initState() {
     super.initState();
+    fetchLoggedInUserId();
     fetchReviews(widget.bookId);
+  }
+
+  Future<void> fetchLoggedInUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    loggedInUserId = prefs.getString('user_id');
+    print('Logged-in user ID: $loggedInUserId');
   }
 
   Future<void> fetchReviews(String bookId) async {
     final url = 'https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/reviews';
 
     try {
-      print('Fetching reviews for book: $bookId from API: $url');
       final response = await http.get(Uri.parse(url));
-
       print('Raw response body: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -69,23 +76,87 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
     }
   }
 
-  void updateReview(Map<String, dynamic> updatedReview, int index) {
-    setState(() {
-      reviews[index] = updatedReview;
-    });
-  }
-
-  Future<void> updateReviewOnServer(String bookId, String reviewId, Map<String, dynamic> updatedReview) async {
-    final url = 'https://readme-backend-zdiq.onrender.com/api/v1/$bookId/reviews/$reviewId';
+  Future<void> deleteReview(String bookId, String reviewId) async {
+    final url = 'https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/reviews/$reviewId';
 
     try {
-      print('Making PATCH request to: $url');
-      print('Request Headers: ${{'Content-Type': 'application/json'}}');
+      print('Making DELETE request to: $url');
+
+      // Get the token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
+
+      if (token == null) {
+        print('Token is missing. User must log in.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Authentication required. Please log in.")),
+        );
+        return;
+      }
+
+      final response = await http.delete(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        print('Review deleted successfully.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Review deleted successfully.")),
+        );
+
+        // Remove the review from the list locally
+        setState(() {
+          reviews.removeWhere((review) => review['_id'] == reviewId);
+        });
+      } else {
+        print('Failed to delete review: ${response.statusCode} - ${response.reasonPhrase}');
+        print('Error Details: ${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to delete review: ${response.reasonPhrase}")),
+        );
+      }
+    } catch (e) {
+      print('Error deleting review: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error deleting review: $e")),
+      );
+    }
+  }
+
+
+
+  Future<void> updateReviewOnServer(String bookId, String reviewId, Map<String, dynamic> updatedReview) async {
+    final url = 'https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/reviews/$reviewId';
+
+    try {
+      print('Making PUT request to: $url');
       print('Request Body: ${jsonEncode(updatedReview)}');
 
-      final response = await http.patch(
+      // Get the token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
+
+      if (token == null) {
+        print('Token is missing. User must log in.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Authentication required. Please log in.")),
+        );
+        return;
+      }
+
+      final response = await http.put(
         Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
         body: jsonEncode(updatedReview),
       );
 
@@ -94,6 +165,9 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
 
       if (response.statusCode == 200) {
         print('Review updated successfully.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Review updated successfully.")),
+        );
       } else {
         print('Failed to update review: ${response.statusCode} - ${response.reasonPhrase}');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -107,6 +181,82 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
       );
     }
   }
+
+
+
+  void updateReview(Map<String, dynamic> updatedReview, int index) {
+    setState(() {
+      reviews[index] = {
+        ...reviews[index],
+        ...updatedReview,
+      };
+    });
+  }
+
+  void _showUpdateReviewDialog(Map<String, dynamic> review, int index) {
+    TextEditingController reviewController = TextEditingController(text: review['review']);
+    double? rating = review['rating']?.toDouble();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Update Review"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: reviewController,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  hintText: "Edit your review...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: List.generate(5, (i) {
+                  return IconButton(
+                    icon: Icon(
+                      i < (rating ?? 0) ? Icons.star : Icons.star_border,
+                    ),
+                    color: i < (rating ?? 0) ? Colors.amber : Color(0xFF5AA5B1),
+                    onPressed: () {
+                      setState(() {
+                        rating = i + 1.0;
+                      });
+                    },
+                  );
+                }),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final updatedReview = {
+                  'review': reviewController.text,
+                  'rating': rating?.toInt(),
+                };
+                await updateReviewOnServer(widget.bookId, review['_id'], updatedReview);
+                updateReview(updatedReview, index);
+                Navigator.pop(context);
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -128,8 +278,8 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
             final createdAt = review['createdAt'] ?? 'Unknown Date';
             final reviewText = review['review'] ?? 'No review provided.';
             final rating = review['rating']?.toDouble() ?? 0.0;
-
             final formattedDate = DateFormat('MMM d, yyyy').format(DateTime.parse(createdAt));
+            final isAuthor = loggedInUserId == review['user']['_id'];
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
@@ -193,16 +343,32 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
                         color: Colors.black87,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showUpdateReviewDialog(review, index);
-                      },
-                      child: Text("Update Review"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF5AA5B1),
+                    if (isAuthor) ...[
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              _showUpdateReviewDialog(review, index);
+                            },
+                            child: Text("Update"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF5AA5B1),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () {
+                              deleteReview(widget.bookId, review['_id']);
+                            },
+                            child: Text("Delete"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -210,72 +376,6 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
           },
         ),
       ),
-    );
-  }
-
-  void _showUpdateReviewDialog(Map<String, dynamic> review, int index) {
-    TextEditingController reviewController = TextEditingController(text: review['review']);
-    double? rating = review['rating']?.toDouble();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Update Review"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: reviewController,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  hintText: "Edit your review...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(5, (i) {
-                  return IconButton(
-                    icon: Icon(
-                      i < (rating ?? 0) ? Icons.star : Icons.star_border,
-                    ),
-                    color: i < (rating ?? 0) ? Colors.amber : Color(0xFF5AA5B1),
-                    onPressed: () {
-                      setState(() {
-                        rating = i + 1.0;
-                      });
-                    },
-                  );
-                }),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () async {
-                final updatedReview = {
-                  'user': review['user'],
-                  'createdAt': review['createdAt'],
-                  'review': reviewController.text,
-                  'rating': rating,
-                };
-                await updateReviewOnServer(widget.bookId, review['_id'], updatedReview); 
-                updateReview(updatedReview, index);
-                Navigator.pop(context);
-              },
-              child: Text("Save"),
-            ),
-          ],
-        );
-      },
     );
   }
 
