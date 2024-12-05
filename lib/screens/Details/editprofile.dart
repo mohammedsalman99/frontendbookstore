@@ -87,13 +87,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(responseBody);
         if (responseData['success'] == true) {
-          widget.onProfileUpdated(); // Notify parent to refresh
-          Navigator.pop(context, true); // Return success
+          widget.onProfileUpdated(); 
+          Navigator.pop(context, true); 
         } else {
-          Navigator.pop(context, false); // Return failure
+          Navigator.pop(context, false);
         }
       } else {
-        Navigator.pop(context, false); // Return failure
+        Navigator.pop(context, false); 
       }
 
       setState(() {
