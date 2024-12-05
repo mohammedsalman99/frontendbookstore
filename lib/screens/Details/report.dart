@@ -30,7 +30,6 @@ class _ReportPageState extends State<ReportPage> {
   Future<void> _submitReport() async {
     final description = _descriptionController.text.trim();
 
-    // Validate the description length
     if (description.length <= 10) {
       setState(() {
         _errorText = "Description must be more than 10 characters.";
@@ -48,7 +47,6 @@ class _ReportPageState extends State<ReportPage> {
     });
 
     try {
-      // Retrieve the authentication token
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
@@ -62,7 +60,6 @@ class _ReportPageState extends State<ReportPage> {
         return;
       }
 
-      // Send the POST request
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -71,8 +68,6 @@ class _ReportPageState extends State<ReportPage> {
         },
         body: json.encode(reportData),
       );
-
-      // Handle different response cases
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
 
@@ -83,7 +78,7 @@ class _ReportPageState extends State<ReportPage> {
             "Your report has been submitted successfully.",
             isError: false,
           );
-          Navigator.pop(context); // Close the report screen
+          Navigator.pop(context); 
         }
       } else if (response.statusCode == 400) {
         final responseData = json.decode(response.body);
