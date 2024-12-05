@@ -122,14 +122,12 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         final responseData = jsonDecode(response.body);
 
         if (responseData.containsKey('user')) {
-          // Save updated values in SharedPreferences
           await prefs.setString('full_name', updatedFullName);
           await prefs.setString('gender', updatedGender);
           await prefs.setString('phone_number', updatedPhoneNumber);
           await prefs.setString('profile_picture', updatedProfilePicture);
           await prefs.setString('user_email', updatedEmail);
 
-          // Update local state
           setState(() {
             fullName = updatedFullName;
             gender = updatedGender;
