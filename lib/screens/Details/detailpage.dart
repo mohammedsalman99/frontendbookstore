@@ -32,15 +32,12 @@ class _DetailPageState extends State<DetailPage> {
     fetchBookDetails();
   }
 
-  /// Load favorite state from SharedPreferences
   Future<void> loadFavoriteState() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       isFavorited = prefs.getBool('favorite_${widget.bookId}') ?? false;
     });
   }
-  // Add this function to handle toggling the favorite state
-  /// Toggle favorite state and save to backend and local storage
   Future<void> toggleFavorite() async {
     final toggleFavoriteUrl =
         'https://readme-backend-zdiq.onrender.com/api/v1/favorites/books/${widget.bookId}';
@@ -73,7 +70,6 @@ class _DetailPageState extends State<DetailPage> {
           isFavorited = data['isFavorited'];
         });
 
-        // Save to SharedPreferences
         await prefs.setBool('favorite_${widget.bookId}', isFavorited);
 
         _showAdvancedMessage(
@@ -379,8 +375,6 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
-
-
   Future<void> fetchBookDetails() async {
     try {
       final response = await http.get(
@@ -477,11 +471,11 @@ class _DetailPageState extends State<DetailPage> {
           IconButton(
             icon: Icon(
               isFavorited ? Icons.favorite : Icons.favorite_border,
-              color: Colors.white, // Keeps it white for consistency with other icons
+              color: Colors.white, 
             ),
             onPressed: () async {
-              await toggleFavorite(); // Toggles the favorite state
-              setState(() {}); // Ensures the UI updates after the state change
+              await toggleFavorite();
+              setState(() {}); 
             },
             tooltip: isFavorited ? "Remove from Favorites" : "Add to Favorites",
           ),
