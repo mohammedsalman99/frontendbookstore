@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Details/editprofile.dart';
 import '../Details/mydownload.dart';
+import '../Details/myfavorits.dart';
 import '../auth/login.dart';
 
 class AdvancedProfileScreen extends StatefulWidget {
@@ -353,8 +354,14 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     return Column(
       children: [
         _buildOption(context, Icons.favorite, 'My Favorites', () {
-          print('Navigating to My Favorites');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyFavoritesPage(),
+            ),
+          );
         }),
+
         _buildOption(context, Icons.download, 'My Downloads', () {
           Navigator.push(
             context,

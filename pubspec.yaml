@@ -20,6 +20,7 @@ dependencies:
   shared_preferences: ^2.0.9
   flutter:
     sdk: flutter
+
   cupertino_icons: ^1.0.8
   google_fonts: ^4.0.3
   http: ^0.13.4

@@ -22,12 +22,83 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   bool isLoading = true;
   Map<String, dynamic>? bookData;
+  bool isFavorited = false;
+
 
   @override
   void initState() {
     super.initState();
+    loadFavoriteState();
     fetchBookDetails();
   }
+
+  /// Load favorite state from SharedPreferences
+  Future<void> loadFavoriteState() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isFavorited = prefs.getBool('favorite_${widget.bookId}') ?? false;
+    });
+  }
+  // Add this function to handle toggling the favorite state
+  /// Toggle favorite state and save to backend and local storage
+  Future<void> toggleFavorite() async {
+    final toggleFavoriteUrl =
+        'https://readme-backend-zdiq.onrender.com/api/v1/favorites/books/${widget.bookId}';
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('auth_token');
+
+      if (token == null) {
+        _showAdvancedMessage(
+          "Authentication Error",
+          "Please log in to toggle favorites.",
+          isError: true,
+        );
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse(toggleFavoriteUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        setState(() {
+          isFavorited = data['isFavorited'];
+        });
+
+        // Save to SharedPreferences
+        await prefs.setBool('favorite_${widget.bookId}', isFavorited);
+
+        _showAdvancedMessage(
+          "Success",
+          data['message'] ?? "Favorite toggled successfully.",
+          isError: false,
+        );
+      } else {
+        _showAdvancedMessage(
+          "Error",
+          "Failed to toggle favorite. Please try again later.",
+          isError: true,
+        );
+      }
+    } catch (e) {
+      _showAdvancedMessage(
+        "Error",
+        "An error occurred: $e",
+        isError: true,
+      );
+    }
+  }
+
+
+
   Future<void> incrementReadingHistory() async {
     final readingHistoryUrl =
         'https://readme-backend-zdiq.onrender.com/api/v1/reading-history//books/${widget.bookId}';
@@ -404,6 +475,17 @@ class _DetailPageState extends State<DetailPage> {
         backgroundColor: Color(0xFF5AA5B1),
         actions: [
           IconButton(
+            icon: Icon(
+              isFavorited ? Icons.favorite : Icons.favorite_border,
+              color: Colors.white, // Keeps it white for consistency with other icons
+            ),
+            onPressed: () async {
+              await toggleFavorite(); // Toggles the favorite state
+              setState(() {}); // Ensures the UI updates after the state change
+            },
+            tooltip: isFavorited ? "Remove from Favorites" : "Add to Favorites",
+          ),
+          IconButton(
             icon: Icon(Icons.share),
             onPressed: () async {
               final sharableLink = "https://Readme.com/detail?bookId=${widget.bookId}";
@@ -533,35 +615,36 @@ class _DetailPageState extends State<DetailPage> {
                             ),
                           ],
                         ),
-
-
                       ],
                     ),
                   ],
                 ),
               ),
-
               SizedBox(height: 20),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  buildActionButton(Icons.favorite_border, "Favourite", () {}),
+                  buildActionButton(
+                    bookData!['isFavorited'] == true
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    "Favorite",
+                        () async {
+                      await toggleFavorite();
+                    },
+                  ),
                   buildActionButton(Icons.download, "Download", () async {
                     await incrementDownload(); 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Download started!")),
                     );
                   }),
-
                   buildActionButton(Icons.book, "Read", () async {
                     if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
                       try {
                         await incrementView(); 
-                        await incrementReadingHistory(); 
-
-
-
+                        await incrementReadingHistory();
                         final pdfUrl = bookData!['bookLink'];
                         Navigator.push(
                           context,
@@ -580,8 +663,6 @@ class _DetailPageState extends State<DetailPage> {
                       );
                     }
                   }),
-
-
 
                   buildActionButton(Icons.report, "Report", () async {
                     final prefs = await SharedPreferences.getInstance();
@@ -657,13 +738,14 @@ class _DetailPageState extends State<DetailPage> {
                   IconButton(
                     icon: Icon(Icons.arrow_forward, color: Color(0xFF5AA5B1)),
                     onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => SeeReviewsPage(bookId: widget.bookId),
-    ),
-  );
-},
+                        Navigator.push(
+                                        context,
+                                         MaterialPageRoute(
+                        builder: (context) => SeeReviewsPage(bookId: widget.bookId),
+                    ),
+                   );
+                 },
+
 
                   ),
                 ],

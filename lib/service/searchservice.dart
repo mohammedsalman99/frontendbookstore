@@ -11,13 +11,17 @@ class SearchService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['success']) {
+
+        // Ensure 'success' exists and is a boolean before accessing it
+        if (data.containsKey('success') && data['success'] == true) {
           return data['results'];
         } else {
-          throw Exception('Search failed: ${data['message']}');
+          throw Exception(
+              'Search failed: ${data['message'] ?? 'Unknown error occurred.'}');
         }
       } else {
-        throw Exception('Failed with status code: ${response.statusCode}');
+        throw Exception(
+            'Failed with status code: ${response.statusCode}, reason: ${response.reasonPhrase}');
       }
     } catch (e) {
       throw Exception('Error during search: $e');
