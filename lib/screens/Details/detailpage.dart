@@ -7,6 +7,7 @@ import 'writereview.dart';
 import 'seereviews.dart';
 import 'pdf_viewer_page.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 
 
 class DetailPage extends StatefulWidget {
@@ -69,6 +70,7 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
+
   Future<void> incrementDownload() async {
     final downloadUrl =
         'https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/download';
@@ -98,52 +100,57 @@ class _DetailPageState extends State<DetailPage> {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['success'] == true) {
-          setState(() {
-            bookData!['numberOfDownloads'] = data['numberOfDownloads'];
-          });
-          _showAdvancedMessage(
-            "Download Started",
-            "Your download has started successfully.",
-            isError: false,
-          );
-        } else if (data.containsKey('message')) {
-          _showAdvancedMessage(
-            "Subscription Required",
-            data['message'], 
-            isError: true,
-          );
-        } else {
-          _showAdvancedMessage(
-            "Unknown Error",
-            "Unable to process your download request. Please try again.",
-            isError: true,
-          );
+        // Assume download is successful if status is 200
+        var box = Hive.box('downloads');
+        Map<String, dynamic> bookDetails = {
+          'id': bookData!['_id'],         // Book ID
+          'title': bookData!['title'],   // Book Title
+          'image': bookData!['image'],   // Book Image URL
+          'bookLink': bookData!['bookLink'], // Book PDF Link
+        };
+
+        // Check if the book already exists in Hive
+        final existingBooks = box.values.where((element) {
+          final map = Map<String, dynamic>.from(element);
+          return map['id'] == bookDetails['id'];
+        });
+
+        if (existingBooks.isEmpty) {
+          box.add(bookDetails); // Add book if not already saved
         }
+
+        _showAdvancedMessage(
+          "Download Started",
+          "Your download has started successfully.",
+          isError: false,
+        );
       } else if (response.statusCode == 403) {
+        // Handle subscription error
         final data = json.decode(response.body);
         _showAdvancedMessage(
           "Access Denied",
-          data['message'] ?? "This book requires an active subscription.",
+          data['message'] ?? "You need an active subscription to download this book.",
           isError: true,
         );
       } else {
         _showAdvancedMessage(
-          "Server Error",
-          "Unable to process your download request. Please try again later.",
+          "Error",
+          "Failed to start download. Status: ${response.statusCode}. ${response.reasonPhrase}",
           isError: true,
         );
       }
     } catch (e) {
-      print('Error during download increment: $e');
+      print("Exception during download: $e");
       _showAdvancedMessage(
-        "Network Error",
-        "An error occurred. Please check your internet connection and try again.",
+        "Error",
+        "An error occurred: $e",
         isError: true,
       );
     }
   }
+
+
+
 
   void _showAdvancedMessage(String title, String message, {required bool isError}) {
     final backgroundColor = isError ? Colors.red.shade100 : Colors.green.shade100;

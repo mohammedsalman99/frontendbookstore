@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Details/editprofile.dart';
+import '../Details/mydownload.dart';
 import '../auth/login.dart';
 
 class AdvancedProfileScreen extends StatefulWidget {
@@ -355,8 +356,14 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           print('Navigating to My Favorites');
         }),
         _buildOption(context, Icons.download, 'My Downloads', () {
-          print('Navigating to My Downloads');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MyDownloadsPage(),
+            ),
+          );
         }),
+
         _buildOption(context, Icons.edit, 'Edit Profile', () async {
           final prefs = await SharedPreferences.getInstance();
           final userId = prefs.getString('user_id') ?? "";

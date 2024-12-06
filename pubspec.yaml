@@ -8,6 +8,9 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.0.12
   http_parser: ^4.0.0
   image_picker: ^0.8.6+3
   provider: ^6.0.5

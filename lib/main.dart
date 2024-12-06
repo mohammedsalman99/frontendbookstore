@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:frontend/screens/Details/detailpage.dart';
 import 'package:frontend/splash.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Open Hive box for downloads
+  await Hive.openBox('downloads');
+
   runApp(MyApp());
 }
 
