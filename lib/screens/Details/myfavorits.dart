@@ -116,7 +116,6 @@ class _MyFavoritesPageState extends State<MyFavoritesPage> {
                 color: Colors.grey,
               ),
               onTap: () {
-                // Navigate to book details
                 Navigator.push(
                   context,
                   MaterialPageRoute(
