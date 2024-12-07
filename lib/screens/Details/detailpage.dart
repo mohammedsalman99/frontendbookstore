@@ -838,7 +838,7 @@ class _DetailPageState extends State<DetailPage> {
               SizedBox(
                 width: double.infinity,
                 child: bookData!['free']
-                    ? SizedBox.shrink() // Hide button if the book is free
+                    ? SizedBox.shrink() 
                     : ElevatedButton(
                   onPressed: () async {
                     final hasAccess = await checkUserAccess(bookData!['_id']);
