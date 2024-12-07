@@ -32,6 +32,15 @@ class _DetailPageState extends State<DetailPage> {
     fetchBookDetails();
   }
 
+  Future<bool> checkUserAccess(String bookId) async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isSubscribed = prefs.getBool('is_subscribed') ?? false;
+    bool hasPurchased = prefs.getBool('purchased_$bookId') ?? false;
+
+    return isSubscribed || hasPurchased;
+  }
+
+
   Future<void> loadFavoriteState() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -629,34 +638,74 @@ class _DetailPageState extends State<DetailPage> {
                     },
                   ),
                   buildActionButton(Icons.download, "Download", () async {
-                    await incrementDownload(); 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Download started!")),
-                    );
-                  }),
-                  buildActionButton(Icons.book, "Read", () async {
-                    if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
-                      try {
-                        await incrementView(); 
-                        await incrementReadingHistory();
-                        final pdfUrl = bookData!['bookLink'];
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PDFViewerPage(pdfUrl: pdfUrl),
-                          ),
+                    if (!bookData!['free']) {
+                      final hasAccess = await checkUserAccess(bookData!['_id']);
+                      if (!hasAccess) {
+                        _showAdvancedMessage(
+                          "Access Denied",
+                          "You need a subscription or purchase to download this book.",
+                          isError: true,
                         );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("An error occurred while reading: $e")),
-                        );
+                        return;
                       }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("PDF URL is unavailable or invalid.")),
+                    }
+
+                    try {
+                      await incrementDownload();
+                      _showAdvancedMessage(
+                        "Download Successful",
+                        "Your book has been added to downloads.",
+                        isError: false,
+                      );
+                    } catch (e) {
+                      _showAdvancedMessage(
+                        "Error",
+                        "Failed to download the book. Please try again later.",
+                        isError: true,
                       );
                     }
                   }),
+
+
+                  buildActionButton(Icons.book, "Read", () async {
+                    if (!bookData!['free']) {
+                      final hasAccess = await checkUserAccess(bookData!['_id']);
+                      if (!hasAccess) {
+                        _showAdvancedMessage(
+                          "Access Denied",
+                          "You need a subscription or purchase to read this book.",
+                          isError: true,
+                        );
+                        return;
+                      }
+                    }
+
+                    if (bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
+                      try {
+                        await incrementView();
+                        await incrementReadingHistory();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PDFViewerPage(pdfUrl: bookData!['bookLink']),
+                          ),
+                        );
+                      } catch (e) {
+                        _showAdvancedMessage(
+                          "Error",
+                          "An error occurred while opening the book. Please try again.",
+                          isError: true,
+                        );
+                      }
+                    } else {
+                      _showAdvancedMessage(
+                        "Error",
+                        "The book is currently unavailable.",
+                        isError: true,
+                      );
+                    }
+                  }),
+
 
                   buildActionButton(Icons.report, "Report", () async {
                     final prefs = await SharedPreferences.getInstance();
@@ -788,8 +837,25 @@ class _DetailPageState extends State<DetailPage> {
 
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {},
+                child: bookData!['free']
+                    ? SizedBox.shrink() // Hide button if the book is free
+                    : ElevatedButton(
+                  onPressed: () async {
+                    final hasAccess = await checkUserAccess(bookData!['_id']);
+                    if (!hasAccess) {
+                      _showAdvancedMessage(
+                        "Access Denied",
+                        "You need a subscription or purchase to access this book.",
+                        isError: true,
+                      );
+                    } else {
+                      _showAdvancedMessage(
+                        "Purchase Successful",
+                        "Enjoy your book!",
+                        isError: false,
+                      );
+                    }
+                  },
                   child: Text(
                     "BUY BOOK",
                     style: TextStyle(
@@ -805,7 +871,8 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                 ),
-              ),
+              )
+
             ],
           ),
         ),
