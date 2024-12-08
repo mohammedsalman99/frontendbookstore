@@ -9,27 +9,27 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
-  List<dynamic> plans = []; // List of subscription plans
-  String? selectedPlan; // Currently selected plan ID
-  bool isLoading = true; // To show loading state when fetching plans
-  bool isProcessing = false; // To show processing state during subscription
+  List<dynamic> plans = []; 
+  String? selectedPlan; 
+  bool isLoading = true; 
+  bool isProcessing = false; 
 
   @override
   void initState() {
     super.initState();
-    fetchPlans(); // Fetch subscription plans when the widget initializes
+    fetchPlans(); 
   }
 
   Future<void> fetchPlans() async {
     try {
-      final fetchedPlans = await LahzaService.fetchPlans(); // Fetch plans from API
+      final fetchedPlans = await LahzaService.fetchPlans(); 
       setState(() {
-        plans = fetchedPlans; // Update plans list
-        isLoading = false; // Stop loading
+        plans = fetchedPlans; 
+        isLoading = false; 
       });
     } catch (e) {
       setState(() {
-        isLoading = false; // Stop loading on error
+        isLoading = false; 
       });
       _showSnackBar("Error fetching plans: $e", isError: true);
     }
@@ -41,17 +41,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     });
 
     try {
-      // Step 1: Subscribe to the plan and get payment URL
       final subscriptionDetails = await LahzaService.subscribeToPlan(planId);
       final transactionId = subscriptionDetails['transaction']['id'];
       final authorizationUrl = subscriptionDetails['payment']['authorization_url'];
 
-      // Step 2: Redirect to payment gateway
       if (await canLaunch(authorizationUrl)) {
         await launch(authorizationUrl);
         _showSnackBar("Redirected to payment gateway.", isError: false);
 
-        // Step 3: Poll the transaction status
         pollTransactionStatus(transactionId, planId);
       } else {
         _showSnackBar("Failed to launch payment gateway.", isError: true);
@@ -65,43 +62,36 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     }
   }
   Future<void> pollTransactionStatus(String transactionId, String planId) async {
-    const int pollingInterval = 5000; // 5 seconds
-    const int maxRetries = 12; // 1 minute (12 x 5 seconds)
+    const int pollingInterval = 5000; 
+    const int maxRetries = 12; 
     int retries = 0;
 
     while (retries < maxRetries) {
       try {
-        // Fetch transaction status
         final transaction = await LahzaService.checkTransactionStatus(transactionId);
         final status = transaction['transaction']['status'];
 
         if (status == 'COMPLETED') {
-          // Transaction completed
           _showSnackBar("Payment successful! Subscription activated.", isError: false);
           return;
         } else if (status == 'FAILED') {
-          // Transaction failed
           _showSnackBar("Payment failed. Please try again.", isError: true);
           return;
         }
       } catch (e) {
-        // Handle errors (e.g., network issues)
         _showSnackBar("Error checking transaction status: $e", isError: true);
       }
 
-      // Wait before the next retry
       await Future.delayed(Duration(milliseconds: pollingInterval));
       retries++;
     }
 
-    // Timeout case
     _showSnackBar("Payment status check timed out. Please verify manually.", isError: true);
   }
 
 
   Future<void> finalizeTransaction(String planId, String transactionId) async {
     try {
-      // Finalize transaction after payment
       final transaction = await LahzaService.createTransaction(planId, "CREDIT_CARD");
       final status = transaction['transaction']['status'];
 
@@ -138,7 +128,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         backgroundColor: Color(0xFF5AA5B1),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Show loading spinner
+          ? Center(child: CircularProgressIndicator()) 
           : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -160,7 +150,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        selectedPlan = plan['_id']; // Update selected plan
+                        selectedPlan = plan['_id']; 
                       });
                     },
                     child: Container(
@@ -217,7 +207,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             ElevatedButton(
               onPressed: !isProcessing && selectedPlan != null
                   ? () {
-                initiateSubscription(selectedPlan!); // Initiate subscription
+                initiateSubscription(selectedPlan!);
               }
                   : null,
               style: ElevatedButton.styleFrom(
