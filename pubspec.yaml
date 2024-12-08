@@ -41,7 +41,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/
     - assets/icons/icon.jpg
     - assets/icons/img1.jpg
     - assets/icons/img2.jpg

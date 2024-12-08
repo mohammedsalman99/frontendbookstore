@@ -8,6 +8,7 @@ import 'seereviews.dart';
 import 'pdf_viewer_page.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import '../payment/subscription.dart';
 
 
 class DetailPage extends StatefulWidget {
@@ -641,10 +642,11 @@ class _DetailPageState extends State<DetailPage> {
                     if (!bookData!['free']) {
                       final hasAccess = await checkUserAccess(bookData!['_id']);
                       if (!hasAccess) {
-                        _showAdvancedMessage(
-                          "Access Denied",
-                          "You need a subscription or purchase to download this book.",
-                          isError: true,
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SubscriptionPage(),
+                          ),
                         );
                         return;
                       }
@@ -666,20 +668,21 @@ class _DetailPageState extends State<DetailPage> {
                     }
                   }),
 
-
                   buildActionButton(Icons.book, "Read", () async {
                     if (!bookData!['free']) {
                       final hasAccess = await checkUserAccess(bookData!['_id']);
                       if (!hasAccess) {
-                        _showAdvancedMessage(
-                          "Access Denied",
-                          "You need a subscription or purchase to read this book.",
-                          isError: true,
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SubscriptionPage(),
+                          ),
                         );
                         return;
                       }
                     }
 
+                    // If the book is free or the user has access
                     if (bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
                       try {
                         await incrementView();
@@ -705,7 +708,6 @@ class _DetailPageState extends State<DetailPage> {
                       );
                     }
                   }),
-
 
                   buildActionButton(Icons.report, "Report", () async {
                     final prefs = await SharedPreferences.getInstance();
