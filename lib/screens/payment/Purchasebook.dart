@@ -41,7 +41,7 @@ class _PurchaseBookPageState extends State<PurchaseBookPage> {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({}), // Empty body as required by the API
+        body: jsonEncode({}), 
       );
 
       if (response.statusCode == 200) {
@@ -49,7 +49,6 @@ class _PurchaseBookPageState extends State<PurchaseBookPage> {
         final authorizationUrl = data['payment']?['authorization_url'];
 
         if (authorizationUrl != null) {
-          // Open the payment URL
           await _openAuthorizationUrl(authorizationUrl);
         } else {
           _showSnackBar(
@@ -103,7 +102,6 @@ class _PurchaseBookPageState extends State<PurchaseBookPage> {
     }
 
     try {
-      // Sending the transactionId to the backend if required
       final body = jsonEncode({"transactionId": transactionId});
 
       final response = await http.post(
@@ -118,14 +116,13 @@ class _PurchaseBookPageState extends State<PurchaseBookPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Inform the user of successful purchase
         _showSnackBar(
           "Purchase Successful",
           data['message'] ?? "Thank you! Enjoy your book.",
           isError: false,
         );
 
-        Navigator.pop(context); // Return to the previous screen
+        Navigator.pop(context); 
       } else {
         final error = json.decode(response.body);
         _showSnackBar(
@@ -145,7 +142,7 @@ class _PurchaseBookPageState extends State<PurchaseBookPage> {
 
   Future<void> _openAuthorizationUrl(String url) async {
     if (await canLaunch(url)) {
-      await launch(url, forceSafariVC: true, forceWebView: false); // Use in-app browser or default browser
+      await launch(url, forceSafariVC: true, forceWebView: false); 
     } else {
       _showSnackBar("Error", "Could not open the payment URL.", isError: true);
     }
