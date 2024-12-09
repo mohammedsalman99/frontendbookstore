@@ -683,7 +683,6 @@ class _DetailPageState extends State<DetailPage> {
                       }
                     }
 
-                    // If the book is free or the user has access
                     if (bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
                       try {
                         await incrementView();
@@ -864,10 +863,8 @@ class _DetailPageState extends State<DetailPage> {
                         isError: false,
                       );
                     } else {
-                      // Ensure price is a double
                       final double price = (bookData!['price'] as num).toDouble();
 
-                      // Navigate to PurchaseBookPage to handle purchase
                       Navigator.push(
                         context,
                         MaterialPageRoute(
