@@ -9,6 +9,7 @@ import 'pdf_viewer_page.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import '../payment/subscription.dart';
+import '../payment/Purchasebook.dart';
 
 
 class DetailPage extends StatefulWidget {
@@ -179,10 +180,10 @@ class _DetailPageState extends State<DetailPage> {
       if (response.statusCode == 200) {
         var box = Hive.box('downloads');
         Map<String, dynamic> bookDetails = {
-          'id': bookData!['_id'],         
-          'title': bookData!['title'],   
-          'image': bookData!['image'],   
-          'bookLink': bookData!['bookLink'], 
+          'id': bookData!['_id'],
+          'title': bookData!['title'],
+          'image': bookData!['image'],
+          'bookLink': bookData!['bookLink'],
         };
 
         final existingBooks = box.values.where((element) {
@@ -191,7 +192,7 @@ class _DetailPageState extends State<DetailPage> {
         });
 
         if (existingBooks.isEmpty) {
-          box.add(bookDetails); 
+          box.add(bookDetails);
         }
 
         _showAdvancedMessage(
@@ -351,7 +352,7 @@ class _DetailPageState extends State<DetailPage> {
         } else if (data.containsKey('message')) {
           _showAdvancedMessage(
             "Subscription Required",
-            data['message'], 
+            data['message'],
             isError: true,
           );
         } else {
@@ -481,11 +482,11 @@ class _DetailPageState extends State<DetailPage> {
           IconButton(
             icon: Icon(
               isFavorited ? Icons.favorite : Icons.favorite_border,
-              color: Colors.white, 
+              color: Colors.white,
             ),
             onPressed: () async {
               await toggleFavorite();
-              setState(() {}); 
+              setState(() {});
             },
             tooltip: isFavorited ? "Remove from Favorites" : "Add to Favorites",
           ),
@@ -728,8 +729,8 @@ class _DetailPageState extends State<DetailPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ReportPage(
-                            bookId: bookData!['_id'], 
-                            bookTitle: bookData!['title'], 
+                            bookId: bookData!['_id'],
+                            bookTitle: bookData!['title'],
                           ),
                         ),
                       );
@@ -783,13 +784,13 @@ class _DetailPageState extends State<DetailPage> {
                   IconButton(
                     icon: Icon(Icons.arrow_forward, color: Color(0xFF5AA5B1)),
                     onPressed: () {
-                        Navigator.push(
-                                        context,
-                                         MaterialPageRoute(
-                        builder: (context) => SeeReviewsPage(bookId: widget.bookId),
-                    ),
-                   );
-                 },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SeeReviewsPage(bookId: widget.bookId),
+                        ),
+                      );
+                    },
 
 
                   ),
@@ -816,12 +817,12 @@ class _DetailPageState extends State<DetailPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => WriteReviewPage(
-                        bookId: widget.bookId, 
-                        refreshBookDetails: fetchBookDetails, 
+                        bookId: widget.bookId,
+                        refreshBookDetails: fetchBookDetails,
                       ),
                     ),
                   );
-                  fetchBookDetails(); 
+                  fetchBookDetails();
                 },
                 child: Text(
                   "Write a Review",
@@ -840,21 +841,41 @@ class _DetailPageState extends State<DetailPage> {
               SizedBox(
                 width: double.infinity,
                 child: bookData!['free']
-                    ? SizedBox.shrink() 
+                    ? SizedBox.shrink()
                     : ElevatedButton(
                   onPressed: () async {
-                    final hasAccess = await checkUserAccess(bookData!['_id']);
-                    if (!hasAccess) {
+                    final prefs = await SharedPreferences.getInstance();
+                    String? token = prefs.getString('auth_token');
+
+                    if (token == null) {
                       _showAdvancedMessage(
-                        "Access Denied",
-                        "You need a subscription or purchase to access this book.",
+                        "Authentication Error",
+                        "Please log in to purchase this book.",
                         isError: true,
                       );
-                    } else {
+                      return;
+                    }
+
+                    final hasAccess = await checkUserAccess(bookData!['_id']);
+                    if (hasAccess) {
                       _showAdvancedMessage(
-                        "Purchase Successful",
-                        "Enjoy your book!",
+                        "Access Granted",
+                        "You already own this book or have access through a subscription.",
                         isError: false,
+                      );
+                    } else {
+                      // Ensure price is a double
+                      final double price = (bookData!['price'] as num).toDouble();
+
+                      // Navigate to PurchaseBookPage to handle purchase
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PurchaseBookPage(
+                            bookId: bookData!['_id'],
+                            amount: price,
+                          ),
+                        ),
                       );
                     }
                   },
@@ -873,6 +894,7 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                 ),
+
               )
 
             ],
