@@ -36,11 +36,73 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<bool> checkUserAccess(String bookId) async {
     final prefs = await SharedPreferences.getInstance();
-    bool isSubscribed = prefs.getBool('is_subscribed') ?? false;
-    bool hasPurchased = prefs.getBool('purchased_$bookId') ?? false;
+    String? token = prefs.getString('auth_token');
 
-    return isSubscribed || hasPurchased;
+    if (token == null) {
+      _showAdvancedMessage(
+        "Authentication Error",
+        "Please log in to verify access.",
+        isError: true,
+      );
+      return false;
+    }
+
+    try {
+      // Step 1: Check purchase status
+      final purchaseResponse = await http.get(
+        Uri.parse('https://your-backend-url.com/api/v1/books/$bookId/purchase-status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (purchaseResponse.statusCode == 200) {
+        final purchaseData = json.decode(purchaseResponse.body);
+
+        if (purchaseData['isPurchased'] == true || purchaseData['isFree'] == true) {
+          return true; // User can access because it's free or purchased
+        }
+
+        // Step 2: Check subscription status if the book requires subscription
+        if (purchaseData['hasSubscriptionAccess'] == false && purchaseData['requiresSubscription'] == true) {
+          final subscriptionResponse = await http.get(
+            Uri.parse('https://your-backend-url.com/api/v1/subscription/details'),
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          );
+
+          if (subscriptionResponse.statusCode == 200) {
+            final subscriptionData = json.decode(subscriptionResponse.body);
+
+            if (subscriptionData['subscription']['status'] == 'active') {
+              return true; // User has an active subscription
+            } else {
+              _showAdvancedMessage(
+                "Subscription Required",
+                "This book requires an active subscription. Please subscribe to continue.",
+                isError: true,
+              );
+              return false;
+            }
+          } else {
+            throw Exception("Failed to fetch subscription details.");
+          }
+        }
+      } else {
+        throw Exception("Failed to check purchase status.");
+      }
+    } catch (e) {
+      _showAdvancedMessage(
+        "Error",
+        "An error occurred while verifying access. Please try again.",
+        isError: true,
+      );
+      return false;
+    }
+    return false;
   }
+
 
 
   Future<void> loadFavoriteState() async {
@@ -224,6 +286,108 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
+
+  Future<bool> checkPurchaseStatus(String bookId) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null) {
+      _showAdvancedMessage(
+        "Authentication Error",
+        "Please log in to proceed.",
+        isError: true,
+      );
+      return false;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://your-backend-url.com/api/v1/books/$bookId/purchase-status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Check if the user owns the book or it's free
+        if (data['isPurchased'] == true || data['isFree'] == true) {
+          return true;
+        }
+
+        // Check if subscription is required and available
+        if (data['requiresSubscription'] == true && data['hasSubscriptionAccess'] == false) {
+          return await checkSubscriptionStatus();
+        }
+
+        // If not purchased and no subscription access
+        _showAdvancedMessage(
+          "Purchase Required",
+          "You need to purchase this book or have an active subscription.",
+          isError: true,
+        );
+        return false;
+      } else {
+        throw Exception("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      _showAdvancedMessage(
+        "Error",
+        "Failed to check purchase status. Please try again.",
+        isError: true,
+      );
+      return false;
+    }
+  }
+
+  Future<bool> checkSubscriptionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null) {
+      _showAdvancedMessage(
+        "Authentication Error",
+        "Please log in to check your subscription status.",
+        isError: true,
+      );
+      return false;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://your-backend-url.com/api/v1/subscription/details'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Check if subscription is active
+        if (data['subscription']['status'] == 'active') {
+          return true;
+        } else {
+          _showAdvancedMessage(
+            "Subscription Required",
+            "Your subscription is inactive or expired. Please renew to access premium books.",
+            isError: true,
+          );
+          return false;
+        }
+      } else {
+        throw Exception("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      _showAdvancedMessage(
+        "Error",
+        "Failed to check subscription status. Please try again.",
+        isError: true,
+      );
+      return false;
+    }
+  }
 
 
 
@@ -641,8 +805,10 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   buildActionButton(Icons.download, "Download", () async {
                     if (!bookData!['free']) {
+                      // Check if the user has access
                       final hasAccess = await checkUserAccess(bookData!['_id']);
                       if (!hasAccess) {
+                        // Redirect to subscription page if access is denied
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -654,13 +820,17 @@ class _DetailPageState extends State<DetailPage> {
                     }
 
                     try {
+                      // Increment download count
                       await incrementDownload();
+
+                      // Notify the user about successful download
                       _showAdvancedMessage(
                         "Download Successful",
                         "Your book has been added to downloads.",
                         isError: false,
                       );
                     } catch (e) {
+                      // Notify the user about download failure
                       _showAdvancedMessage(
                         "Error",
                         "Failed to download the book. Please try again later.",
@@ -670,44 +840,50 @@ class _DetailPageState extends State<DetailPage> {
                   }),
 
                   buildActionButton(Icons.book, "Read", () async {
-                    if (!bookData!['free']) {
-                      final hasAccess = await checkUserAccess(bookData!['_id']);
-                      if (!hasAccess) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubscriptionPage(),
-                          ),
-                        );
-                        return;
-                      }
+                    bool hasAccess = await checkUserAccess(bookData!['_id']); // Verify user access
+
+                    if (!hasAccess) {
+                      // Redirect to subscription page if access is denied
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SubscriptionPage(),
+                        ),
+                      );
+                      return;
                     }
 
-                    if (bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
-                      try {
-                        await incrementView();
-                        await incrementReadingHistory();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PDFViewerPage(pdfUrl: bookData!['bookLink']),
-                          ),
-                        );
-                      } catch (e) {
-                        _showAdvancedMessage(
-                          "Error",
-                          "An error occurred while opening the book. Please try again.",
-                          isError: true,
-                        );
-                      }
-                    } else {
+                    // Check if the book link is valid
+                    if (bookData!['bookLink'] == null || bookData!['bookLink'].isEmpty) {
                       _showAdvancedMessage(
                         "Error",
-                        "The book is currently unavailable.",
+                        "The book link is unavailable. Please contact support.",
+                        isError: true,
+                      );
+                      return;
+                    }
+
+                    try {
+                      // Increment view count
+                      await incrementView();
+
+                      // Navigate to the PDF viewer with the book link
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PDFViewerPage(pdfUrl: bookData!['bookLink']),
+                        ),
+                      );
+                    } catch (e) {
+                      _showAdvancedMessage(
+                        "Error",
+                        "An error occurred while opening the book. Please try again.",
                         isError: true,
                       );
                     }
                   }),
+
+
 
                   buildActionButton(Icons.report, "Report", () async {
                     final prefs = await SharedPreferences.getInstance();
