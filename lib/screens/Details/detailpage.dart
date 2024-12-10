@@ -48,7 +48,6 @@ class _DetailPageState extends State<DetailPage> {
     }
 
     try {
-      // Step 1: Check purchase status
       final purchaseResponse = await http.get(
         Uri.parse('https://your-backend-url.com/api/v1/books/$bookId/purchase-status'),
         headers: {
@@ -60,10 +59,9 @@ class _DetailPageState extends State<DetailPage> {
         final purchaseData = json.decode(purchaseResponse.body);
 
         if (purchaseData['isPurchased'] == true || purchaseData['isFree'] == true) {
-          return true; // User can access because it's free or purchased
+          return true; 
         }
 
-        // Step 2: Check subscription status if the book requires subscription
         if (purchaseData['hasSubscriptionAccess'] == false && purchaseData['requiresSubscription'] == true) {
           final subscriptionResponse = await http.get(
             Uri.parse('https://your-backend-url.com/api/v1/subscription/details'),
@@ -76,7 +74,7 @@ class _DetailPageState extends State<DetailPage> {
             final subscriptionData = json.decode(subscriptionResponse.body);
 
             if (subscriptionData['subscription']['status'] == 'active') {
-              return true; // User has an active subscription
+              return true; 
             } else {
               _showAdvancedMessage(
                 "Subscription Required",
@@ -311,17 +309,14 @@ class _DetailPageState extends State<DetailPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Check if the user owns the book or it's free
         if (data['isPurchased'] == true || data['isFree'] == true) {
           return true;
         }
 
-        // Check if subscription is required and available
         if (data['requiresSubscription'] == true && data['hasSubscriptionAccess'] == false) {
           return await checkSubscriptionStatus();
         }
 
-        // If not purchased and no subscription access
         _showAdvancedMessage(
           "Purchase Required",
           "You need to purchase this book or have an active subscription.",
@@ -365,7 +360,6 @@ class _DetailPageState extends State<DetailPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Check if subscription is active
         if (data['subscription']['status'] == 'active') {
           return true;
         } else {
@@ -805,10 +799,8 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   buildActionButton(Icons.download, "Download", () async {
                     if (!bookData!['free']) {
-                      // Check if the user has access
                       final hasAccess = await checkUserAccess(bookData!['_id']);
                       if (!hasAccess) {
-                        // Redirect to subscription page if access is denied
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -820,17 +812,13 @@ class _DetailPageState extends State<DetailPage> {
                     }
 
                     try {
-                      // Increment download count
                       await incrementDownload();
-
-                      // Notify the user about successful download
                       _showAdvancedMessage(
                         "Download Successful",
                         "Your book has been added to downloads.",
                         isError: false,
                       );
                     } catch (e) {
-                      // Notify the user about download failure
                       _showAdvancedMessage(
                         "Error",
                         "Failed to download the book. Please try again later.",
@@ -840,10 +828,9 @@ class _DetailPageState extends State<DetailPage> {
                   }),
 
                   buildActionButton(Icons.book, "Read", () async {
-                    bool hasAccess = await checkUserAccess(bookData!['_id']); // Verify user access
+                    bool hasAccess = await checkUserAccess(bookData!['_id']); 
 
                     if (!hasAccess) {
-                      // Redirect to subscription page if access is denied
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -852,8 +839,6 @@ class _DetailPageState extends State<DetailPage> {
                       );
                       return;
                     }
-
-                    // Check if the book link is valid
                     if (bookData!['bookLink'] == null || bookData!['bookLink'].isEmpty) {
                       _showAdvancedMessage(
                         "Error",
@@ -864,10 +849,7 @@ class _DetailPageState extends State<DetailPage> {
                     }
 
                     try {
-                      // Increment view count
                       await incrementView();
-
-                      // Navigate to the PDF viewer with the book link
                       Navigator.push(
                         context,
                         MaterialPageRoute(
