@@ -175,10 +175,15 @@ class _LatestScreenState extends State<LatestScreen> {
 
     String authors = book['authors'] != null && book['authors'] is List
         ? (book['authors'] as List)
-        .map((author) => author['fullName'].toString()) 
+        .map((author) => author['fullName'].toString())
         .join(", ")
         : "Unknown Author";
 
+    // Check if the book has a valid link
+    String bookLink = book['bookLink'] ?? '';
+    if (bookLink.isEmpty) {
+      bookLink = 'https://via.placeholder.com/150'; // Fallback link for empty or null link
+    }
 
     return GestureDetector(
       onTap: () {
@@ -190,7 +195,6 @@ class _LatestScreenState extends State<LatestScreen> {
         );
       },
       child: Container(
-
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: Colors.white,
@@ -208,7 +212,7 @@ class _LatestScreenState extends State<LatestScreen> {
             Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: 16 / 9, 
+                  aspectRatio: 16 / 9,
                   child: ClipRRect(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                     child: Image.network(
@@ -290,7 +294,7 @@ class _LatestScreenState extends State<LatestScreen> {
                   SizedBox(height: 6),
                   Row(
                     children: [
-                      ...buildRatingStars(rating, size: 14), 
+                      ...buildRatingStars(rating, size: 14),
                       SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
