@@ -45,13 +45,11 @@ class _DetailPageState extends State<DetailPage> {
         "Please log in to verify access.",
         isError: true,
       );
-      // Redirect to login
       Navigator.pushReplacementNamed(context, '/login');
       return false;
     }
 
     try {
-      // First API Call: Check purchase status
       final purchaseResponse = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/purchase-status'),
         headers: {'Authorization': 'Bearer $token'},
@@ -77,7 +75,6 @@ class _DetailPageState extends State<DetailPage> {
         );
         return false;
       } else if (purchaseResponse.statusCode == 401) {
-        // Handle expired token
         _showAdvancedMessage(
           "Authentication Error",
           "Your session has expired. Please log in again.",
@@ -544,7 +541,6 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<void> fetchBookDetails() async {
     try {
-      // Make the API request to fetch book details
       final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}'),
       );
@@ -555,16 +551,13 @@ class _DetailPageState extends State<DetailPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Check if 'book' key exists in the response
         if (data.containsKey('book')) {
           setState(() {
             bookData = data['book'];
 
-            // Validate and handle the book link
             if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
               String pdfUrl = bookData!['bookLink'];
 
-              // Handle Google Drive links
               final uri = Uri.parse(pdfUrl);
               if (uri.host.contains('drive.google.com') && uri.queryParameters.containsKey('id')) {
                 bookData!['bookLink'] =
@@ -575,24 +568,22 @@ class _DetailPageState extends State<DetailPage> {
               }
             } else {
               print("Error: Book link is null or empty.");
-              bookData!['bookLink'] = null; // Ensure it is explicitly null for handling later
+              bookData!['bookLink'] = null; 
             }
 
-            isLoading = false; // Stop loading indicator
+            isLoading = false;
           });
         } else {
           throw Exception("Invalid response: 'book' key missing");
         }
       } else {
-        // Log and throw an exception for non-200 status codes
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
-      // Catch any error and display a message to the user
       print("Error in fetchBookDetails: $e");
 
       setState(() {
-        isLoading = false; // Stop loading indicator
+        isLoading = false; 
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
