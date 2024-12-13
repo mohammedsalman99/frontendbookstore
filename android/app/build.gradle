@@ -1,13 +1,12 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
 
 android {
     namespace = "com.example.frontend"
-    compileSdk = 34 // Update compileSdk to 34 to meet dependencies requirements
+    compileSdk = 34 
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -20,8 +19,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.frontend"
-        minSdkVersion flutter.minSdkVersion  // Specify minSdkVersion explicitly
-        targetSdkVersion 34  // Update targetSdkVersion to 34 as recommended
+        minSdkVersion flutter.minSdkVersion  
+        targetSdkVersion 34  
         versionCode 1
         versionName "1.0.0"
     }
