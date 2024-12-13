@@ -34,12 +34,14 @@ class _DetailPageState extends State<DetailPage> {
     fetchBookDetails();
   }
 
-  Future<bool> checkUserAccess(String bookId) async {
+  Future<bool> checkUserAccess(String bookId, {bool refreshDetails = false}) async {
+    print("checkUserAccess: Started for bookId = $bookId, refreshDetails = $refreshDetails");
+
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
     if (token == null) {
-      print("Authentication token is null.");
+      print("checkUserAccess: Token is null");
       _showAdvancedMessage(
         "Authentication Error",
         "Please log in to verify access.",
@@ -50,31 +52,44 @@ class _DetailPageState extends State<DetailPage> {
     }
 
     try {
-      final purchaseResponse = await http.get(
+      print("checkUserAccess: Sending request to purchase-status endpoint...");
+      final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/purchase-status'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      if (purchaseResponse.statusCode == 200) {
-        final purchaseData = json.decode(purchaseResponse.body);
-        print("Purchase Data: $purchaseData");
+      print("checkUserAccess: Response status code = ${response.statusCode}");
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("checkUserAccess: Response data = $data");
 
-        if (purchaseData['isPurchased'] == true || purchaseData['isFree'] == true) {
-          print("Access granted via purchase or free status.");
+        if (data['isPurchased'] == true || data['isFree'] == true) {
+          print("checkUserAccess: Access granted (purchased or free)");
+          if (refreshDetails) {
+            print("checkUserAccess: Refreshing book details after access granted...");
+            await fetchBookDetails();
+          }
           return true;
         }
 
-        if (purchaseData['requiresSubscription'] == true) {
-          return await checkSubscriptionStatus();
+        if (data['hasSubscriptionAccess'] == true) {
+          print("checkUserAccess: User has subscription access.");
+          if (refreshDetails) {
+            print("checkUserAccess: Fetching subscription-based book link...");
+            await fetchSubscriptionBookLink(bookId, token);
+          }
+          return true;
         }
 
+        print("checkUserAccess: Access denied (purchase or subscription required)");
         _showAdvancedMessage(
           "Purchase Required",
           "You need to purchase this book or have an active subscription.",
           isError: true,
         );
         return false;
-      } else if (purchaseResponse.statusCode == 401) {
+      } else if (response.statusCode == 401) {
+        print("checkUserAccess: Unauthorized (401). Token may be expired.");
         _showAdvancedMessage(
           "Authentication Error",
           "Your session has expired. Please log in again.",
@@ -83,10 +98,11 @@ class _DetailPageState extends State<DetailPage> {
         Navigator.pushReplacementNamed(context, '/login');
         return false;
       } else {
-        throw Exception("Unexpected status code: ${purchaseResponse.statusCode}");
+        print("checkUserAccess: Unexpected response status = ${response.statusCode}");
+        throw Exception("Unexpected status code: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error in checkUserAccess: $e");
+      print("checkUserAccess: Exception occurred: $e");
       _showAdvancedMessage(
         "Error",
         "An error occurred while verifying access. Please try again later.",
@@ -95,6 +111,79 @@ class _DetailPageState extends State<DetailPage> {
       return false;
     }
   }
+  Future<void> fetchSubscriptionBookLink(String bookId, String token) async {
+    try {
+      print("fetchSubscriptionBookLink: Sending request to protected endpoint...");
+      final response = await http.get(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/protected'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      print("fetchSubscriptionBookLink: Response status code = ${response.statusCode}");
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("fetchSubscriptionBookLink: Response data = $data");
+
+        if (data.containsKey('book') && data['book']['bookLink'] != null) {
+          setState(() {
+            bookData!['bookLink'] = data['book']['bookLink'];
+          });
+          print("fetchSubscriptionBookLink: Updated bookLink = ${bookData!['bookLink']}");
+        } else {
+          print("fetchSubscriptionBookLink: Error - bookLink missing in response.");
+        }
+      } else {
+        print("fetchSubscriptionBookLink: Error - Unexpected status code = ${response.statusCode}");
+      }
+    } catch (e) {
+      print("fetchSubscriptionBookLink: Exception occurred: $e");
+      _showAdvancedMessage(
+        "Error",
+        "An error occurred while fetching the subscription book link. Please try again later.",
+        isError: true,
+      );
+    }
+  }
+
+
+  Future<void> fetchPurchasedBookLink(String bookId, String token) async {
+    try {
+      print("fetchPurchasedBookLink: Sending request to purchased endpoint...");
+      final response = await http.get(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/purchased'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      print("fetchPurchasedBookLink: Response status code = ${response.statusCode}");
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("fetchPurchasedBookLink: Response data = $data");
+
+        final purchasedBook = data['purchases']?.firstWhere(
+                (purchase) => purchase['book']['_id'] == bookId,
+            orElse: () => null);
+
+        if (purchasedBook != null && purchasedBook['book']['bookLink'] != null) {
+          setState(() {
+            bookData!['bookLink'] = purchasedBook['book']['bookLink'];
+          });
+          print("fetchPurchasedBookLink: Updated bookLink = ${bookData!['bookLink']}");
+        } else {
+          print("fetchPurchasedBookLink: Error - Book not found in purchased list.");
+        }
+      } else {
+        print("fetchPurchasedBookLink: Error - Unexpected status code = ${response.statusCode}");
+      }
+    } catch (e) {
+      print("fetchPurchasedBookLink: Exception occurred: $e");
+      _showAdvancedMessage(
+        "Error",
+        "An error occurred while fetching the purchased book link. Please try again later.",
+        isError: true,
+      );
+    }
+  }
+
 
 
 
@@ -541,49 +630,82 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<void> fetchBookDetails() async {
     try {
+      print("fetchBookDetails: Sending request to fetch book details...");
       final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}'),
       );
 
-      print("FetchBookDetails API Response: ${response.statusCode}");
-      print("FetchBookDetails Response Body: ${response.body}");
+      print("fetchBookDetails: Response status code = ${response.statusCode}");
+      print("fetchBookDetails: Response body = ${response.body}");
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
         if (data.containsKey('book')) {
-          setState(() {
-            bookData = data['book'];
+          bookData = data['book'];
+          print("fetchBookDetails: Updated bookData = $bookData");
 
-            if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
-              String pdfUrl = bookData!['bookLink'];
+          if (bookData != null && bookData!['free'] == false) {
+            // Premium book: Check purchase or subscription
+            final prefs = await SharedPreferences.getInstance();
+            String? token = prefs.getString('auth_token');
 
-              final uri = Uri.parse(pdfUrl);
-              if (uri.host.contains('drive.google.com') && uri.queryParameters.containsKey('id')) {
-                bookData!['bookLink'] =
-                'https://drive.google.com/uc?export=download&id=${uri.queryParameters['id']}';
-                print("Formatted Google Drive link: ${bookData!['bookLink']}");
-              } else {
-                print("Book link is a direct link: $pdfUrl");
+            if (token != null) {
+              final hasAccess = await checkUserAccess(widget.bookId);
+              if (hasAccess) {
+                // Fetch the correct book link based on access type
+                final purchaseStatusResponse = await http.get(
+                  Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/purchase-status'),
+                  headers: {'Authorization': 'Bearer $token'},
+                );
+
+                if (purchaseStatusResponse.statusCode == 200) {
+                  final purchaseData = json.decode(purchaseStatusResponse.body);
+
+                  if (purchaseData['isPurchased'] == true) {
+                    print("fetchBookDetails: Fetching purchased book link...");
+                    await fetchPurchasedBookLink(widget.bookId, token);
+                  } else if (purchaseData['hasSubscriptionAccess'] == true) {
+                    print("fetchBookDetails: Fetching subscribed book link...");
+                    await fetchSubscriptionBookLink(widget.bookId, token);
+                  }
+                }
               }
-            } else {
-              print("Error: Book link is null or empty.");
-              bookData!['bookLink'] = null; 
             }
+          } else if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
+            // Free book: Process bookLink directly
+            String pdfUrl = bookData!['bookLink'];
 
+            final uri = Uri.parse(pdfUrl);
+            if (uri.host.contains('drive.google.com') && uri.queryParameters.containsKey('id')) {
+              bookData!['bookLink'] =
+              'https://drive.google.com/uc?export=download&id=${uri.queryParameters['id']}';
+              print("fetchBookDetails: Formatted Google Drive link = ${bookData!['bookLink']}");
+            } else {
+              print("fetchBookDetails: Book link is a direct link: $pdfUrl");
+            }
+          } else {
+            print("fetchBookDetails: Error - Book link is null or empty.");
+            bookData!['bookLink'] = null;
+          }
+
+          // Mark loading as complete
+          setState(() {
             isLoading = false;
           });
         } else {
+          print("fetchBookDetails: Error - 'book' key missing in response.");
           throw Exception("Invalid response: 'book' key missing");
         }
       } else {
+        print("fetchBookDetails: Error - Unexpected status code = ${response.statusCode}");
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
-      print("Error in fetchBookDetails: $e");
+      print("fetchBookDetails: Exception occurred: $e");
 
       setState(() {
-        isLoading = false; 
+        isLoading = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -594,6 +716,7 @@ class _DetailPageState extends State<DetailPage> {
       );
     }
   }
+
 
 
 
@@ -813,17 +936,16 @@ class _DetailPageState extends State<DetailPage> {
                     },
                   ),
                   buildActionButton(Icons.download, "Download", () async {
-                    if (!bookData!['free']) {
-                      final hasAccess = await checkUserAccess(bookData!['_id']);
-                      if (!hasAccess) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubscriptionPage(),
-                          ),
-                        );
-                        return;
-                      }
+                    final hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
+
+                    if (!hasAccess) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SubscriptionPage(),
+                        ),
+                      );
+                      return;
                     }
 
                     try {
@@ -843,9 +965,14 @@ class _DetailPageState extends State<DetailPage> {
                   }),
 
                   buildActionButton(Icons.book, "Read", () async {
-                    bool hasAccess = await checkUserAccess(bookData!['_id']);
+                    print("Read Button: Checking access...");
+                    bool hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
+
+                    print("Read Button: Access status = $hasAccess");
+                    print("Read Button: Current bookData = $bookData");
 
                     if (!hasAccess) {
+                      print("Read Button: Access denied. Redirecting to subscription page...");
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -856,6 +983,7 @@ class _DetailPageState extends State<DetailPage> {
                     }
 
                     if (bookData!['bookLink'] == null || bookData!['bookLink']!.isEmpty) {
+                      print("Read Button: Book link is null or empty after access check.");
                       _showAdvancedMessage(
                         "Error",
                         "The book link is unavailable. Please contact support.",
@@ -865,7 +993,9 @@ class _DetailPageState extends State<DetailPage> {
                     }
 
                     try {
+                      print("Read Button: Access granted. Incrementing view count...");
                       await incrementView();
+                      print("Read Button: Navigating to PDF viewer...");
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -873,6 +1003,7 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                       );
                     } catch (e) {
+                      print("Read Button: Exception occurred while opening the book: $e");
                       _showAdvancedMessage(
                         "Error",
                         "An error occurred while opening the book. Please try again.",
@@ -880,7 +1011,6 @@ class _DetailPageState extends State<DetailPage> {
                       );
                     }
                   }),
-
 
 
 
