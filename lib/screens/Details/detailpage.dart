@@ -646,14 +646,12 @@ class _DetailPageState extends State<DetailPage> {
           print("fetchBookDetails: Updated bookData = $bookData");
 
           if (bookData != null && bookData!['free'] == false) {
-            // Premium book: Check purchase or subscription
             final prefs = await SharedPreferences.getInstance();
             String? token = prefs.getString('auth_token');
 
             if (token != null) {
               final hasAccess = await checkUserAccess(widget.bookId);
               if (hasAccess) {
-                // Fetch the correct book link based on access type
                 final purchaseStatusResponse = await http.get(
                   Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/${widget.bookId}/purchase-status'),
                   headers: {'Authorization': 'Bearer $token'},
@@ -673,7 +671,6 @@ class _DetailPageState extends State<DetailPage> {
               }
             }
           } else if (bookData != null && bookData!['bookLink'] != null && bookData!['bookLink'].isNotEmpty) {
-            // Free book: Process bookLink directly
             String pdfUrl = bookData!['bookLink'];
 
             final uri = Uri.parse(pdfUrl);
@@ -689,7 +686,6 @@ class _DetailPageState extends State<DetailPage> {
             bookData!['bookLink'] = null;
           }
 
-          // Mark loading as complete
           setState(() {
             isLoading = false;
           });
