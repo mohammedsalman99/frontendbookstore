@@ -8,10 +8,7 @@ import 'package:frontend/screens/Home/home_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
   await Firebase.initializeApp();
-
-  // Initialize Hive
   await Hive.initFlutter();
   await Hive.openBox('downloads');
 
