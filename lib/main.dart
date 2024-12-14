@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:frontend/screens/Details/detailpage.dart';
 import 'package:frontend/splash.dart';
+import 'package:frontend/screens/Home/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Initialize Hive
   await Hive.initFlutter();
   await Hive.openBox('downloads');
 

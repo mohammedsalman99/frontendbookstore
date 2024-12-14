@@ -2,11 +2,14 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+
+    // Add the Google services Gradle plugin
+    id 'com.google.gms.google-services' version '4.4.2' apply false
 }
 
 android {
     namespace = "com.example.frontend"
-    compileSdk = 34 
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -19,8 +22,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.frontend"
-        minSdkVersion flutter.minSdkVersion  
-        targetSdkVersion 34  
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0.0"
     }
@@ -35,3 +38,17 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:33.7.0')
+
+    // Add Firebase Analytics dependency
+    implementation 'com.google.firebase:firebase-analytics'
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+}
+
+// Apply the Google services Gradle plugin at the bottom of the file
+apply plugin: 'com.google.gms.google-services'
