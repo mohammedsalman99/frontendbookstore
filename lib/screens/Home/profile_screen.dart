@@ -318,9 +318,9 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
               child: Column(
                 children: [
                   _buildCustomTabBar(),
-                  const SizedBox(height: 20), // Increased space below TabBar
+                  const SizedBox(height: 20),
                   SizedBox(
-                    height: 300, // Increased the height of TabBarView
+                    height: 300, 
                     child: TabBarView(
                       children: [
                         _buildHorizontalBooksTab(),
@@ -331,7 +331,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20), // Increased space before User Options
+            const SizedBox(height: 20), 
             _buildUserOptions(context),
           ],
         ),
@@ -394,7 +394,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
   Widget _buildCustomTabBar() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      padding: const EdgeInsets.all(12), // Increased padding for larger tabs
+      padding: const EdgeInsets.all(12), 
       decoration: BoxDecoration(
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(30),
@@ -418,19 +418,19 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         labelColor: Colors.white,
         unselectedLabelColor: Colors.grey[600],
         labelStyle: const TextStyle(
-          fontSize: 16, // Increased font size for larger tabs
+          fontSize: 16, 
           fontWeight: FontWeight.bold,
         ),
         unselectedLabelStyle: const TextStyle(
-          fontSize: 14, // Slightly larger font for unselected tabs
+          fontSize: 14,
         ),
         tabs: const [
           Tab(
-            icon: Icon(Icons.book, size: 30), // Increased icon size
+            icon: Icon(Icons.book, size: 30), 
             text: 'Books',
           ),
           Tab(
-            icon: Icon(Icons.subscriptions, size: 30), // Increased icon size
+            icon: Icon(Icons.subscriptions, size: 30), 
             text: 'Subscriptions',
           ),
         ],
@@ -513,15 +513,9 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     final subscription = subscriptions[0];
     final expiryDate = DateTime.parse(subscription['expiryDate']);
     final durationInDays = subscription['plan']['durationInDays'] ?? 0;
-
-    // Calculate the start date based on duration
     final startDate = expiryDate.subtract(Duration(days: durationInDays));
     final now = DateTime.now();
-
-    // Correct calculation of days left
     final daysLeft = durationInDays - now.difference(startDate).inDays;
-
-    // Determine if the subscription is expired
     final isExpired = daysLeft <= 0;
 
     return Padding(
