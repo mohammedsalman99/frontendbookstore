@@ -6,6 +6,7 @@ import '../Details/editprofile.dart';
 import '../Details/mydownload.dart';
 import '../Details/myfavorits.dart';
 import '../auth/login.dart';
+import '../setting/setting.dart';
 
 class AdvancedProfileScreen extends StatefulWidget {
   const AdvancedProfileScreen({Key? key}) : super(key: key);
@@ -22,12 +23,110 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
   String? phoneNumber;
   String? profilePicture;
   bool isLoading = true;
+  List<dynamic> purchasedBooks = [];
+  List<dynamic> subscriptions = [];
+  bool isBooksLoading = true;
+  bool isSubscriptionsLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchUserDetails();
+    fetchUserDetails().then((_) {
+      if (token != null) {
+        fetchPurchasedBooks();
+        fetchSubscriptions();
+      }
+    });
   }
+
+
+  Future<void> fetchPurchasedBooks() async {
+    try {
+      setState(() => isBooksLoading = true);
+      final response = await http.get(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/purchased'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          purchasedBooks = data['purchases'] ?? [];
+          isBooksLoading = false;
+        });
+        print('Purchased books count: ${purchasedBooks.length}');
+      } else {
+        throw Exception('Failed to fetch books: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error fetching books: $error');
+      setState(() => isBooksLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading books: $error')),
+      );
+    }
+  }
+
+
+
+
+  Future<void> fetchSubscriptions() async {
+    print('fetchSubscriptions: Started fetching subscription details...');
+
+    try {
+      setState(() => isSubscriptionsLoading = true);
+      print('fetchSubscriptions: isSubscriptionsLoading set to true.');
+
+      if (token == null) {
+        print('fetchSubscriptions: Token is null. Exiting...');
+        throw Exception('Token is null. Cannot fetch subscriptions.');
+      }
+
+      print('fetchSubscriptions: Token is not null. Proceeding with API call.');
+
+      final response = await http.get(
+        Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/subscriptions/details'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('fetchSubscriptions: API Response status: ${response.statusCode}');
+      print('fetchSubscriptions: API Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data['subscription'] != null) {
+          print('fetchSubscriptions: Subscription data found.');
+          setState(() {
+            subscriptions = [data['subscription']];
+            isSubscriptionsLoading = false;
+          });
+          print('fetchSubscriptions: Subscriptions updated. isSubscriptionsLoading set to false.');
+        } else {
+          print('fetchSubscriptions: Subscription data is null or missing in response.');
+          throw Exception('No subscription found in the API response.');
+        }
+      } else {
+        print('fetchSubscriptions: API request failed with status code: ${response.statusCode}');
+        throw Exception('Failed to fetch subscriptions: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('fetchSubscriptions: Error occurred: $error');
+      setState(() => isSubscriptionsLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading subscription details: $error')),
+      );
+    } finally {
+      print('fetchSubscriptions: Completed.');
+    }
+  }
+
+
 
   Future<void> fetchUserDetails() async {
     final prefs = await SharedPreferences.getInstance();
@@ -186,8 +285,15 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: logout,
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
           ),
         ],
         flexibleSpace: Container(
@@ -212,8 +318,9 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
               child: Column(
                 children: [
                   _buildCustomTabBar(),
+                  const SizedBox(height: 20), // Increased space below TabBar
                   SizedBox(
-                    height: 250,
+                    height: 300, // Increased the height of TabBarView
                     child: TabBarView(
                       children: [
                         _buildHorizontalBooksTab(),
@@ -224,13 +331,15 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20), // Increased space before User Options
             _buildUserOptions(context),
           ],
         ),
       ),
     );
   }
+
+
   Widget _buildProfileHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
@@ -285,7 +394,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
   Widget _buildCustomTabBar() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(12), // Increased padding for larger tabs
       decoration: BoxDecoration(
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(30),
@@ -309,19 +418,19 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         labelColor: Colors.white,
         unselectedLabelColor: Colors.grey[600],
         labelStyle: const TextStyle(
-          fontSize: 14,
+          fontSize: 16, // Increased font size for larger tabs
           fontWeight: FontWeight.bold,
         ),
         unselectedLabelStyle: const TextStyle(
-          fontSize: 13,
+          fontSize: 14, // Slightly larger font for unselected tabs
         ),
         tabs: const [
           Tab(
-            icon: Icon(Icons.book, size: 20),
+            icon: Icon(Icons.book, size: 30), // Increased icon size
             text: 'Books',
           ),
           Tab(
-            icon: Icon(Icons.subscriptions, size: 20),
+            icon: Icon(Icons.subscriptions, size: 30), // Increased icon size
             text: 'Subscriptions',
           ),
         ],
@@ -330,25 +439,195 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
   }
 
 
+
   Widget _buildHorizontalBooksTab() {
+    if (isBooksLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (purchasedBooks.isEmpty) {
+      return const Center(child: Text('No books purchased.'));
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.all(16),
       child: Row(
-        children: [],
+        children: purchasedBooks.map((purchase) {
+          final book = purchase['book'];
+          return Card(
+            margin: const EdgeInsets.only(right: 10),
+            child: Container(
+              width: 120,
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.network(
+                    book['image'] ?? 'https://example.com/placeholder.png',
+                    height: 100,
+                    width: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image, size: 100);
+                    },
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    book['title'] ?? 'Unknown Title',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    book['authors']?.first['fullName'] ?? 'Unknown Author',
+                    style: const TextStyle(fontSize: 9, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
+
+
   Widget _buildHorizontalSubscriptionTab() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [],
+    if (isSubscriptionsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (subscriptions.isEmpty) {
+      return const Center(
+        child: Text(
+          'No active subscriptions.',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+
+    final subscription = subscriptions[0];
+    final expiryDate = DateTime.parse(subscription['expiryDate']);
+    final durationInDays = subscription['plan']['durationInDays'] ?? 0;
+
+    // Calculate the start date based on duration
+    final startDate = expiryDate.subtract(Duration(days: durationInDays));
+    final now = DateTime.now();
+
+    // Correct calculation of days left
+    final daysLeft = durationInDays - now.difference(startDate).inDays;
+
+    // Determine if the subscription is expired
+    final isExpired = daysLeft <= 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.subscriptions, size: 40, color: Colors.white),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          subscription['plan']['planName'] ?? 'N/A',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Price: \$${subscription['plan']['price'] ?? 'N/A'}",
+                          style: const TextStyle(fontSize: 14, color: Colors.white70),
+                        ),
+                        Text(
+                          "Duration: ${durationInDays} days",
+                          style: const TextStyle(fontSize: 14, color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(color: Colors.white54, thickness: 1, height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Expiry Date:",
+                        style: TextStyle(fontSize: 14, color: Colors.white70),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        expiryDate.toLocal().toString().split(' ')[0],
+                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isExpired ? Colors.red : Colors.green,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      isExpired ? "Expired" : "Active",
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    isExpired ? "Expired" : "Days Left:",
+                    style: const TextStyle(fontSize: 14, color: Colors.white70),
+                  ),
+                  Text(
+                    isExpired ? "0 days" : "$daysLeft days",
+                    style: const TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
+
+
+
+
+
 
   Widget _buildUserOptions(BuildContext context) {
     return Column(
