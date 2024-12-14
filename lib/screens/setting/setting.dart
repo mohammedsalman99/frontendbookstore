@@ -83,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
         return;
       }
 
-      final authToken = await _getAuthToken(); // Get the auth token
+      final authToken = await _getAuthToken(); 
       if (authToken == null) {
         print("Authorization token is missing.");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
         Uri.parse(registerUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $authToken', // Include the auth token
+          'Authorization': 'Bearer $authToken', 
         },
         body: jsonEncode({
           'fcmToken': fcmToken,
@@ -142,7 +142,7 @@ class _SettingsPageState extends State<SettingsPage> {
         return;
       }
 
-      final authToken = await _getAuthToken(); // Get the auth token
+      final authToken = await _getAuthToken(); 
       if (authToken == null) {
         print("Authorization token is missing.");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -155,7 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
         Uri.parse(unregisterUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $authToken', // Include the auth token
+          'Authorization': 'Bearer $authToken', 
         },
         body: jsonEncode({'fcmToken': fcmToken}),
       );
