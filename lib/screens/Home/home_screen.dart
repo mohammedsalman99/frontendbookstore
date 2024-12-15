@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Dynamic background color
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
       body: ListView(
         physics: const BouncingScrollPhysics(),
         children: [
@@ -192,19 +192,18 @@ class _HomeScreenState extends State<HomeScreen> {
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.5,
-              ), // Dynamic text style
+              ), 
             ),
           ),
           const SizedBox(height: 13),
 
-          // Search Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
-                color: Theme.of(context).cardColor, // Dynamic card background
+                color: Theme.of(context).cardColor, 
               ),
               child: Row(
                 children: [
@@ -212,12 +211,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: 'Search book here...',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium, // Dynamic hint style
+                        hintStyle: Theme.of(context).textTheme.bodyMedium, 
                         border: InputBorder.none,
                       ),
                     ),
                   ),
-                  Icon(Icons.search, color: Theme.of(context).iconTheme.color), // Dynamic icon color
+                  Icon(Icons.search, color: Theme.of(context).iconTheme.color), 
                 ],
               ),
             ),
@@ -354,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black87, // Adjusted text color
+              color: isDarkMode ? Colors.white : Colors.black87, 
             ),
           ),
           SizedBox(height: 10),
@@ -409,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
-                              color: isDarkMode ? Colors.white70 : Colors.black87, // Adjusted text color
+                              color: isDarkMode ? Colors.white70 : Colors.black87, 
                               overflow: TextOverflow.ellipsis,
                             ),
                             maxLines: 2,
@@ -437,10 +436,10 @@ class _HomeScreenState extends State<HomeScreen> {
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-          ), // Dynamic text style
+          ), 
         ),
         const Spacer(),
-        Icon(Icons.arrow_forward, color: Theme.of(context).iconTheme.color), // Dynamic icon color
+        Icon(Icons.arrow_forward, color: Theme.of(context).iconTheme.color), 
       ],
     );
   }
@@ -468,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor, // Dynamic shadow color
+              color: Theme.of(context).shadowColor, 
               offset: const Offset(0, 4),
               blurRadius: 4,
             ),
@@ -496,9 +495,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.white, // Keep text white for readability
+                    color: Colors.white, 
                     fontWeight: FontWeight.bold,
-                  ), // Dynamic text style
+                  ), 
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -530,11 +529,11 @@ class _HomeScreenState extends State<HomeScreen> {
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Theme.of(context).cardColor, // Dynamic card background color
-          border: Border.all(color: Theme.of(context).dividerColor, width: 1), // Dynamic border color
+          color: Theme.of(context).cardColor, 
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1), 
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.1), // Dynamic shadow color
+              color: Theme.of(context).shadowColor.withOpacity(0.1), 
               offset: const Offset(0, 2),
               blurRadius: 4,
             ),
@@ -570,7 +569,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 10,
-                    ), // Dynamic text color
+                    ), 
                   ),
                   const SizedBox(height: 3),
                   Text(
@@ -579,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontSize: 8,
-                      color: Theme.of(context).hintColor, // Dynamic secondary text color
+                      color: Theme.of(context).hintColor, 
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -588,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Icon(
                         Icons.star,
                         size: 10,
-                        color: index < rating ? Colors.amber : Theme.of(context).dividerColor, // Dynamic star fill color
+                        color: index < rating ? Colors.amber : Theme.of(context).dividerColor, 
                       );
                     }),
                   ),
