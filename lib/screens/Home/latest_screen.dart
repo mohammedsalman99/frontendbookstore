@@ -44,7 +44,6 @@ class _LatestScreenState extends State<LatestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Check if dark mode is enabled
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     List<dynamic> filteredBooks = displayedBooks
@@ -60,16 +59,16 @@ class _LatestScreenState extends State<LatestScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.white, // Dynamic background
+      backgroundColor: isDarkMode ? Colors.black : Colors.white, 
       appBar: AppBar(
         centerTitle: false,
-        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white, // Dynamic AppBar color
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white, 
         elevation: 0,
         title: Text(
           'Latest',
           style: TextStyle(
             fontFamily: 'SF-Pro-Text',
-            color: isDarkMode ? Colors.white : Colors.black, // Dynamic text color
+            color: isDarkMode ? Colors.white : Colors.black, 
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -78,7 +77,7 @@ class _LatestScreenState extends State<LatestScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
-              icon: Icon(Icons.search, color: isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1)), // Dynamic icon color
+              icon: Icon(Icons.search, color: isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1)), 
               onPressed: () {
                 showSearch(
                   context: context,
@@ -106,7 +105,7 @@ class _LatestScreenState extends State<LatestScreen> {
                     fontFamily: 'SF-Pro-Text',
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: isDarkMode ? Colors.white : Colors.black87, // Dynamic text color
+                    color: isDarkMode ? Colors.white : Colors.black87, 
                   ),
                 ),
                 Row(
@@ -187,8 +186,6 @@ class _LatestScreenState extends State<LatestScreen> {
     if (bookLink.isEmpty) {
       bookLink = 'https://via.placeholder.com/150';
     }
-
-    // Check if dark mode is enabled
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
@@ -203,18 +200,18 @@ class _LatestScreenState extends State<LatestScreen> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Theme.of(context).cardColor, // Dynamic card color
+          color: Theme.of(context).cardColor, 
           border: Border.all(
             color: isDarkMode
-                ? Colors.white // Border color for dark mode
-                : Colors.grey.shade300, // Border color for light mode
+                ? Colors.white
+                : Colors.grey.shade300,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
               color: isDarkMode
-                  ? Colors.black.withOpacity(0.4) // Darker shadow for dark mode
-                  : Colors.black.withOpacity(0.1), // Lighter shadow for light mode
+                  ? Colors.black.withOpacity(0.4) 
+                  : Colors.black.withOpacity(0.1), 
               blurRadius: 8,
               offset: const Offset(0, 6),
             ),
@@ -237,13 +234,13 @@ class _LatestScreenState extends State<LatestScreen> {
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Container(
-                          color: Theme.of(context).dividerColor, // Dynamic placeholder
+                          color: Theme.of(context).dividerColor, 
                           child: const Center(child: CircularProgressIndicator()),
                         );
                       },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: Theme.of(context).colorScheme.error, // Dynamic error background
+                          color: Theme.of(context).colorScheme.error, 
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -276,7 +273,7 @@ class _LatestScreenState extends State<LatestScreen> {
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
-                    ), // Dynamic title style
+                    ), 
                   ),
                   const SizedBox(height: 3),
                   Text(
@@ -285,7 +282,7 @@ class _LatestScreenState extends State<LatestScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontSize: 9,
-                    ), // Dynamic author text style
+                    ), 
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -296,8 +293,8 @@ class _LatestScreenState extends State<LatestScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
                       color: book['free'] == true
-                          ? Colors.green // Static color for free books
-                          : Colors.red, // Static color for priced books
+                          ? Colors.green 
+                          : Colors.red, 
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -305,14 +302,14 @@ class _LatestScreenState extends State<LatestScreen> {
                     children: [
                       ...buildRatingStars(rating,
                           size: 14,
-                          color: Colors.amber), // Static star color
+                          color: Colors.amber), 
                       const SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
-                        ), // Dynamic rating text style
+                        ), 
                       ),
                     ],
                   ),
@@ -445,7 +442,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   }
 
   Widget categoryCard(BuildContext context, dynamic book) {
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark; // Check dark mode status
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark; 
 
     double rating = book['rating'] != null
         ? double.tryParse(book['rating'].toString()) ?? 0.0
@@ -471,9 +468,9 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         margin: EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: isDarkMode ? Colors.grey[900] : Colors.white, // Adjust color for dark mode
+          color: isDarkMode ? Colors.grey[900] : Colors.white, 
           boxShadow: [
-            if (!isDarkMode) // Remove shadow in dark mode
+            if (!isDarkMode) 
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
                 blurRadius: 6,
@@ -481,7 +478,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
               ),
           ],
           border: isDarkMode
-              ? Border.all(color: Colors.grey[700]!, width: 1) // Add border in dark mode
+              ? Border.all(color: Colors.grey[700]!, width: 1) 
               : null,
         ),
         child: Column(
@@ -492,7 +489,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
               child: Container(
                 height: 120,
                 width: double.infinity,
-                color: isDarkMode ? Colors.grey[800] : Colors.grey[200], // Adjust placeholder color
+                color: isDarkMode ? Colors.grey[800] : Colors.grey[200], 
                 child: FittedBox(
                   fit: BoxFit.cover,
                   clipBehavior: Clip.hardEdge,
@@ -502,7 +499,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                     height: 105,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: isDarkMode ? Colors.grey[700] : Colors.grey[300], // Adjust error color
+                        color: isDarkMode ? Colors.grey[700] : Colors.grey[300], 
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -539,7 +536,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                       fontFamily: 'SF-Pro-Text',
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
-                      color: isDarkMode ? Colors.white : Colors.black, // Adjust text color
+                      color: isDarkMode ? Colors.white : Colors.black, 
                     ),
                   ),
                   SizedBox(height: 3),
@@ -550,7 +547,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontSize: 9,
-                      color: isDarkMode ? Colors.grey[500] : Colors.grey[700], // Adjust text color
+                      color: isDarkMode ? Colors.grey[500] : Colors.grey[700], 
                     ),
                   ),
                   SizedBox(height: 5),
@@ -563,7 +560,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color:
-                      book['free'] == true ? Colors.green : (isDarkMode ? Colors.red[300] : Colors.red), // Adjust price color
+                      book['free'] == true ? Colors.green : (isDarkMode ? Colors.red[300] : Colors.red), 
                     ),
                   ),
                   SizedBox(height: 5),
@@ -577,7 +574,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                           fontFamily: 'SF-Pro-Text',
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: isDarkMode ? Colors.grey[500] : Colors.grey[700], // Adjust rating color
+                          color: isDarkMode ? Colors.grey[500] : Colors.grey[700],
                         ),
                       ),
                     ],
