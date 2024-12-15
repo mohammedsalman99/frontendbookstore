@@ -736,7 +736,7 @@ class _DetailPageState extends State<DetailPage> {
           ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? Colors.grey[850]
-              : Color(0xFF5AA5B1), // Adjusted for dark mode
+              : Color(0xFF5AA5B1), 
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -756,7 +756,7 @@ class _DetailPageState extends State<DetailPage> {
           ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? Colors.grey[850]
-              : Color(0xFF5AA5B1), // Adjusted for dark mode
+              : Color(0xFF5AA5B1), 
         ),
         body: Center(child: Text("Failed to load book details.")),
       );
@@ -775,7 +775,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? Colors.grey[850]
-            : Color(0xFF5AA5B1), // Adjusted for dark mode
+            : Color(0xFF5AA5B1), 
         actions: [
           IconButton(
             icon: Icon(
@@ -820,12 +820,12 @@ class _DetailPageState extends State<DetailPage> {
                           height: 250,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.grey[800]
-                              : Colors.grey[200], // Adjusted for dark mode
+                              : Colors.grey[200], 
                           child: Icon(
                             Icons.broken_image,
                             color: Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white70
-                                : Colors.grey, // Adjusted for dark mode
+                                : Colors.grey, 
                           ),
                         );
                       },
@@ -860,7 +860,7 @@ class _DetailPageState extends State<DetailPage> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[900]
-                      : Colors.teal.shade50, // Adjusted for dark mode
+                      : Colors.teal.shade50, 
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: EdgeInsets.all(16),
@@ -875,7 +875,7 @@ class _DetailPageState extends State<DetailPage> {
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Colors.white
-                            : Colors.black87, // Adjusted for dark mode
+                            : Colors.black87, 
                       ),
                     ),
                     SizedBox(height: 7),
@@ -898,7 +898,7 @@ class _DetailPageState extends State<DetailPage> {
                                 fontSize: 12,
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white
-                                    : Colors.black87, // Adjusted for dark mode
+                                    : Colors.black87, 
                                 fontWeight: FontWeight.bold,
                               ),
                             );
@@ -927,7 +927,7 @@ class _DetailPageState extends State<DetailPage> {
                                 size: 16,
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white70
-                                    : Colors.grey), // Adjusted for dark mode
+                                    : Colors.grey), 
                             SizedBox(width: 4),
                             Text(
                               "${bookData!['numberOfViews']}",
@@ -936,7 +936,7 @@ class _DetailPageState extends State<DetailPage> {
                                 fontSize: 14,
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white
-                                    : Colors.white, // Adjusted for dark mode
+                                    : Colors.white, 
                               ),
                             ),
                           ],
@@ -961,7 +961,7 @@ class _DetailPageState extends State<DetailPage> {
                     },
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.redAccent
-                        : Colors.white, // Dynamic color for dark mode
+                        : Colors.white, 
                   ),
                   buildActionButton(
                     Icons.download,
@@ -996,7 +996,7 @@ class _DetailPageState extends State<DetailPage> {
                     },
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.tealAccent
-                        : Colors.white, // Dynamic color for dark mode
+                        : Colors.white, 
                   ),
                   buildActionButton(
                     Icons.book,
@@ -1050,7 +1050,7 @@ class _DetailPageState extends State<DetailPage> {
                     },
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.blueAccent
-                        : Colors.white, // Dynamic color for dark mode
+                        : Colors.white, 
                   ),
                   buildActionButton(
                     Icons.report,
@@ -1090,7 +1090,7 @@ class _DetailPageState extends State<DetailPage> {
                     },
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.orange
-                        : Colors.white, // Dynamic color for dark mode
+                        : Colors.white, 
                   ),
                 ],
               ),
@@ -1104,7 +1104,7 @@ class _DetailPageState extends State<DetailPage> {
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
-                      : Colors.black87, // Dynamic color for dark mode
+                      : Colors.black87, 
                 ),
               ),
               SizedBox(height: 7),
@@ -1115,7 +1115,7 @@ class _DetailPageState extends State<DetailPage> {
                   fontSize: 13,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[300]
-                      : Colors.grey[700], // Dynamic color for dark mode
+                      : Colors.grey[700], 
                 ),
               ),
               SizedBox(height: 19),
@@ -1130,7 +1130,7 @@ class _DetailPageState extends State<DetailPage> {
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
-                          : Colors.black87, // Dynamic color for dark mode
+                          : Colors.black87, 
                     ),
                   ),
                   IconButton(
@@ -1138,7 +1138,7 @@ class _DetailPageState extends State<DetailPage> {
                       Icons.arrow_forward,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.tealAccent
-                          : Color(0xFF5AA5B1), // Dynamic color for dark mode
+                          : Color(0xFF5AA5B1), 
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -1163,7 +1163,7 @@ class _DetailPageState extends State<DetailPage> {
                       fontSize: 13,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.grey[300]
-                          : Colors.black, // Dynamic color for dark mode
+                          : Colors.black, 
                     ),
                   ),
                 ],
@@ -1191,7 +1191,7 @@ class _DetailPageState extends State<DetailPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).brightness == Brightness.dark
                       ? Colors.tealAccent
-                      : Color(0xFF5AA5B1), // Dynamic color for dark mode
+                      : Color(0xFF5AA5B1),
                   foregroundColor: Colors.white,
                 ),
               ),
@@ -1244,7 +1244,7 @@ class _DetailPageState extends State<DetailPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).brightness == Brightness.dark
                         ? Colors.redAccent
-                        : Colors.redAccent, // Retains redAccent for both modes
+                        : Colors.redAccent,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
