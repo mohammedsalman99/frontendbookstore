@@ -734,7 +734,9 @@ class _DetailPageState extends State<DetailPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Color(0xFF5AA5B1),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[850]
+              : Color(0xFF5AA5B1), // Adjusted for dark mode
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -752,7 +754,9 @@ class _DetailPageState extends State<DetailPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Color(0xFF5AA5B1),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[850]
+              : Color(0xFF5AA5B1), // Adjusted for dark mode
         ),
         body: Center(child: Text("Failed to load book details.")),
       );
@@ -769,7 +773,9 @@ class _DetailPageState extends State<DetailPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color(0xFF5AA5B1),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[850]
+            : Color(0xFF5AA5B1), // Adjusted for dark mode
         actions: [
           IconButton(
             icon: Icon(
@@ -809,6 +815,20 @@ class _DetailPageState extends State<DetailPage> {
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 250,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 250,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[800]
+                              : Colors.grey[200], // Adjusted for dark mode
+                          child: Icon(
+                            Icons.broken_image,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white70
+                                : Colors.grey, // Adjusted for dark mode
+                          ),
+                        );
+                      },
                     ),
                   ),
                   if (!bookData!['free'])
@@ -838,7 +858,9 @@ class _DetailPageState extends State<DetailPage> {
 
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.teal.shade50,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[900]
+                      : Colors.teal.shade50, // Adjusted for dark mode
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: EdgeInsets.all(16),
@@ -851,6 +873,9 @@ class _DetailPageState extends State<DetailPage> {
                         fontFamily: 'SF-Pro-Text',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87, // Adjusted for dark mode
                       ),
                     ),
                     SizedBox(height: 7),
@@ -868,10 +893,12 @@ class _DetailPageState extends State<DetailPage> {
                           ...?bookData!['authors']?.map<TextSpan>((author) {
                             return TextSpan(
                               text: '${author['fullName']}, ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'SF-Pro-Text',
                                 fontSize: 12,
-                                color: Colors.black87,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black87, // Adjusted for dark mode
                                 fontWeight: FontWeight.bold,
                               ),
                             );
@@ -895,20 +922,22 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Icon(Icons.remove_red_eye, size: 16, color: Colors.grey),
-                                SizedBox(width: 4),
-                                Text(
-                                  "${bookData!['numberOfViews']}",
-                                  style: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
+                            Icon(Icons.remove_red_eye,
+                                size: 16,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white70
+                                    : Colors.grey), // Adjusted for dark mode
+                            SizedBox(width: 4),
+                            Text(
+                              "${bookData!['numberOfViews']}",
+                              style: TextStyle(
+                                fontFamily: 'SF-Pro-Text',
+                                fontSize: 14,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.white, // Adjusted for dark mode
+                              ),
                             ),
                           ],
                         ),
@@ -930,121 +959,139 @@ class _DetailPageState extends State<DetailPage> {
                         () async {
                       await toggleFavorite();
                     },
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.redAccent
+                        : Colors.white, // Dynamic color for dark mode
                   ),
-                  buildActionButton(Icons.download, "Download", () async {
-                    final hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
+                  buildActionButton(
+                    Icons.download,
+                    "Download",
+                        () async {
+                      final hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
 
-                    if (!hasAccess) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SubscriptionPage(),
-                        ),
-                      );
-                      return;
-                    }
-
-                    try {
-                      await incrementDownload();
-                      _showAdvancedMessage(
-                        "Download Successful",
-                        "Your book has been added to downloads.",
-                        isError: false,
-                      );
-                    } catch (e) {
-                      _showAdvancedMessage(
-                        "Error",
-                        "Failed to download the book. Please try again later.",
-                        isError: true,
-                      );
-                    }
-                  }),
-
-                  buildActionButton(Icons.book, "Read", () async {
-                    print("Read Button: Checking access...");
-                    bool hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
-
-                    print("Read Button: Access status = $hasAccess");
-                    print("Read Button: Current bookData = $bookData");
-
-                    if (!hasAccess) {
-                      print("Read Button: Access denied. Redirecting to subscription page...");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SubscriptionPage(),
-                        ),
-                      );
-                      return;
-                    }
-
-                    if (bookData!['bookLink'] == null || bookData!['bookLink']!.isEmpty) {
-                      print("Read Button: Book link is null or empty after access check.");
-                      _showAdvancedMessage(
-                        "Error",
-                        "The book link is unavailable. Please contact support.",
-                        isError: true,
-                      );
-                      return;
-                    }
-
-                    try {
-                      print("Read Button: Access granted. Incrementing view count...");
-                      await incrementView();
-                      print("Read Button: Navigating to PDF viewer...");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PDFViewerPage(pdfUrl: bookData!['bookLink']),
-                        ),
-                      );
-                    } catch (e) {
-                      print("Read Button: Exception occurred while opening the book: $e");
-                      _showAdvancedMessage(
-                        "Error",
-                        "An error occurred while opening the book. Please try again.",
-                        isError: true,
-                      );
-                    }
-                  }),
-
-
-
-                  buildActionButton(Icons.report, "Report", () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    String? token = prefs.getString('auth_token');
-
-                    if (token == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Authentication token is missing. Please log in again."),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-
-                    if (bookData != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReportPage(
-                            bookId: bookData!['_id'],
-                            bookTitle: bookData!['title'],
+                      if (!hasAccess) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SubscriptionPage(),
                           ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Book details are missing."),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }),
+                        );
+                        return;
+                      }
 
+                      try {
+                        await incrementDownload();
+                        _showAdvancedMessage(
+                          "Download Successful",
+                          "Your book has been added to downloads.",
+                          isError: false,
+                        );
+                      } catch (e) {
+                        _showAdvancedMessage(
+                          "Error",
+                          "Failed to download the book. Please try again later.",
+                          isError: true,
+                        );
+                      }
+                    },
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.tealAccent
+                        : Colors.white, // Dynamic color for dark mode
+                  ),
+                  buildActionButton(
+                    Icons.book,
+                    "Read",
+                        () async {
+                      print("Read Button: Checking access...");
+                      bool hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
 
+                      print("Read Button: Access status = $hasAccess");
+                      print("Read Button: Current bookData = $bookData");
+
+                      if (!hasAccess) {
+                        print("Read Button: Access denied. Redirecting to subscription page...");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SubscriptionPage(),
+                          ),
+                        );
+                        return;
+                      }
+
+                      if (bookData!['bookLink'] == null || bookData!['bookLink']!.isEmpty) {
+                        print("Read Button: Book link is null or empty after access check.");
+                        _showAdvancedMessage(
+                          "Error",
+                          "The book link is unavailable. Please contact support.",
+                          isError: true,
+                        );
+                        return;
+                      }
+
+                      try {
+                        print("Read Button: Access granted. Incrementing view count...");
+                        await incrementView();
+                        print("Read Button: Navigating to PDF viewer...");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PDFViewerPage(pdfUrl: bookData!['bookLink']),
+                          ),
+                        );
+                      } catch (e) {
+                        print("Read Button: Exception occurred while opening the book: $e");
+                        _showAdvancedMessage(
+                          "Error",
+                          "An error occurred while opening the book. Please try again.",
+                          isError: true,
+                        );
+                      }
+                    },
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.blueAccent
+                        : Colors.white, // Dynamic color for dark mode
+                  ),
+                  buildActionButton(
+                    Icons.report,
+                    "Report",
+                        () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      String? token = prefs.getString('auth_token');
+
+                      if (token == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Authentication token is missing. Please log in again."),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      if (bookData != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReportPage(
+                              bookId: bookData!['_id'],
+                              bookTitle: bookData!['title'],
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Book details are missing."),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.orange
+                        : Colors.white, // Dynamic color for dark mode
+                  ),
                 ],
               ),
               SizedBox(height: 20),
@@ -1055,7 +1102,9 @@ class _DetailPageState extends State<DetailPage> {
                   fontFamily: 'SF-Pro-Text',
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black87, // Dynamic color for dark mode
                 ),
               ),
               SizedBox(height: 7),
@@ -1064,11 +1113,12 @@ class _DetailPageState extends State<DetailPage> {
                 style: TextStyle(
                   fontFamily: 'SF-Pro-Text',
                   fontSize: 13,
-                  color: Colors.grey[700],
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[300]
+                      : Colors.grey[700], // Dynamic color for dark mode
                 ),
               ),
               SizedBox(height: 19),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1078,11 +1128,18 @@ class _DetailPageState extends State<DetailPage> {
                       fontFamily: 'SF-Pro-Text',
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87, // Dynamic color for dark mode
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.arrow_forward, color: Color(0xFF5AA5B1)),
+                    icon: Icon(
+                      Icons.arrow_forward,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.tealAccent
+                          : Color(0xFF5AA5B1), // Dynamic color for dark mode
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -1091,8 +1148,6 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                       );
                     },
-
-
                   ),
                 ],
               ),
@@ -1106,6 +1161,9 @@ class _DetailPageState extends State<DetailPage> {
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontSize: 13,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[300]
+                          : Colors.black, // Dynamic color for dark mode
                     ),
                   ),
                 ],
@@ -1131,13 +1189,13 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF5AA5B1),
+                  backgroundColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.tealAccent
+                      : Color(0xFF5AA5B1), // Dynamic color for dark mode
                   foregroundColor: Colors.white,
                 ),
               ),
-
               SizedBox(height: 19),
-
               SizedBox(
                 width: double.infinity,
                 child: bookData!['free']
@@ -1184,7 +1242,9 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.redAccent
+                        : Colors.redAccent, // Retains redAccent for both modes
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -1192,8 +1252,7 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                 ),
-
-              )
+              ),
 
             ],
           ),
@@ -1202,7 +1261,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget buildActionButton(IconData icon, String label, VoidCallback onPressed) {
+  Widget buildActionButton(IconData icon, String label, VoidCallback onPressed, {required Color color}) {
     return GestureDetector(
       onTap: onPressed,
       child: Column(

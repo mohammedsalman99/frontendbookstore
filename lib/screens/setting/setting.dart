@@ -278,11 +278,11 @@ class _SettingsPageState extends State<SettingsPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white), 
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -291,16 +291,15 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             leading: Icon(
               Icons.notifications,
-              color: Theme.of(context).iconTheme.color, 
+              color: Theme.of(context).iconTheme.color,
             ),
             title: Text(
               'Enable Push Notification',
-              style: Theme.of(context).textTheme.bodyLarge, 
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
-            trailing: Switch(
+            trailing: Switch.adaptive(
               value: isNotificationEnabled,
               onChanged: (value) {
-                print("Push Notification toggled: $value");
                 setState(() {
                   isNotificationEnabled = value;
                   _saveNotificationPreference(value);
@@ -311,30 +310,33 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             leading: Icon(
               Icons.refresh,
-              color: Theme.of(context).iconTheme.color, 
+              color: Theme.of(context).iconTheme.color,
             ),
             title: Text(
               'Clear Cache',
-              style: Theme.of(context).textTheme.bodyLarge, 
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             subtitle: Text(
-              '${cacheSize.toStringAsFixed(1)} MB', 
-              style: Theme.of(context).textTheme.bodyMedium, 
+              '${cacheSize.toStringAsFixed(1)} MB',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             onTap: () async {
-              print("Clear cache tapped.");
-              await _clearCache(); 
-              final size = await _calculateCacheSize(); 
+              await _clearCache();
+              final size = await _calculateCacheSize();
               setState(() {
-                cacheSize = size; 
+                cacheSize = size;
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     'Cache cleared successfully!',
-                    style: Theme.of(context).textTheme.bodyLarge, 
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black
+                          : Colors.white,
+                    ),
                   ),
-                  backgroundColor: Theme.of(context).cardColor, 
+                  backgroundColor: Theme.of(context).cardColor,
                 ),
               );
             },
@@ -348,10 +350,10 @@ class _SettingsPageState extends State<SettingsPage> {
               'Dark Mode',
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            trailing: Switch(
+            trailing: Switch.adaptive(
               value: themeProvider.themeMode == ThemeMode.dark,
               onChanged: (value) {
-                themeProvider.toggleTheme(value); 
+                themeProvider.toggleTheme(value);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -451,6 +453,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+
 
 
 

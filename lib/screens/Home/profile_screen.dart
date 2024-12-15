@@ -270,22 +270,35 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? Colors.black : Colors.white, // Adjust background color
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Profile', style: TextStyle(color: Colors.white)),
+        title: Text(
+          'Profile',
+          style: TextStyle(
+            color: isDarkMode ? Colors.white : Colors.black, // Adjust title color
+          ),
+        ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDarkMode ? Colors.white : Colors.black, // Adjust icon color
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
+            icon: Icon(
+              Icons.settings,
+              color: isDarkMode ? Colors.white : Colors.black, // Adjust icon color
+            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -297,9 +310,11 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           ),
         ],
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
+              colors: isDarkMode
+                  ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)] // Dark mode gradient
+                  : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], // Light mode gradient
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -320,7 +335,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                   _buildCustomTabBar(),
                   const SizedBox(height: 20),
                   SizedBox(
-                    height: 300, 
+                    height: 300,
                     child: TabBarView(
                       children: [
                         _buildHorizontalBooksTab(),
@@ -331,7 +346,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20), 
+            const SizedBox(height: 20),
             _buildUserOptions(context),
           ],
         ),
@@ -340,19 +355,26 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
   }
 
 
+
   Widget _buildProfileHeader() {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
+        gradient: LinearGradient(
+          colors: isDarkMode
+              ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)] // Dark mode gradient
+              : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], // Light mode gradient
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: isDarkMode
+                ? Colors.black.withOpacity(0.5) // Stronger shadow for dark mode
+                : Colors.black.withOpacity(0.1), // Lighter shadow for light mode
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -363,7 +385,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundColor: Colors.white,
+            backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
             backgroundImage: profilePicture != null && profilePicture!.startsWith('http')
                 ? NetworkImage(profilePicture!)
                 : const AssetImage('assets/images/user_placeholder.png') as ImageProvider,
@@ -371,19 +393,19 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           const SizedBox(height: 15),
           Text(
             fullName ?? "Loading full name...",
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: isDarkMode ? Colors.white : Colors.black, // Adjust text color
             ),
           ),
           const SizedBox(height: 5),
           Text(
             email ?? "Loading email...",
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: Colors.white70,
+              color: isDarkMode ? Colors.grey[400] : Colors.white70, // Adjust text color
             ),
           ),
         ],
@@ -392,15 +414,19 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
   }
 
   Widget _buildCustomTabBar() {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      padding: const EdgeInsets.all(12), 
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: isDarkMode ? Colors.grey[800] : Colors.grey[200], // Adjust background color
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: isDarkMode
+                ? Colors.black.withOpacity(0.5) // Stronger shadow for dark mode
+                : Colors.black.withOpacity(0.1), // Lighter shadow for light mode
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -408,17 +434,19 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       ),
       child: TabBar(
         indicator: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
+          gradient: LinearGradient(
+            colors: isDarkMode
+                ? [Colors.grey[700]!, Colors.grey[600]!] // Darker gradient for dark mode
+                : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], // Original gradient for light mode
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(20),
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: Colors.grey[600],
+        labelColor: isDarkMode ? Colors.black : Colors.white, // Adjust label color
+        unselectedLabelColor: isDarkMode ? Colors.grey[400] : Colors.grey[600], // Adjust unselected label color
         labelStyle: const TextStyle(
-          fontSize: 16, 
+          fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
         unselectedLabelStyle: const TextStyle(
@@ -426,11 +454,11 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         ),
         tabs: const [
           Tab(
-            icon: Icon(Icons.book, size: 30), 
+            icon: Icon(Icons.book, size: 30),
             text: 'Books',
           ),
           Tab(
-            icon: Icon(Icons.subscriptions, size: 30), 
+            icon: Icon(Icons.subscriptions, size: 30),
             text: 'Subscriptions',
           ),
         ],

@@ -10,22 +10,40 @@ class AuthorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor, // Dynamic background color
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Authors',
-          style: TextStyle(
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(
             fontSize: 18,
             fontFamily: 'SF-Pro-Text',
             fontWeight: FontWeight.w700,
-          ),
+          ), // Dynamic title style
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme
+            .of(context)
+            .appBarTheme
+            .backgroundColor,
+        // Dynamic AppBar color
+        foregroundColor: Theme
+            .of(context)
+            .appBarTheme
+            .iconTheme
+            ?.color,
+        // Dynamic icons color
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
+            icon: Icon(Icons.search, color: Theme
+                .of(context)
+                .iconTheme
+                .color), // Dynamic icon color
             onPressed: () {
               showSearch(
                 context: context,
@@ -44,22 +62,28 @@ class AuthorsScreen extends StatelessWidget {
             return Center(
               child: Text(
                 'Error: ${snapshot.error}',
-                style: const TextStyle(
-                  fontFamily: 'SF-Pro-Text',
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
-                ),
+                ), // Dynamic error text style
               ),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'No authors found.',
-                style: TextStyle(
-                  fontFamily: 'SF-Pro-Text',
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(
                   fontWeight: FontWeight.w300,
                   fontSize: 14,
-                ),
+                ), // Dynamic empty state text style
               ),
             );
           } else {
@@ -104,11 +128,15 @@ class AuthorsScreen extends StatelessWidget {
           Text(
             author['fullName'],
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: Theme
+                .of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(
               fontFamily: 'SF-Pro-Text',
               fontWeight: FontWeight.w500,
               fontSize: 10,
-            ),
+            ), // Dynamic text style
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
@@ -117,6 +145,7 @@ class AuthorsScreen extends StatelessWidget {
     );
   }
 }
+
 
 class AuthorSearchDelegate extends SearchDelegate<String> {
   final SearchService _searchService;
@@ -127,7 +156,10 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: Icon(
+          Icons.clear,
+          color: Theme.of(context).iconTheme.color, // Dynamic icon color
+        ),
         onPressed: () {
           query = '';
         },
@@ -138,7 +170,10 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: Icon(
+        Icons.arrow_back,
+        color: Theme.of(context).iconTheme.color, // Dynamic icon color
+      ),
       onPressed: () {
         close(context, '');
       },
@@ -151,18 +186,28 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
       future: _searchService.search(query),
       builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
           return Center(
-            child: Text('Error: ${snapshot.error}'),
+            child: Text(
+              'Error: ${snapshot.error}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w400,
+              ), // Dynamic error text style
+            ),
           );
         }
 
         if (!snapshot.hasData || snapshot.data == null) {
           return Center(
-            child: Text('No results found'),
+            child: Text(
+              'No results found',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w300,
+              ), // Dynamic no results text style
+            ),
           );
         }
 
@@ -170,7 +215,12 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
 
         return authors.isEmpty
             ? Center(
-          child: Text('No authors found'),
+          child: Text(
+            'No authors found',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w300,
+            ), // Dynamic no authors text style
+          ),
         )
             : GridView.builder(
           padding: const EdgeInsets.all(8.0),
@@ -193,7 +243,12 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     if (query.isEmpty) {
       return Center(
-        child: Text('Search for authors by name'),
+        child: Text(
+          'Search for authors by name',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w400,
+          ), // Dynamic suggestion text style
+        ),
       );
     }
     return buildResults(context);
@@ -220,11 +275,11 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
           Text(
             author['fullName'],
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               fontFamily: 'SF-Pro-Text',
               fontWeight: FontWeight.w500,
               fontSize: 10,
-            ),
+            ), // Dynamic card text style
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),

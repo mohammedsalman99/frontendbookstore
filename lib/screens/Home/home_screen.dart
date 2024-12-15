@@ -180,32 +180,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Dynamic background color
       body: ListView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         children: [
-          SizedBox(height: 45),
+          const SizedBox(height: 45),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               'Readme',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 24,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.5,
-              ),
+              ), // Dynamic text style
             ),
           ),
-          SizedBox(height: 13),
+          const SizedBox(height: 13),
 
+          // Search Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
-                color: Colors.grey[200],
+                color: Theme.of(context).cardColor, // Dynamic card background
               ),
               child: Row(
                 children: [
@@ -213,11 +212,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: 'Search book here...',
+                        hintStyle: Theme.of(context).textTheme.bodyMedium, // Dynamic hint style
                         border: InputBorder.none,
                       ),
                     ),
                   ),
-                  Icon(Icons.search, color: Color(0xFF5AA5B1)),
+                  Icon(Icons.search, color: Theme.of(context).iconTheme.color), // Dynamic icon color
                 ],
               ),
             ),
@@ -339,8 +339,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildBestAuthorSection() {
     if (topAuthors.isEmpty) {
-      return SizedBox.shrink(); 
+      return SizedBox.shrink();
     }
+
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
@@ -350,14 +352,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             'Top Authors',
             style: TextStyle(
-              fontSize: 18, 
+              fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: isDarkMode ? Colors.white : Colors.black87, // Adjusted text color
             ),
           ),
           SizedBox(height: 10),
           Container(
-            height: 130, 
+            height: 130,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: topAuthors.length,
@@ -375,26 +377,39 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 12.0), 
+                    padding: const EdgeInsets.only(right: 12.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ClipOval(
                           child: CachedNetworkImage(
                             imageUrl: author['profilePicture'],
-                            width: 60, 
+                            width: 60,
                             height: 60,
                             fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              width: 60,
+                              height: 60,
+                              color: isDarkMode ? Colors.grey[700] : Colors.grey[300],
+                              child: const Icon(Icons.person, color: Colors.white),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              width: 60,
+                              height: 60,
+                              color: isDarkMode ? Colors.grey[700] : Colors.grey[300],
+                              child: const Icon(Icons.error, color: Colors.red),
+                            ),
                           ),
                         ),
-                        SizedBox(height: 8), 
+                        SizedBox(height: 8),
                         Container(
-                          width: 70, 
+                          width: 70,
                           child: Text(
                             author['fullName'],
                             style: TextStyle(
-                              fontSize: 10, 
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
+                              color: isDarkMode ? Colors.white70 : Colors.black87, // Adjusted text color
                               overflow: TextOverflow.ellipsis,
                             ),
                             maxLines: 2,
@@ -414,19 +429,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
+
   Widget sectionHeader(String title) {
     return Row(
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 18,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          ), // Dynamic text style
         ),
-        Spacer(),
-        Icon(Icons.arrow_forward, color: Color(0xFF5AA5B1)),
+        const Spacer(),
+        Icon(Icons.arrow_forward, color: Theme.of(context).iconTheme.color), // Dynamic icon color
       ],
     );
   }
@@ -454,8 +468,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              offset: Offset(0, 4),
+              color: Theme.of(context).shadowColor, // Dynamic shadow color
+              offset: const Offset(0, 4),
               blurRadius: 4,
             ),
           ],
@@ -465,7 +479,10 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+                  colors: [
+                    Colors.black.withOpacity(0.4),
+                    Colors.transparent,
+                  ],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
@@ -478,11 +495,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.white, // Keep text white for readability
                     fontWeight: FontWeight.bold,
-                  ),
+                  ), // Dynamic text style
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -492,6 +508,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 
   Widget bookCard(dynamic book) {
     double rating = book['rating'] != null
@@ -509,16 +526,16 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         width: 160,
-        height: 110, 
-        margin: EdgeInsets.only(right: 16),
+        height: 120,
+        margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300, width: 1), 
+          color: Theme.of(context).cardColor, // Dynamic card background color
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1), // Dynamic border color
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              offset: Offset(0, 2),
+              color: Theme.of(context).shadowColor.withOpacity(0.1), // Dynamic shadow color
+              offset: const Offset(0, 2),
               blurRadius: 4,
             ),
           ],
@@ -527,13 +544,17 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: Container(
-                height: 100, 
+                height: 90,
                 width: double.infinity,
                 child: Image.network(
                   book['image'] ?? 'https://via.placeholder.com/150',
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Theme.of(context).colorScheme.error,
+                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                  ),
                 ),
               ),
             ),
@@ -546,22 +567,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     book['title'] ?? 'Unknown Title',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                    ), // Dynamic text color
                   ),
-                  SizedBox(height: 3),
+                  const SizedBox(height: 3),
                   Text(
                     'By ${(book['authors'] as List).map((e) => e['fullName']).join(", ")}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 9, color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 8,
+                      color: Theme.of(context).hintColor, // Dynamic secondary text color
+                    ),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Row(
                     children: List.generate(5, (index) {
                       return Icon(
                         Icons.star,
-                        size: 11, 
-                        color: index < rating ? Colors.amber : Colors.grey.shade300,
+                        size: 10,
+                        color: index < rating ? Colors.amber : Theme.of(context).dividerColor, // Dynamic star fill color
                       );
                     }),
                   ),
@@ -573,6 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 
   Widget readingHistoryCard(String title, String imageUrl, String bookId) {
     return GestureDetector(

@@ -44,6 +44,9 @@ class _LatestScreenState extends State<LatestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Check if dark mode is enabled
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     List<dynamic> filteredBooks = displayedBooks
         .where((book) =>
     book['title']
@@ -57,16 +60,16 @@ class _LatestScreenState extends State<LatestScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? Colors.black : Colors.white, // Dynamic background
       appBar: AppBar(
         centerTitle: false,
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white, // Dynamic AppBar color
         elevation: 0,
         title: Text(
           'Latest',
           style: TextStyle(
             fontFamily: 'SF-Pro-Text',
-            color: Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black, // Dynamic text color
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -75,7 +78,7 @@ class _LatestScreenState extends State<LatestScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
-              icon: Icon(Icons.search, color: Color(0xFF5AA5B1)),
+              icon: Icon(Icons.search, color: isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1)), // Dynamic icon color
               onPressed: () {
                 showSearch(
                   context: context,
@@ -103,7 +106,7 @@ class _LatestScreenState extends State<LatestScreen> {
                     fontFamily: 'SF-Pro-Text',
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: Colors.black87,
+                    color: isDarkMode ? Colors.white : Colors.black87, // Dynamic text color
                   ),
                 ),
                 Row(
@@ -120,8 +123,8 @@ class _LatestScreenState extends State<LatestScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isGridView
-                              ? Color(0xFF5AA5B1)
-                              : Colors.grey[300],
+                              ? (isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1))
+                              : (isDarkMode ? Colors.grey[800] : Colors.grey[300]),
                         ),
                         child: Icon(Icons.grid_on, color: Colors.white),
                       ),
@@ -137,8 +140,8 @@ class _LatestScreenState extends State<LatestScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: !isGridView
-                              ? Color(0xFF5AA5B1)
-                              : Colors.grey[300],
+                              ? (isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1))
+                              : (isDarkMode ? Colors.grey[800] : Colors.grey[300]),
                         ),
                         child: Icon(Icons.list, color: Colors.white),
                       ),
@@ -168,6 +171,7 @@ class _LatestScreenState extends State<LatestScreen> {
     );
   }
 
+
   Widget categoryCard(dynamic book) {
     double rating = book['rating'] != null
         ? double.tryParse(book['rating'].toString()) ?? 0.0
@@ -179,11 +183,13 @@ class _LatestScreenState extends State<LatestScreen> {
         .join(", ")
         : "Unknown Author";
 
-    // Check if the book has a valid link
     String bookLink = book['bookLink'] ?? '';
     if (bookLink.isEmpty) {
-      bookLink = 'https://via.placeholder.com/150'; // Fallback link for empty or null link
+      bookLink = 'https://via.placeholder.com/150';
     }
+
+    // Check if dark mode is enabled
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () {
@@ -197,12 +203,20 @@ class _LatestScreenState extends State<LatestScreen> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
+          color: Theme.of(context).cardColor, // Dynamic card color
+          border: Border.all(
+            color: isDarkMode
+                ? Colors.white // Border color for dark mode
+                : Colors.grey.shade300, // Border color for light mode
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: isDarkMode
+                  ? Colors.black.withOpacity(0.4) // Darker shadow for dark mode
+                  : Colors.black.withOpacity(0.1), // Lighter shadow for light mode
               blurRadius: 8,
-              offset: Offset(0, 6),
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -214,7 +228,8 @@ class _LatestScreenState extends State<LatestScreen> {
                 AspectRatio(
                   aspectRatio: 16 / 9,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                    borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(12)),
                     child: Image.network(
                       book['image'] ?? 'https://via.placeholder.com/150',
                       fit: BoxFit.cover,
@@ -222,26 +237,22 @@ class _LatestScreenState extends State<LatestScreen> {
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Container(
-                          color: Colors.grey[300],
-                          child: Center(child: CircularProgressIndicator()),
+                          color: Theme.of(context).dividerColor, // Dynamic placeholder
+                          child: const Center(child: CircularProgressIndicator()),
                         );
                       },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: Colors.grey[300],
+                          color: Theme.of(context).colorScheme.error, // Dynamic error background
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.broken_image,
+                                const Icon(Icons.broken_image,
                                     size: 30, color: Colors.grey),
                                 Text(
                                   'Image not available',
-                                  style: TextStyle(
-                                    fontFamily: 'SF-Pro-Text',
-                                    fontSize: 10,
-                                    color: Colors.grey,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),
@@ -262,48 +273,46 @@ class _LatestScreenState extends State<LatestScreen> {
                     book['title'] ?? '',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'SF-Pro-Text',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 11,
-                    ),
+                    ), // Dynamic title style
                   ),
-                  SizedBox(height: 3),
+                  const SizedBox(height: 3),
                   Text(
                     'By $authors',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'SF-Pro-Text',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontSize: 9,
-                      color: Colors.grey[700],
-                    ),
+                    ), // Dynamic author text style
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Text(
                     book['free'] == true
                         ? 'Free'
                         : '₹ ${book['price'] ?? 'Unknown'}',
-                    style: TextStyle(
-                      fontFamily: 'SF-Pro-Text',
-                      fontSize: 11,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: book['free'] == true ? Colors.green : Colors.red,
+                      fontSize: 11,
+                      color: book['free'] == true
+                          ? Colors.green // Static color for free books
+                          : Colors.red, // Static color for priced books
                     ),
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
-                      ...buildRatingStars(rating, size: 14),
-                      SizedBox(width: 4),
+                      ...buildRatingStars(rating,
+                          size: 14,
+                          color: Colors.amber), // Static star color
+                      const SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
-                        style: TextStyle(
-                          fontFamily: 'SF-Pro-Text',
-                          fontSize: 11,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
-                        ),
+                          fontSize: 11,
+                        ), // Dynamic rating text style
                       ),
                     ],
                   ),
@@ -316,7 +325,8 @@ class _LatestScreenState extends State<LatestScreen> {
     );
   }
 
-  List<Widget> buildRatingStars(double rating, {double size = 18}) {
+
+  List<Widget> buildRatingStars(double rating, {double size = 18, required MaterialColor color}) {
     List<Widget> stars = [];
     for (int i = 0; i < 5; i++) {
       if (i < rating) {
@@ -435,6 +445,8 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   }
 
   Widget categoryCard(BuildContext context, dynamic book) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark; // Check dark mode status
+
     double rating = book['rating'] != null
         ? double.tryParse(book['rating'].toString()) ?? 0.0
         : 0.0;
@@ -455,18 +467,22 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         );
       },
       child: Container(
-        width: 140, 
+        width: 140,
         margin: EdgeInsets.only(right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
+          color: isDarkMode ? Colors.grey[900] : Colors.white, // Adjust color for dark mode
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: Offset(0, 4),
-            ),
+            if (!isDarkMode) // Remove shadow in dark mode
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 6,
+                offset: Offset(0, 4),
+              ),
           ],
+          border: isDarkMode
+              ? Border.all(color: Colors.grey[700]!, width: 1) // Add border in dark mode
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -474,30 +490,30 @@ class CustomSearchDelegate extends SearchDelegate<String> {
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
               child: Container(
-                height: 120, 
+                height: 120,
                 width: double.infinity,
-                color: Colors.grey[200], 
+                color: isDarkMode ? Colors.grey[800] : Colors.grey[200], // Adjust placeholder color
                 child: FittedBox(
-                  fit: BoxFit.cover, 
+                  fit: BoxFit.cover,
                   clipBehavior: Clip.hardEdge,
                   child: Image.network(
                     book['image'] ?? 'https://via.placeholder.com/150',
-                    width: 140, 
-                    height: 120, 
+                    width: 140,
+                    height: 105,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: Colors.grey[300],
+                        color: isDarkMode ? Colors.grey[700] : Colors.grey[300], // Adjust error color
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.broken_image,
-                                  size: 30, color: Colors.grey),
+                                  size: 25, color: Colors.grey),
                               Text(
                                 'Image not available',
                                 style: TextStyle(
                                   fontFamily: 'SF-Pro-Text',
-                                  fontSize: 10,
+                                  fontSize: 9,
                                   color: Colors.grey,
                                 ),
                               ),
@@ -522,21 +538,22 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 11,
+                      color: isDarkMode ? Colors.white : Colors.black, // Adjust text color
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 3),
                   Text(
                     'By $authors',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
-                      fontSize: 10,
-                      color: Colors.grey[700],
+                      fontSize: 9,
+                      color: isDarkMode ? Colors.grey[500] : Colors.grey[700], // Adjust text color
                     ),
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: 5),
                   Text(
                     book['free'] == true
                         ? 'Free'
@@ -545,21 +562,22 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                       fontFamily: 'SF-Pro-Text',
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: book['free'] == true ? Colors.green : Colors.red,
+                      color:
+                      book['free'] == true ? Colors.green : (isDarkMode ? Colors.red[300] : Colors.red), // Adjust price color
                     ),
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: 5),
                   Row(
                     children: [
-                      ...buildRatingStars(rating, size: 14),
+                      ...buildRatingStars(rating, size: 13),
                       SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
                         style: TextStyle(
                           fontFamily: 'SF-Pro-Text',
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
+                          color: isDarkMode ? Colors.grey[500] : Colors.grey[700], // Adjust rating color
                         ),
                       ),
                     ],
@@ -572,7 +590,6 @@ class CustomSearchDelegate extends SearchDelegate<String> {
       ),
     );
   }
-
 
 
   List<Widget> buildRatingStars(double rating, {double size = 18}) {
