@@ -12,7 +12,7 @@ class AuthorsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme
           .of(context)
-          .scaffoldBackgroundColor, // Dynamic background color
+          .scaffoldBackgroundColor, 
       appBar: AppBar(
         title: Text(
           'Authors',
@@ -24,26 +24,24 @@ class AuthorsScreen extends StatelessWidget {
             fontSize: 18,
             fontFamily: 'SF-Pro-Text',
             fontWeight: FontWeight.w700,
-          ), // Dynamic title style
+          ), 
         ),
         backgroundColor: Theme
             .of(context)
             .appBarTheme
             .backgroundColor,
-        // Dynamic AppBar color
         foregroundColor: Theme
             .of(context)
             .appBarTheme
             .iconTheme
             ?.color,
-        // Dynamic icons color
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: Theme
                 .of(context)
                 .iconTheme
-                .color), // Dynamic icon color
+                .color), 
             onPressed: () {
               showSearch(
                 context: context,
@@ -69,7 +67,7 @@ class AuthorsScreen extends StatelessWidget {
                     ?.copyWith(
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
-                ), // Dynamic error text style
+                ), 
               ),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -83,7 +81,7 @@ class AuthorsScreen extends StatelessWidget {
                     ?.copyWith(
                   fontWeight: FontWeight.w300,
                   fontSize: 14,
-                ), // Dynamic empty state text style
+                ), 
               ),
             );
           } else {
@@ -136,7 +134,7 @@ class AuthorsScreen extends StatelessWidget {
               fontFamily: 'SF-Pro-Text',
               fontWeight: FontWeight.w500,
               fontSize: 10,
-            ), // Dynamic text style
+            ), 
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
@@ -158,7 +156,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
       IconButton(
         icon: Icon(
           Icons.clear,
-          color: Theme.of(context).iconTheme.color, // Dynamic icon color
+          color: Theme.of(context).iconTheme.color, 
         ),
         onPressed: () {
           query = '';
@@ -172,7 +170,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
     return IconButton(
       icon: Icon(
         Icons.arrow_back,
-        color: Theme.of(context).iconTheme.color, // Dynamic icon color
+        color: Theme.of(context).iconTheme.color, 
       ),
       onPressed: () {
         close(context, '');
@@ -195,7 +193,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
               'Error: ${snapshot.error}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w400,
-              ), // Dynamic error text style
+              ), 
             ),
           );
         }
@@ -206,7 +204,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
               'No results found',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w300,
-              ), // Dynamic no results text style
+              ), 
             ),
           );
         }
@@ -219,7 +217,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
             'No authors found',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w300,
-            ), // Dynamic no authors text style
+            ), 
           ),
         )
             : GridView.builder(
@@ -247,7 +245,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
           'Search for authors by name',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w400,
-          ), // Dynamic suggestion text style
+          ), 
         ),
       );
     }
@@ -279,7 +277,7 @@ class AuthorSearchDelegate extends SearchDelegate<String> {
               fontFamily: 'SF-Pro-Text',
               fontWeight: FontWeight.w500,
               fontSize: 10,
-            ), // Dynamic card text style
+            ), 
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
