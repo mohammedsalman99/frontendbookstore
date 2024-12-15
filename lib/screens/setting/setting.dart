@@ -5,7 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
-import 'theme_provider.dart'; // Make sure you have the ThemeProvider class defined
+import 'theme_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -28,7 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     print("SettingsPage initialized.");
     _loadNotificationPreference();
-    _loadCacheSize(); // Load cache size on startup
+    _loadCacheSize(); 
   }
   Future<String?> _getAuthToken() async {
     try {
@@ -205,12 +205,8 @@ class _SettingsPageState extends State<SettingsPage> {
     double totalSize = 0.0;
 
     try {
-      // Get cache directory path
       final Directory cacheDir = Directory(await getTemporaryDirectoryPath());
-
-      // Ensure directory exists
       if (cacheDir.existsSync()) {
-        // Iterate through cache files and calculate total size
         for (final file in cacheDir.listSync()) {
           if (file is File) {
             totalSize += file.lengthSync();
@@ -220,26 +216,18 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (e) {
       print("Error calculating cache size: $e");
     }
-
-    // Convert bytes to megabytes (MB)
     return totalSize / (1024 * 1024);
   }
 
   Future<void> _clearCache() async {
     print("Clearing cache...");
     try {
-      // Get cache directory path
       final Directory cacheDir = Directory(await getTemporaryDirectoryPath());
-
-      // Ensure directory exists
       if (cacheDir.existsSync()) {
-        // Delete all files and directories in the cache
         for (final file in cacheDir.listSync()) {
           file.deleteSync(recursive: true);
         }
       }
-
-      // Update UI and cache size
       setState(() {
         cacheSize = 0.0;
       });
@@ -280,7 +268,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadCacheSize() async {
     final size = await _calculateCacheSize();
     setState(() {
-      cacheSize = size; // Update cache size dynamically
+      cacheSize = size;
     });
   }
 
@@ -290,25 +278,24 @@ class _SettingsPageState extends State<SettingsPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Dynamic background
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
       appBar: AppBar(
         title: Text(
           'Settings',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white), // Dynamic AppBar title
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white), 
         ),
         centerTitle: true,
       ),
       body: ListView(
         children: [
-          // Push Notification Toggle
           ListTile(
             leading: Icon(
               Icons.notifications,
-              color: Theme.of(context).iconTheme.color, // Dynamic icon color
+              color: Theme.of(context).iconTheme.color, 
             ),
             title: Text(
               'Enable Push Notification',
-              style: Theme.of(context).textTheme.bodyLarge, // Dynamic text style
+              style: Theme.of(context).textTheme.bodyLarge, 
             ),
             trailing: Switch(
               value: isNotificationEnabled,
@@ -321,52 +308,50 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
           ),
-          // Clear Cache Option
           ListTile(
             leading: Icon(
               Icons.refresh,
-              color: Theme.of(context).iconTheme.color, // Dynamic icon color
+              color: Theme.of(context).iconTheme.color, 
             ),
             title: Text(
               'Clear Cache',
-              style: Theme.of(context).textTheme.bodyLarge, // Dynamic text style
+              style: Theme.of(context).textTheme.bodyLarge, 
             ),
             subtitle: Text(
-              '${cacheSize.toStringAsFixed(1)} MB', // Display current cache size dynamically
-              style: Theme.of(context).textTheme.bodyMedium, // Secondary text style
+              '${cacheSize.toStringAsFixed(1)} MB', 
+              style: Theme.of(context).textTheme.bodyMedium, 
             ),
             onTap: () async {
               print("Clear cache tapped.");
-              await _clearCache(); // Clear cache
-              final size = await _calculateCacheSize(); // Recalculate cache size
+              await _clearCache(); 
+              final size = await _calculateCacheSize(); 
               setState(() {
-                cacheSize = size; // Update UI with new cache size
+                cacheSize = size; 
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     'Cache cleared successfully!',
-                    style: Theme.of(context).textTheme.bodyLarge, // Dynamic text style
+                    style: Theme.of(context).textTheme.bodyLarge, 
                   ),
-                  backgroundColor: Theme.of(context).cardColor, // Dynamic SnackBar color
+                  backgroundColor: Theme.of(context).cardColor, 
                 ),
               );
             },
           ),
-          // Dark Mode Toggle
           ListTile(
             leading: Icon(
               Icons.brightness_6,
-              color: Theme.of(context).iconTheme.color, // Dynamic icon color
+              color: Theme.of(context).iconTheme.color,
             ),
             title: Text(
               'Dark Mode',
-              style: Theme.of(context).textTheme.bodyLarge, // Dynamic text style
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             trailing: Switch(
               value: themeProvider.themeMode == ThemeMode.dark,
               onChanged: (value) {
-                themeProvider.toggleTheme(value); // Toggle dark/light mode
+                themeProvider.toggleTheme(value); 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -379,7 +364,6 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
           ),
-          // About Us
           ListTile(
             leading: Icon(
               Icons.info,
@@ -397,7 +381,6 @@ class _SettingsPageState extends State<SettingsPage> {
               _showAboutUsDialog(context);
             },
           ),
-          // Rate App
           ListTile(
             leading: Icon(
               Icons.star_rate,
@@ -415,7 +398,6 @@ class _SettingsPageState extends State<SettingsPage> {
               _rateApp();
             },
           ),
-          // Share App
           ListTile(
             leading: Icon(
               Icons.share,
@@ -431,7 +413,6 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             onTap: () {},
           ),
-          // Privacy Policy
           ListTile(
             leading: Icon(
               Icons.privacy_tip,
@@ -449,7 +430,6 @@ class _SettingsPageState extends State<SettingsPage> {
               _showPrivacyPolicy(context);
             },
           ),
-          // Terms of Use
           ListTile(
             leading: Icon(
               Icons.description,
