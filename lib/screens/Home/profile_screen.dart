@@ -273,21 +273,21 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.white, // Adjust background color
+      backgroundColor: isDarkMode ? Colors.black : Colors.white, 
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
           'Profile',
           style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black, // Adjust title color
+            color: isDarkMode ? Colors.white : Colors.black, 
           ),
         ),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDarkMode ? Colors.white : Colors.black, // Adjust icon color
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -297,7 +297,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           IconButton(
             icon: Icon(
               Icons.settings,
-              color: isDarkMode ? Colors.white : Colors.black, // Adjust icon color
+              color: isDarkMode ? Colors.white : Colors.black, 
             ),
             onPressed: () {
               Navigator.push(
@@ -313,8 +313,8 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: isDarkMode
-                  ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)] // Dark mode gradient
-                  : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], // Light mode gradient
+                  ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)] 
+                  : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], 
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -364,8 +364,8 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDarkMode
-              ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)] // Dark mode gradient
-              : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], // Light mode gradient
+              ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)] 
+              : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], 
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -373,8 +373,8 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         boxShadow: [
           BoxShadow(
             color: isDarkMode
-                ? Colors.black.withOpacity(0.5) // Stronger shadow for dark mode
-                : Colors.black.withOpacity(0.1), // Lighter shadow for light mode
+                ? Colors.black.withOpacity(0.5) 
+                : Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -396,7 +396,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black, // Adjust text color
+              color: isDarkMode ? Colors.white : Colors.black, 
             ),
           ),
           const SizedBox(height: 5),
@@ -405,7 +405,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: isDarkMode ? Colors.grey[400] : Colors.white70, // Adjust text color
+              color: isDarkMode ? Colors.grey[400] : Colors.white70, 
             ),
           ),
         ],
@@ -420,13 +420,13 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey[800] : Colors.grey[200], // Adjust background color
+        color: isDarkMode ? Colors.grey[800] : Colors.grey[200], 
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
             color: isDarkMode
-                ? Colors.black.withOpacity(0.5) // Stronger shadow for dark mode
-                : Colors.black.withOpacity(0.1), // Lighter shadow for light mode
+                ? Colors.black.withOpacity(0.5) 
+                : Colors.black.withOpacity(0.1), 
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -436,15 +436,15 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         indicator: BoxDecoration(
           gradient: LinearGradient(
             colors: isDarkMode
-                ? [Colors.grey[700]!, Colors.grey[600]!] // Darker gradient for dark mode
-                : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], // Original gradient for light mode
+                ? [Colors.grey[700]!, Colors.grey[600]!] 
+                : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], 
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(20),
         ),
-        labelColor: isDarkMode ? Colors.black : Colors.white, // Adjust label color
-        unselectedLabelColor: isDarkMode ? Colors.grey[400] : Colors.grey[600], // Adjust unselected label color
+        labelColor: isDarkMode ? Colors.black : Colors.white, 
+        unselectedLabelColor: isDarkMode ? Colors.grey[400] : Colors.grey[600], 
         labelStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
