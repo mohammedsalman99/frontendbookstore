@@ -4,7 +4,7 @@ import 'package:frontend/screens/setting/theme_provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:frontend/screens/Details/detailpage.dart';
 import 'package:frontend/splash.dart';
-import 'package:provider/provider.dart'; // For ThemeProvider
+import 'package:provider/provider.dart'; 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +15,7 @@ Future<void> main() async {
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => ThemeProvider(), // Provide ThemeProvider globally
+      create: (_) => ThemeProvider(), 
       child: const MyApp(),
     ),
   );
@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    // Custom Light and Dark Themes
     final ThemeData lightTheme = ThemeData(
       brightness: Brightness.light,
       primarySwatch: Colors.teal,
@@ -39,12 +38,12 @@ class MyApp extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: Colors.black), // Main body text (formerly bodyText1)
-        bodyMedium: TextStyle(color: Colors.black54), // Secondary text (formerly bodyText2)
-        titleLarge: TextStyle(color: Colors.black), // AppBar title (formerly headline6)
+        bodyLarge: TextStyle(color: Colors.black), 
+        bodyMedium: TextStyle(color: Colors.black54), 
+        titleLarge: TextStyle(color: Colors.black), 
       ),
-      cardColor: Colors.white, // Card background
-      dividerColor: Colors.grey, // Divider color
+      cardColor: Colors.white,
+      dividerColor: Colors.grey,
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.teal,
         selectedItemColor: Colors.white,
@@ -62,12 +61,12 @@ class MyApp extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: Colors.white), // Main body text (formerly bodyText1)
-        bodyMedium: TextStyle(color: Colors.white70), // Secondary text (formerly bodyText2)
-        titleLarge: TextStyle(color: Colors.white), // AppBar title (formerly headline6)
+        bodyLarge: TextStyle(color: Colors.white), 
+        bodyMedium: TextStyle(color: Colors.white70), 
+        titleLarge: TextStyle(color: Colors.white),
       ),
-      cardColor: Colors.grey[900], // Card background
-      dividerColor: Colors.white24, // Divider color
+      cardColor: Colors.grey[900], 
+      dividerColor: Colors.white24, 
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.teal,
         selectedItemColor: Colors.white,
@@ -79,12 +78,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Readme',
-      theme: lightTheme, // Custom light theme
-      darkTheme: darkTheme, // Custom dark theme
-      themeMode: themeProvider.themeMode, // Dynamic theme switching
+      theme: lightTheme, 
+      darkTheme: darkTheme, 
+      themeMode: themeProvider.themeMode, 
       initialRoute: '/',
       onGenerateRoute: (settings) {
-        // Handle dynamic routing for detail pages
         if (settings.name != null && settings.name!.startsWith('/detail')) {
           final uri = Uri.parse(settings.name!);
           final bookId = uri.queryParameters['bookId'];
@@ -95,8 +93,6 @@ class MyApp extends StatelessWidget {
             );
           }
         }
-
-        // Default route to SplashScreen
         return MaterialPageRoute(
           builder: (context) => SplashScreen(),
         );
