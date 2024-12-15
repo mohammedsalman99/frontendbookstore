@@ -15,7 +15,7 @@ class AuthorInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Dynamic background
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
       appBar: AppBar(
         title: Text(
           'Author Info',
@@ -24,7 +24,7 @@ class AuthorInfoScreen extends StatelessWidget {
             fontSize: 18,
           ),
         ),
-        foregroundColor: Theme.of(context).iconTheme.color, // Dynamic icon color
+        foregroundColor: Theme.of(context).iconTheme.color, 
         elevation: 0,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -36,14 +36,14 @@ class AuthorInfoScreen extends StatelessWidget {
             return Center(
               child: Text(
                 'Error: ${authorSnapshot.error}',
-                style: Theme.of(context).textTheme.bodyMedium, // Dynamic text style
+                style: Theme.of(context).textTheme.bodyMedium, 
               ),
             );
           } else if (!authorSnapshot.hasData) {
             return Center(
               child: Text(
                 'No author info found.',
-                style: Theme.of(context).textTheme.bodyMedium, // Dynamic text style
+                style: Theme.of(context).textTheme.bodyMedium, 
               ),
             );
           } else {
@@ -57,7 +57,7 @@ class AuthorInfoScreen extends StatelessWidget {
                   return Center(
                     child: Text(
                       'Error loading books: ${bookSnapshot.error}',
-                      style: Theme.of(context).textTheme.bodyMedium, // Dynamic text style
+                      style: Theme.of(context).textTheme.bodyMedium, 
                     ),
                   );
                 } else if (!bookSnapshot.hasData || bookSnapshot.data!.isEmpty) {
@@ -69,7 +69,7 @@ class AuthorInfoScreen extends StatelessWidget {
                       Center(
                         child: Text(
                           'No books found for this author.',
-                          style: Theme.of(context).textTheme.bodyMedium, // Dynamic text style
+                          style: Theme.of(context).textTheme.bodyMedium, 
                         ),
                       ),
                     ],
@@ -105,7 +105,7 @@ class AuthorInfoScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor, // Dynamic card color
+        color: Theme.of(context).cardColor, 
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -177,14 +177,13 @@ class AuthorInfoScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           bio ?? 'No biography available.',
-          style: Theme.of(context).textTheme.bodyMedium, // Dynamic text style
+          style: Theme.of(context).textTheme.bodyMedium, 
         ),
       ],
     );
   }
 
   Widget _buildAuthorBooks(BuildContext context, List<dynamic> books) {
-    // Filter books to include only those authored by the selected author
     final filteredBooks = books.where((book) {
       return book['authors'].any((author) => author['_id'] == authorId);
     }).toList();
@@ -196,7 +195,7 @@ class AuthorInfoScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w400,
             fontSize: 14,
-          ), // Dynamic text style
+          ), 
         ),
       );
     }
@@ -209,7 +208,7 @@ class AuthorInfoScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
             fontSize: 18,
-          ), // Dynamic text style
+          ), 
         ),
         const SizedBox(height: 16),
         GridView.builder(
@@ -279,13 +278,13 @@ class AuthorInfoScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark
               ? Colors.grey[800]
-              : Colors.white, // Dynamic background color
+              : Colors.white, 
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.black.withOpacity(0.4)
-                  : Colors.black.withOpacity(0.1), // Adjust shadow intensity
+                  : Colors.black.withOpacity(0.1), 
               blurRadius: 6,
               offset: const Offset(0, 4),
             ),
@@ -306,12 +305,12 @@ class AuthorInfoScreen extends StatelessWidget {
                     height: 100,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[700]
-                        : Colors.grey[200], // Adjust error background color
+                        : Colors.grey[200],
                     child: Icon(
                       Icons.broken_image,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
-                          : Colors.grey, // Adjust icon color
+                          : Colors.grey, 
                     ),
                   );
                 },
@@ -326,7 +325,7 @@ class AuthorInfoScreen extends StatelessWidget {
                 fontSize: 11,
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
-                    : Colors.black, // Dynamic text color
+                    : Colors.black, 
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -340,7 +339,7 @@ class AuthorInfoScreen extends StatelessWidget {
                 fontSize: 9,
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.grey[400]
-                    : Colors.grey, // Dynamic text color
+                    : Colors.grey, 
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -357,7 +356,7 @@ class AuthorInfoScreen extends StatelessWidget {
                     fontSize: 11,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.green
-                        : Colors.red, // Dynamic price color
+                        : Colors.red, 
                   ),
                 ),
                 Row(
@@ -372,7 +371,7 @@ class AuthorInfoScreen extends StatelessWidget {
                         fontSize: 11,
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Colors.white70
-                            : Colors.black, // Dynamic rating text color
+                            : Colors.black, 
                       ),
                     ),
                   ],
