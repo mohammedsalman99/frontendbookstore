@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 class RateApp {
   static Future<void> launchRateApp(BuildContext context) async {
     final Uri appStoreUrl = Uri.parse(
-        'https://play.google.com/store/apps/details?id=com.example.app'); // Replace with your app's URL
+        'https://play.google.com/store/apps/details?id=com.example.app');
 
     try {
       if (await canLaunchUrl(appStoreUrl)) {
