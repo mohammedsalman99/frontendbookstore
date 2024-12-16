@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/setting/termofuse.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:provider/provider.dart';
+import 'aboutus.dart';
 import 'theme_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'rateapp.dart';// Adjust the path if needed
+import 'shareapp.dart'; // Import the ShareApp class
+import 'privacypolicy.dart'; // Import your new file
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -280,12 +285,15 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        backgroundColor: Colors.black, // Set the background color to black
         title: Text(
           'Settings',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white), // Text remains white
         ),
-        centerTitle: true,
+        centerTitle: true, // Center the title
+        iconTheme: IconThemeData(color: Colors.white), // Ensure icons are also white
       ),
+
       body: ListView(
         children: [
           ListTile(
@@ -380,7 +388,10 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).iconTheme.color,
             ),
             onTap: () {
-              _showAboutUsDialog(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AboutUsPage()),
+              );
             },
           ),
           ListTile(
@@ -397,7 +408,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).iconTheme.color,
             ),
             onTap: () {
-              _rateApp();
+              RateApp.launchRateApp(context);
             },
           ),
           ListTile(
@@ -413,8 +424,11 @@ class _SettingsPageState extends State<SettingsPage> {
               Icons.arrow_forward_ios,
               color: Theme.of(context).iconTheme.color,
             ),
-            onTap: () {},
+            onTap: () {
+              ShareApp.share(); // Call the method from ShareApp class
+            },
           ),
+
           ListTile(
             leading: Icon(
               Icons.privacy_tip,
@@ -429,9 +443,13 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).iconTheme.color,
             ),
             onTap: () {
-              _showPrivacyPolicy(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+              );
             },
           ),
+
           ListTile(
             leading: Icon(
               Icons.description,
@@ -446,9 +464,13 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).iconTheme.color,
             ),
             onTap: () {
-              _showTermsOfUse(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TermsOfUsePage()),
+              );
             },
           ),
+
         ],
       ),
     );
@@ -464,24 +486,11 @@ class _SettingsPageState extends State<SettingsPage> {
     themeProvider.toggleTheme(!isDarkMode);
   }
 
-  void _showAboutUsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('About Us'),
-          content: const Text(
-              'This is a sample app developed to showcase settings functionality.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+
+  void _showAboutUsPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AboutUsPage()),
     );
   }
 
