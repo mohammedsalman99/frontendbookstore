@@ -26,7 +26,6 @@ class TermsOfUsePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Center(
                   child: Column(
                     children: [
@@ -55,14 +54,12 @@ class TermsOfUsePage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
 
-                // Introduction
                 _buildSection(
                   title: 'Introduction',
                   content: '''
 Welcome to our Bookstore app. By accessing or using our platform, you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, please do not use our services.''',
                 ),
 
-                // User Obligations
                 _buildSection(
                   title: 'User Obligations',
                   content: '''
@@ -71,7 +68,6 @@ Welcome to our Bookstore app. By accessing or using our platform, you agree to b
 - Use the app for personal and non-commercial purposes only.''',
                 ),
 
-                // Prohibited Activities
                 _buildSection(
                   title: 'Prohibited Activities',
                   content: '''
@@ -80,7 +76,6 @@ Welcome to our Bookstore app. By accessing or using our platform, you agree to b
 - Distributing or reselling content without authorization.''',
                 ),
 
-                // Payment Terms
                 _buildSection(
                   title: 'Payment Terms',
                   content: '''
@@ -89,14 +84,12 @@ Welcome to our Bookstore app. By accessing or using our platform, you agree to b
 - Ensure secure payment methods when making purchases.''',
                 ),
 
-                // Intellectual Property
                 _buildSection(
                   title: 'Intellectual Property',
                   content: '''
 All content on this app, including text, images, and logos, is owned by the Bookstore. Unauthorized use, reproduction, or distribution of our content is strictly prohibited.''',
                 ),
 
-                // Limitation of Liability
                 _buildSection(
                   title: 'Limitation of Liability',
                   content: '''
@@ -106,21 +99,19 @@ We are not liable for any damages arising from:
 - Third-party actions or services linked to our platform.''',
                 ),
 
-                // Termination
                 _buildSection(
                   title: 'Termination',
                   content: '''
 We reserve the right to suspend or terminate your account for violations of these terms or illegal activities.''',
                 ),
 
-                // Governing Law
                 _buildSection(
                   title: 'Governing Law',
                   content: '''
 These Terms of Use are governed by the laws of your jurisdiction. Disputes will be resolved in accordance with these laws.''',
                 ),
 
-                SizedBox(height: 80), // Space for footer
+                SizedBox(height: 80), 
               ],
             ),
           ),
@@ -129,7 +120,6 @@ These Terms of Use are governed by the laws of your jurisdiction. Disputes will 
     );
   }
 
-  // Section Builder
   Widget _buildSection({required String title, required String content}) {
     return Card(
       margin: EdgeInsets.only(bottom: 16),
