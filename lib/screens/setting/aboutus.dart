@@ -5,7 +5,7 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Color(0xFF5AA5B1); // Your app's primary color
+    final primaryColor = Color(0xFF5AA5B1); 
 
     Widget _buildInfoTile(IconData icon, String title, String subtitle) {
       return Card(
@@ -37,18 +37,18 @@ class AboutUsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white, // White background
-        elevation: 1, // Light shadow for subtle separation
+        backgroundColor: Colors.white, 
+        elevation: 1, 
         title: Text(
           "About Us",
           style: TextStyle(
-            color: Colors.black87, // Text color set to dark for contrast
+            color: Colors.black87, 
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         iconTheme: IconThemeData(
-          color: Colors.black87, // Back arrow and icons color
+          color: Colors.black87, 
         ),
       ),
 
@@ -57,7 +57,6 @@ class AboutUsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // App Logo and Title
             Center(
               child: Column(
                 children: [
@@ -80,7 +79,6 @@ class AboutUsPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // App Information Tiles
             _buildInfoTile(Icons.info, "App Version", "1.0.0"),
             _buildInfoTile(Icons.business, "Company", "README"),
             _buildInfoTile(Icons.email, "Email", "info@easy.com"),
@@ -89,8 +87,6 @@ class AboutUsPage extends StatelessWidget {
 
             SizedBox(height: 16),
             Divider(thickness: 1),
-
-            // About Us Description
             Text(
               "About Us",
               style: TextStyle(
