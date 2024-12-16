@@ -54,12 +54,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Readme',
-      theme: lightTheme, // Default light theme
-      darkTheme: darkTheme, // Default dark theme
-      themeMode: themeProvider.themeMode, // Dynamic theme switching
+      theme: lightTheme, 
+      darkTheme: darkTheme, 
+      themeMode: themeProvider.themeMode, 
       initialRoute: initialRoute,
       onGenerateRoute: (settings) {
-        // Handle dynamic routing for detail pages
         if (settings.name != null && settings.name!.startsWith('/detail')) {
           final uri = Uri.parse(settings.name!);
           final bookId = uri.queryParameters['bookId'];
@@ -72,7 +71,6 @@ class MyApp extends StatelessWidget {
           }
         }
 
-        // Default route to SplashScreen
         return MaterialPageRoute(
           builder: (context) => SplashScreen(),
           settings: RouteSettings(name: '/'),
