@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RateApp {
   static Future<void> launchRateApp(BuildContext context) async {
     final Uri appStoreUrl = Uri.parse(
-        'https://play.google.com/store/apps/details?id=com.example.app'); // Replace with your app's URL
+        'https://play.google.com/store/apps/details?id=com.example.app');
 
     // Save the current state before launching the external app
     await _saveCurrentState(context);

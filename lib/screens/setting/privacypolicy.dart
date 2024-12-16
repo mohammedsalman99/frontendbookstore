@@ -26,7 +26,6 @@ class PrivacyPolicyPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // App Logo and Name Header
                 Center(
                   child: Column(
                     children: [
@@ -55,7 +54,6 @@ class PrivacyPolicyPage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
 
-                // Data Collection Section
                 _buildExpandableSection(
                   title: 'Data Collection',
                   content: '''
@@ -67,7 +65,6 @@ class PrivacyPolicyPage extends StatelessWidget {
                   icon: Icons.data_usage,
                 ),
 
-                // Data Usage Section
                 _buildExpandableSection(
                   title: 'How We Use Your Data',
                   content: '''
@@ -79,7 +76,6 @@ class PrivacyPolicyPage extends StatelessWidget {
                   icon: Icons.verified_user,
                 ),
 
-                // Data Sharing Section
                 _buildExpandableSection(
                   title: 'Third-Party Services',
                   content: '''
@@ -93,7 +89,6 @@ We may share data with trusted partners for:
                   icon: Icons.supervised_user_circle,
                 ),
 
-                // Security Measures Section
                 _buildExpandableSection(
                   title: 'Security Measures',
                   content: '''
@@ -105,7 +100,6 @@ We may share data with trusted partners for:
                   icon: Icons.lock_outline,
                 ),
 
-                // User Rights Section
                 _buildExpandableSection(
                   title: 'Your Rights',
                   content: '''
@@ -119,7 +113,7 @@ We may share data with trusted partners for:
 
                 SizedBox(height: 20),
                 _buildFooterSection(),
-                SizedBox(height: 80), // Extra space for footer
+                SizedBox(height: 80), 
               ],
             ),
           ),
@@ -128,7 +122,6 @@ We may share data with trusted partners for:
     );
   }
 
-  // Expandable Section Widget
   Widget _buildExpandableSection({
     required String title,
     required String content,
@@ -161,7 +154,6 @@ We may share data with trusted partners for:
     );
   }
 
-  // Footer Section
   Widget _buildFooterSection() {
     return Card(
       color: Color(0xFF5AA5B1),
