@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:io';
 
-import '../auth/login.dart'; // Replace with your LoginPage path if needed
+import '../auth/login.dart'; 
 
 class MessagesScreen extends StatefulWidget {
   @override
@@ -19,7 +19,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
   String? authToken;
-  String? profilePictureUrl; // Holds the user's profile picture URL
+  String? profilePictureUrl;
 
 
   @override
@@ -29,7 +29,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
 
-  // Check if user is authenticated
   Future<void> _checkAuthentication() async {
     final prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('auth_token');
@@ -39,12 +38,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
         MaterialPageRoute(builder: (context) => LoginPage()),
       );
     } else {
-      fetchMessages();       // Fetch chat messages
+      fetchMessages();   
     }
   }
 
-
-  // Fetch messages from the backend
   Future<void> fetchMessages() async {
     print("Fetching messages...");
     setState(() {
@@ -76,21 +73,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  // Send a new message to the backend
-  // Send a new message to the backend
   Future<void> sendMessage({required String message, File? file}) async {
     print("Sending message...");
 
-    // Add the message locally for instant UI feedback
     final newMessage = {
       'body': message,
       'sentBy': 'user',
       'timestamp': {'_seconds': DateTime.now().millisecondsSinceEpoch ~/ 1000},
-      'attachment': file?.path, // Use file path for attachment preview if applicable
+      'attachment': file?.path, 
     };
 
     setState(() {
-      messages.insert(0, newMessage); // Add the message to the top of the list
+      messages.insert(0, newMessage); 
     });
 
     try {
@@ -110,7 +104,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
       print("Auth Token: Bearer $authToken");
 
       if (file == null) {
-        // Text-only message (JSON request)
         final response = await http.post(
           Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/chat/send'),
           headers: {
@@ -128,7 +121,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
           print("Error: ${response.body}");
         }
       } else {
-        // Message with file attachment (Multipart request)
         final request = http.MultipartRequest(
           'POST',
           Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/chat/send'),
@@ -160,9 +152,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-
-
-  // Show error message
   void showError(String message) {
     print("Error: $message");
     ScaffoldMessenger.of(context).showSnackBar(
@@ -173,7 +162,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     });
   }
 
-  // Pick an image
   Future<File?> pickImage() async {
     try {
       final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
@@ -191,7 +179,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  // Pick a file
   Future<File?> pickFile() async {
     try {
       final result = await FilePicker.platform.pickFiles();
@@ -222,7 +209,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              reverse: true, // Show latest messages at the bottom
+              reverse: true, 
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
@@ -239,8 +226,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isSentByUser
-                          ? Color(0xFF5AA5B1) // User message color
-                          : Colors.white, // Admin message color
+                          ? Color(0xFF5AA5B1) 
+                          : Colors.white, 
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
@@ -359,7 +346,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   onPressed: () {
                     final message = _messageController.text.trim();
                     if (message.isNotEmpty) {
-                      // Add message locally and clear input
                       setState(() {
                         messages.insert(0, {
                           'body': message,
@@ -385,13 +371,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-
-
-
-  // Format timestamp
   String _formatTimestamp(dynamic timestamp) {
     final seconds = timestamp['_seconds'];
     final dateTime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-    return "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}"; // Format HH:mm
+    return "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}"; 
   }
 }
