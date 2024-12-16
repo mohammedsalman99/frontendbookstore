@@ -7,7 +7,6 @@ class RateApp {
     final Uri appStoreUrl = Uri.parse(
         'https://play.google.com/store/apps/details?id=com.example.app');
 
-    // Save the current state before launching the external app
     await _saveCurrentState(context);
 
     try {
@@ -27,7 +26,6 @@ class RateApp {
     }
   }
 
-  // Save the current route to SharedPreferences
   static Future<void> _saveCurrentState(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final String? currentRoute = ModalRoute.of(context)?.settings.name;
@@ -38,7 +36,6 @@ class RateApp {
     }
   }
 
-  // Restore the last route on app resume
   static Future<String?> getLastRoute() async {
     final prefs = await SharedPreferences.getInstance();
     final lastRoute = prefs.getString('last_route');
