@@ -15,7 +15,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
-  int _unreadMessages = 0; // Track unread message count
+  int _unreadMessages = 0;
 
   final List<Widget> _screens = [
     HomeScreen(),
@@ -27,10 +27,9 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    fetchUnreadMessages(); // Fetch unread messages on app start
+    fetchUnreadMessages(); 
   }
 
-  // Fetch unread message count from the backend
   Future<void> fetchUnreadMessages() async {
     try {
       final response = await http.get(
@@ -41,7 +40,6 @@ class _HomeState extends State<Home> {
         final data = jsonDecode(response.body);
         final messages = data['messages'] as List;
 
-        // Count unread messages based on a condition (e.g., not viewed yet)
         final unreadCount = messages.where((message) => !message['isViewed']).length;
 
         setState(() {
@@ -66,7 +64,6 @@ class _HomeState extends State<Home> {
       context,
       MaterialPageRoute(builder: (context) => MessagesScreen()),
     ).then((_) {
-      // Clear unread messages after viewing
       setState(() {
         _unreadMessages = 0;
       });
@@ -79,18 +76,15 @@ class _HomeState extends State<Home> {
       extendBody: true,
       body: Stack(
         children: [
-          // Main screens
           _screens[_selectedIndex],
-          // Floating message icon
           Positioned(
-            bottom: 80, // Above the bottom navigation bar
-            right: 16, // Aligned to the right
+            bottom: 80, 
+            right: 16, 
             child: GestureDetector(
               onTap: _openMessagesScreen,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Circular floating icon
                   Container(
                     width: 56,
                     height: 56,
@@ -111,7 +105,6 @@ class _HomeState extends State<Home> {
                       size: 28,
                     ),
                   ),
-                  // Unread badge
                   if (_unreadMessages > 0)
                     Positioned(
                       top: 8,
