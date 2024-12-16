@@ -9,9 +9,9 @@ import 'package:provider/provider.dart';
 import 'aboutus.dart';
 import 'theme_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'rateapp.dart';// Adjust the path if needed
-import 'shareapp.dart'; // Import the ShareApp class
-import 'privacypolicy.dart'; // Import your new file
+import 'rateapp.dart';
+import 'shareapp.dart'; 
+import 'privacypolicy.dart'; 
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -285,13 +285,13 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black, // Set the background color to black
+        backgroundColor: Colors.black, 
         title: Text(
           'Settings',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white), // Text remains white
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
         ),
-        centerTitle: true, // Center the title
-        iconTheme: IconThemeData(color: Colors.white), // Ensure icons are also white
+        centerTitle: true, 
+        iconTheme: IconThemeData(color: Colors.white), 
       ),
 
       body: ListView(
@@ -425,7 +425,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Theme.of(context).iconTheme.color,
             ),
             onTap: () {
-              ShareApp.share(); // Call the method from ShareApp class
+              ShareApp.share(); 
             },
           ),
 
