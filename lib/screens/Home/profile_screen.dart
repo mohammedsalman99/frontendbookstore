@@ -99,7 +99,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         if (data.containsKey('subscription')) {
           print('fetchSubscriptions: Subscription data found.');
           setState(() {
-            subscriptions = [data['subscription']]; // Update subscription list
+            subscriptions = [data['subscription']]; 
             isSubscriptionsLoading = false;
           });
         } else {
@@ -332,7 +332,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _buildUserOptions(context), // Replace this with the updated _buildUserOptions
+            _buildUserOptions(context), 
           ],
         ),
       ),
@@ -659,13 +659,13 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       padding: const EdgeInsets.all(16),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2, // Responsive grid
+          crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2, 
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         ),
         itemCount: options.length,
         shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(), // Prevent scrolling inside the grid
+        physics: const NeverScrollableScrollPhysics(), 
         itemBuilder: (context, index) {
           final option = options[index];
           return _buildOptionCard(
