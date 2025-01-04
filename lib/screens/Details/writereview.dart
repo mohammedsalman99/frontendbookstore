@@ -80,12 +80,12 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
 
         widget.refreshBookDetails();
         Future.delayed(Duration(seconds: 2), () {
-          Navigator.pop(context);
+          Navigator.pop(context); // Close the review page
         });
       } else if (response.statusCode == 400) {
         final responseBody = jsonDecode(response.body);
         final errorMessage = responseBody['message'] ?? "Your review contains inappropriate content.";
-        final isDuplicate = errorMessage.contains("duplicate");
+        final isDuplicate = errorMessage.contains("duplicate"); // Check for duplicate-specific message
 
         if (isDuplicate) {
           _showAdvancedDialog(
