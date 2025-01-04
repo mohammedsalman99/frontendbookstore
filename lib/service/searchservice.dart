@@ -6,17 +6,21 @@ class SearchService {
 
   Future<Map<String, dynamic>> search(String query) async {
     try {
+      // Construct the URL with query parameter
       final url = Uri.parse('$baseUrl?query=$query');
+
+      // Make the GET request
       final response = await http.get(url);
 
+      // Handle the response
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        if (data.containsKey('success') && data['success'] == true) {
-          return data['results'];
+        // Ensure the 'results' key exists
+        if (data.containsKey('results')) {
+          return data['results'] as Map<String, dynamic>;
         } else {
-          throw Exception(
-              'Search failed: ${data['message'] ?? 'Unknown error occurred.'}');
+          throw Exception('Search failed: "results" key not found in response.');
         }
       } else {
         throw Exception(
