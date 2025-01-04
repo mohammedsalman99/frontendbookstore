@@ -6,17 +6,13 @@ class SearchService {
 
   Future<Map<String, dynamic>> search(String query) async {
     try {
-      // Construct the URL with query parameter
       final url = Uri.parse('$baseUrl?query=$query');
 
-      // Make the GET request
       final response = await http.get(url);
 
-      // Handle the response
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Ensure the 'results' key exists
         if (data.containsKey('results')) {
           return data['results'] as Map<String, dynamic>;
         } else {
