@@ -75,17 +75,13 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
   Future<void> fetchSubscriptions() async {
     print('fetchSubscriptions: Started fetching subscription details...');
-
     try {
       setState(() => isSubscriptionsLoading = true);
-      print('fetchSubscriptions: isSubscriptionsLoading set to true.');
 
       if (token == null) {
         print('fetchSubscriptions: Token is null. Exiting...');
         throw Exception('Token is null. Cannot fetch subscriptions.');
       }
-
-      print('fetchSubscriptions: Token is not null. Proceeding with API call.');
 
       final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/subscriptions/details'),
@@ -100,16 +96,15 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        if (data['subscription'] != null) {
+        if (data.containsKey('subscription')) {
           print('fetchSubscriptions: Subscription data found.');
           setState(() {
-            subscriptions = [data['subscription']];
+            subscriptions = [data['subscription']]; // Update subscription list
             isSubscriptionsLoading = false;
           });
-          print('fetchSubscriptions: Subscriptions updated. isSubscriptionsLoading set to false.');
         } else {
-          print('fetchSubscriptions: Subscription data is null or missing in response.');
-          throw Exception('No subscription found in the API response.');
+          print('fetchSubscriptions: No subscription data found in the response.');
+          setState(() => isSubscriptionsLoading = false);
         }
       } else {
         print('fetchSubscriptions: API request failed with status code: ${response.statusCode}');
@@ -121,10 +116,9 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading subscription details: $error')),
       );
-    } finally {
-      print('fetchSubscriptions: Completed.');
     }
   }
+
 
 
 
@@ -280,19 +274,10 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         title: Text(
           'Profile',
           style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black, 
+            color: isDarkMode ? Colors.white : Colors.white,
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDarkMode ? Colors.white : Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         actions: [
           IconButton(
             icon: Icon(
@@ -347,13 +332,13 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _buildUserOptions(context),
+            _buildUserOptions(context), // Replace this with the updated _buildUserOptions
           ],
         ),
       ),
+
     );
   }
-
 
 
   Widget _buildProfileHeader() {
@@ -396,7 +381,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black, 
+              color: isDarkMode ? Colors.white : Colors.white,
             ),
           ),
           const SizedBox(height: 5),
@@ -539,8 +524,19 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     }
 
     final subscription = subscriptions[0];
-    final expiryDate = DateTime.parse(subscription['expiryDate']);
-    final durationInDays = subscription['plan']['durationInDays'] ?? 0;
+    final plan = subscription['plan'];
+    if (plan == null) {
+      return const Center(
+        child: Text(
+          'You don’t have an active subscription at the moment.',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+
+
+    final expiryDate = DateTime.tryParse(subscription['expiryDate'] ?? '') ?? DateTime.now();
+    final durationInDays = plan['durationInDays'] ?? 0;
     final startDate = expiryDate.subtract(Duration(days: durationInDays));
     final now = DateTime.now();
     final daysLeft = durationInDays - now.difference(startDate).inDays;
@@ -573,7 +569,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          subscription['plan']['planName'] ?? 'N/A',
+                          plan['planName'] ?? 'N/A',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -582,7 +578,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "Price: \$${subscription['plan']['price'] ?? 'N/A'}",
+                          "Price: \$${plan['price'] ?? 'N/A'}",
                           style: const TextStyle(fontSize: 14, color: Colors.white70),
                         ),
                         Text(
@@ -646,72 +642,85 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     );
   }
 
-
-
-
-
-
   Widget _buildUserOptions(BuildContext context) {
-    return Column(
-      children: [
-        _buildOption(context, Icons.favorite, 'My Favorites', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyFavoritesPage(),
-            ),
+    final List<Map<String, dynamic>> options = [
+      {'icon': Icons.favorite, 'label': 'My Favorites', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyFavoritesPage()))},
+      {'icon': Icons.download, 'label': 'My Downloads', 'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MyDownloadsPage()))},
+      {'icon': Icons.edit, 'label': 'Edit Profile', 'onTap': () async {
+        final prefs = await SharedPreferences.getInstance();
+        final userId = prefs.getString('user_id') ?? "";
+        Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(fullName: fullName, gender: gender, phoneNumber: phoneNumber, profilePicture: profilePicture, email: email, userId: userId, onProfileUpdated: fetchUserDetails)));
+      }},
+      {'icon': Icons.delete, 'label': 'Delete Account', 'onTap': () => _showConfirmationDialog(context, 'Delete My Account')},
+      {'icon': Icons.logout, 'label': 'Logout', 'onTap': logout},
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2, // Responsive grid
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: options.length,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(), // Prevent scrolling inside the grid
+        itemBuilder: (context, index) {
+          final option = options[index];
+          return _buildOptionCard(
+            icon: option['icon'],
+            label: option['label'],
+            onTap: option['onTap'],
           );
-        }),
-
-        _buildOption(context, Icons.download, 'My Downloads', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MyDownloadsPage(),
-            ),
-          );
-        }),
-
-        _buildOption(context, Icons.edit, 'Edit Profile', () async {
-          final prefs = await SharedPreferences.getInstance();
-          final userId = prefs.getString('user_id') ?? "";
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EditProfileScreen(
-                fullName: fullName,
-                gender: gender,
-                phoneNumber: phoneNumber,
-                profilePicture: profilePicture,
-                email: email,
-                userId: userId,
-                onProfileUpdated: fetchUserDetails,
-              ),
-            ),
-          );
-        }),
-
-        _buildOption(context, Icons.delete, 'Delete My Account', () {
-          _showConfirmationDialog(context, 'Delete My Account');
-        }),
-        _buildOption(context, Icons.logout, 'Logout', logout),
-        const SizedBox(height: 65),
-      ],
-    );
-  }
-
-  Widget _buildOption(BuildContext context, IconData icon, String label, VoidCallback onTap) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      elevation: 2,
-      child: ListTile(
-        leading: Icon(icon, color: Colors.blue),
-        title: Text(label),
-        onTap: onTap,
+        },
       ),
     );
   }
+
+  Widget _buildOptionCard({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 36, color: Colors.white),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
 
 

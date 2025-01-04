@@ -12,6 +12,7 @@ class SearchService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
+        // Ensure 'success' exists and is a boolean before accessing it
         if (data.containsKey('success') && data['success'] == true) {
           return data['results'];
         } else {
