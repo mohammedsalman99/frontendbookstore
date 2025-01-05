@@ -382,7 +382,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           ),
           const SizedBox(height: 15),
           Text(
-            fullName ?? "Loading full name...", // Uses updated logic
+            fullName ?? "Loading full name...", 
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
