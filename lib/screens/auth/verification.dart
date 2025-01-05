@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Home/home.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Add this import
+import 'package:shared_preferences/shared_preferences.dart'; 
 
 class VerificationPage extends StatefulWidget {
   final String email;
@@ -39,14 +39,11 @@ class _VerificationPageState extends State<VerificationPage> {
       });
 
       if (response.statusCode == 200) {
-        // Parse response and extract user details
         final responseData = jsonDecode(response.body);
 
         String token = responseData['token'];
         String userId = responseData['user']['id'];
         String userEmail = responseData['user']['email'];
-
-        // Save token and user details to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
         await prefs.setString('user_id', userId);
@@ -94,7 +91,6 @@ class _VerificationPageState extends State<VerificationPage> {
     bool isValid = await _verifyCode(_codeController.text);
 
     if (isValid) {
-      // Navigate to the Home screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Home()),
@@ -189,7 +185,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
                         TextField(
                           controller: _codeController,
-                          keyboardType: TextInputType.text, // Allows all input types
+                          keyboardType: TextInputType.text, 
                           decoration: InputDecoration(
                             labelText: "Verification Code",
                             labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
