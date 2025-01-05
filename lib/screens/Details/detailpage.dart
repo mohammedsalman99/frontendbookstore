@@ -82,7 +82,6 @@ class _DetailPageState extends State<DetailPage> {
           return true;
         }
 
-        // Manual fallback check
         if (data['hasSubscriptionAccess'] == false) {
           print("checkUserAccess: Manual subscription check needed...");
           final subscriptionActive = await checkSubscriptionStatus();
