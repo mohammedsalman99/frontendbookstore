@@ -280,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               } else {
-                return const SizedBox.shrink(); // Skip null entries
+                return const SizedBox.shrink(); 
               }
             },
           ),
