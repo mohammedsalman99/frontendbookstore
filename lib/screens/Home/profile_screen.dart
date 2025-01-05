@@ -148,9 +148,14 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         final data = jsonDecode(response.body);
 
         if (data.containsKey('user')) {
+          final fetchedEmail = data['user']['email'];
+          final fetchedFullName = data['user']['fullName'];
+
           setState(() {
-            email = data['user']['email'];
-            fullName = data['user']['fullName'];
+            email = fetchedEmail;
+            fullName = (fetchedFullName == null || fetchedFullName.isEmpty)
+                ? fetchedEmail.split('@').first
+                : fetchedFullName;
             gender = data['user']['gender'];
             phoneNumber = data['user']['phoneNumber'];
             profilePicture = data['user']['profilePicture'];
@@ -349,8 +354,8 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDarkMode
-              ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)] 
-              : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], 
+              ? [Color(0xFF2E2E2E), Color(0xFF1E1E1E)]
+              : [Color(0xFF5AA5B1), Color(0xFF87D1D3)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -358,7 +363,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
         boxShadow: [
           BoxShadow(
             color: isDarkMode
-                ? Colors.black.withOpacity(0.5) 
+                ? Colors.black.withOpacity(0.5)
                 : Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
@@ -373,11 +378,11 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
             backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
             backgroundImage: profilePicture != null && profilePicture!.startsWith('http')
                 ? NetworkImage(profilePicture!)
-                : const AssetImage('assets/images/user_placeholder.png') as ImageProvider,
+                : const AssetImage('assets/icons/rr.jpg') as ImageProvider,
           ),
           const SizedBox(height: 15),
           Text(
-            fullName ?? "Loading full name...",
+            fullName ?? "Loading full name...", // Uses updated logic
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -390,13 +395,16 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: isDarkMode ? Colors.grey[400] : Colors.white70, 
+              color: isDarkMode ? Colors.grey[400] : Colors.white70,
             ),
           ),
         ],
       ),
     );
   }
+
+
+
 
   Widget _buildCustomTabBar() {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;

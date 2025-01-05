@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Home/home.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Add this import
 
 class VerificationPage extends StatefulWidget {
   final String email;
@@ -17,6 +18,7 @@ class _VerificationPageState extends State<VerificationPage> {
   final _codeController = TextEditingController();
   bool _isLoading = false;
 
+
   Future<bool> _verifyCode(String code) async {
     setState(() {
       _isLoading = true;
@@ -25,9 +27,7 @@ class _VerificationPageState extends State<VerificationPage> {
     try {
       final response = await http.post(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/users/auth/verify-email'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'tempUserId': widget.tempUserId,
           'verificationCode': code,
@@ -39,9 +39,24 @@ class _VerificationPageState extends State<VerificationPage> {
       });
 
       if (response.statusCode == 200) {
+        // Parse response and extract user details
+        final responseData = jsonDecode(response.body);
+
+        String token = responseData['token'];
+        String userId = responseData['user']['id'];
+        String userEmail = responseData['user']['email'];
+
+        // Save token and user details to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        await prefs.setString('user_id', userId);
+        await prefs.setString('user_email', userEmail);
+
+        print('Verification successful. Token: $token');
         return true;
       } else {
         final error = jsonDecode(response.body)['message'] ?? 'Invalid verification code';
+        print('Verification failed: $error');
         _showError(error);
         return false;
       }
@@ -49,10 +64,14 @@ class _VerificationPageState extends State<VerificationPage> {
       setState(() {
         _isLoading = false;
       });
+      print('Error during verification: $e');
       _showError("An error occurred. Please try again.");
       return false;
     }
   }
+
+
+
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -75,9 +94,20 @@ class _VerificationPageState extends State<VerificationPage> {
     bool isValid = await _verifyCode(_codeController.text);
 
     if (isValid) {
+      // Navigate to the Home screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Home()),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Verification successful!',
+            style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
+          ),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
       _showError("Invalid verification code");
@@ -159,8 +189,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
                         TextField(
                           controller: _codeController,
-                          keyboardType: TextInputType.number,
-                          maxLength: 6,
+                          keyboardType: TextInputType.text, // Allows all input types
                           decoration: InputDecoration(
                             labelText: "Verification Code",
                             labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
@@ -174,6 +203,7 @@ class _VerificationPageState extends State<VerificationPage> {
                           ),
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
+
                         const SizedBox(height: 12),
 
                         _isLoading

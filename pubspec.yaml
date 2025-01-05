@@ -55,6 +55,7 @@ flutter:
     - assets/icons/apple.png
     - assets/icons/login.png
     - assets/icons/signup.png
+    - assets/icons/rr.jpg
 
   fonts:
     - family: SF-Pro-Text

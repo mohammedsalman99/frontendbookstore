@@ -133,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
   Future<void> _fetchReadingHistory() async {
     final readingHistoryUrl =
         'https://readme-backend-zdiq.onrender.com/api/v1/reading-history';
@@ -176,6 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -255,36 +257,36 @@ class _HomeScreenState extends State<HomeScreen> {
             child: sectionHeader("Reading History"),
           ),
           SizedBox(height: 10),
-      isReadingHistoryLoading
-          ? Center(child: CircularProgressIndicator())
-          : readingHistory.isEmpty
-          ? Center(child: Text('No reading history found'))
-          : Container(
-        height: 160,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: readingHistory.length,
-          itemBuilder: (context, index) {
-            final historyItem = readingHistory[index];
-            final book = historyItem['book'];
-            if (book != null) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: readingHistoryCard(
-                  book['title'] ?? 'Untitled',
-                  book['image'] ??
-                      'https://via.placeholder.com/150', 
-                  book['_id'] ?? '',
-                ),
-              );
-            } else {
-              return SizedBox.shrink(); 
-            }
-          },
-        ),
-      ),
+        isReadingHistoryLoading
+            ? const Center(child: CircularProgressIndicator())
+            : readingHistory.isEmpty
+            ? const Center(child: Text('No reading history available.'))
+            : Container(
+          height: 160,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: readingHistory.length,
+            itemBuilder: (context, index) {
+              final historyItem = readingHistory[index];
+              final book = historyItem['book'];
 
-          SizedBox(height: 20),
+              if (book != null) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: readingHistoryCard(
+                    book['title'] ?? 'Untitled',
+                    book['image'] ?? '',
+                    book['_id'] ?? '',
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink(); // Skip null entries
+              }
+            },
+          ),
+        ),
+
+        SizedBox(height: 20),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -616,7 +618,9 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           image: DecorationImage(
-            image: CachedNetworkImageProvider(imageUrl),
+            image: imageUrl.isNotEmpty
+                ? CachedNetworkImageProvider(imageUrl)
+                : const AssetImage('assets/icons/placeholder.jpg') as ImageProvider,
             fit: BoxFit.cover,
           ),
           boxShadow: [
@@ -648,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

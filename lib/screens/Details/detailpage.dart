@@ -52,6 +52,7 @@ class _DetailPageState extends State<DetailPage> {
     }
 
     try {
+      print("checkUserAccess: Token used = ${token.substring(0, 5)}*****");
       print("checkUserAccess: Sending request to purchase-status endpoint...");
       final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/purchase-status'),
@@ -61,7 +62,7 @@ class _DetailPageState extends State<DetailPage> {
       print("checkUserAccess: Response status code = ${response.statusCode}");
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print("checkUserAccess: Response data = $data");
+        print("checkUserAccess: Full Response = ${response.body}");
 
         if (data['isPurchased'] == true || data['isFree'] == true) {
           print("checkUserAccess: Access granted (purchased or free)");
@@ -79,6 +80,16 @@ class _DetailPageState extends State<DetailPage> {
             await fetchSubscriptionBookLink(bookId, token);
           }
           return true;
+        }
+
+        // Manual fallback check
+        if (data['hasSubscriptionAccess'] == false) {
+          print("checkUserAccess: Manual subscription check needed...");
+          final subscriptionActive = await checkSubscriptionStatus();
+          if (subscriptionActive) {
+            print("checkUserAccess: Subscription is active but not reflected in response. Granting access.");
+            return true;
+          }
         }
 
         print("checkUserAccess: Access denied (purchase or subscription required)");
@@ -111,6 +122,7 @@ class _DetailPageState extends State<DetailPage> {
       return false;
     }
   }
+
   Future<void> fetchSubscriptionBookLink(String bookId, String token) async {
     try {
       print("fetchSubscriptionBookLink: Sending request to protected endpoint...");
