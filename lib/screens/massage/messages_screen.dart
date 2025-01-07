@@ -64,7 +64,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
           isLoading = false;
         });
       } else if (response.statusCode == 500 && response.body.contains('NOT_FOUND')) {
-        // Handle "No messages" scenario gracefully
         print("No messages found, initializing with an empty list.");
         setState(() {
           messages = [];
@@ -90,7 +89,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
       'attachment': file?.path,
     };
 
-    // Optimistically update the UI
     setState(() {
       messages.insert(0, newMessage);
     });
@@ -142,7 +140,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         showError('Failed to send message');
         print("Error: ${response.body}");
         setState(() {
-          messages.removeAt(0); // Remove the optimistically added message if it fails
+          messages.removeAt(0); 
         });
       }
     } catch (e, stacktrace) {
@@ -150,7 +148,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       print("Stacktrace: $stacktrace");
       showError('An error occurred while sending the message.');
       setState(() {
-        messages.removeAt(0); // Remove the optimistically added message if it fails
+        messages.removeAt(0); 
       });
     }
   }
@@ -350,7 +348,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   onPressed: () {
                     final message = _messageController.text.trim();
                     if (message.isNotEmpty) {
-                      sendMessage(message: message); // Only call the sendMessage function
+                      sendMessage(message: message); 
                       _messageController.clear();
                     }
                   },
