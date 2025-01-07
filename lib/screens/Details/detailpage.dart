@@ -642,7 +642,6 @@ class _DetailPageState extends State<DetailPage> {
           final hasAccess = data['hasAccess'] ?? false;
 
           if (hasAccess) {
-            // Fetch the book link only if access is granted
             if (bookData!['bookLink'] == null || bookData!['bookLink'].isEmpty) {
               print("fetchBookDetails: Access granted but bookLink is missing.");
               await fetchSubscriptionBookLink(widget.bookId, token);
