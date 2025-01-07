@@ -63,6 +63,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
           messages = data['messages'];
           isLoading = false;
         });
+      } else if (response.statusCode == 500 && response.body.contains('NOT_FOUND')) {
+        // Handle "No messages" scenario gracefully
+        print("No messages found, initializing with an empty list.");
+        setState(() {
+          messages = [];
+          isLoading = false;
+        });
       } else {
         showError('Failed to fetch messages');
       }
@@ -80,11 +87,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
       'body': message,
       'sentBy': 'user',
       'timestamp': {'_seconds': DateTime.now().millisecondsSinceEpoch ~/ 1000},
-      'attachment': file?.path, 
+      'attachment': file?.path,
     };
 
+    // Optimistically update the UI
     setState(() {
-      messages.insert(0, newMessage); 
+      messages.insert(0, newMessage);
     });
 
     try {
@@ -103,8 +111,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
       print("Auth Token: Bearer $authToken");
 
+      http.Response response;
       if (file == null) {
-        final response = await http.post(
+        response = await http.post(
           Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/chat/send'),
           headers: {
             'Content-Type': 'application/json',
@@ -112,14 +121,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
           },
           body: jsonEncode({'message': message}),
         );
-
-        print("Send Message Response: ${response.statusCode}");
-        print("Response Body: ${response.body}");
-
-        if (response.statusCode != 200) {
-          showError('Failed to send message');
-          print("Error: ${response.body}");
-        }
       } else {
         final request = http.MultipartRequest(
           'POST',
@@ -128,29 +129,32 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
         request.headers['Authorization'] = 'Bearer $authToken';
         request.fields['message'] = message;
+        request.files.add(await http.MultipartFile.fromPath('attachment', file.path));
 
-        print("Attaching file: ${file.path}");
-        request.files.add(
-          await http.MultipartFile.fromPath('attachment', file.path),
-        );
+        final streamedResponse = await request.send();
+        response = await http.Response.fromStream(streamedResponse);
+      }
 
-        final response = await request.send();
-        final responseBody = await response.stream.bytesToString();
+      print("Send Message Response: ${response.statusCode}");
+      print("Response Body: ${response.body}");
 
-        print("Send Message Response: ${response.statusCode}");
-        print("Response Body: $responseBody");
-
-        if (response.statusCode != 200) {
-          showError('Failed to send message');
-          print("Error: $responseBody");
-        }
+      if (response.statusCode != 200) {
+        showError('Failed to send message');
+        print("Error: ${response.body}");
+        setState(() {
+          messages.removeAt(0); // Remove the optimistically added message if it fails
+        });
       }
     } catch (e, stacktrace) {
       print("Error while sending message: $e");
       print("Stacktrace: $stacktrace");
       showError('An error occurred while sending the message.');
+      setState(() {
+        messages.removeAt(0); // Remove the optimistically added message if it fails
+      });
     }
   }
+
 
   void showError(String message) {
     print("Error: $message");
@@ -346,19 +350,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   onPressed: () {
                     final message = _messageController.text.trim();
                     if (message.isNotEmpty) {
-                      setState(() {
-                        messages.insert(0, {
-                          'body': message,
-                          'sentBy': 'user',
-                          'timestamp': {
-                            '_seconds': DateTime.now()
-                                .millisecondsSinceEpoch ~/
-                                1000
-                          },
-                          'attachment': null,
-                        });
-                      });
-                      sendMessage(message: message);
+                      sendMessage(message: message); // Only call the sendMessage function
                       _messageController.clear();
                     }
                   },
