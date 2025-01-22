@@ -187,7 +187,6 @@ class _HomeScreenState extends State<HomeScreen> {
         physics: const BouncingScrollPhysics(),
         children: [
           const SizedBox(height: 45),
-          // Search Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -219,14 +218,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      // Add search logic here
                     },
                     borderRadius: BorderRadius.circular(30),
                     child: Container(
                       padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFF5AA5B1), // Updated color for the search icon background
+                        color: Color(0xFF5AA5B1), 
                       ),
                       child: Icon(
                         Icons.search,
@@ -241,12 +239,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 30),
 
-          // Categories Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Categories"),
           ),
-          const SizedBox(height: 12), // Increased space
+          const SizedBox(height: 12), 
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : hasError
@@ -268,9 +265,8 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-          const SizedBox(height: 40), // Increased space between sections
+          const SizedBox(height: 40), 
 
-          // Reading History Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Reading History"),
@@ -306,7 +302,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 40),
 
-          // Popular Books Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Popular Books"),
@@ -329,7 +324,6 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 40),
 
 
-          // Trending Books Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Trending Books"),
@@ -351,7 +345,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 40),
 
-          // Best Authors Section
           buildBestAuthorSection(),
           const SizedBox(height: 50),
         ],
@@ -462,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 16, // Reduced font size
+            fontSize: 16, 
           ),
         ),
         const Spacer(),
@@ -568,7 +561,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Book Image
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: CachedNetworkImage(
@@ -587,7 +579,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            // Book Details
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -616,15 +607,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     book['price'] != null
                         ? '\$${book['price']}'
-                        : 'Free', // Display "Free" if no price
+                        : 'Free', 
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: book['price'] != null ? Colors.red : Colors.green, // Green for "Free"
+                      color: book['price'] != null ? Colors.red : Colors.green, 
                     ),
                   ),
                   const SizedBox(height: 6),
-                  // Rating
                   Row(
                     children: List.generate(5, (index) {
                       return Icon(
