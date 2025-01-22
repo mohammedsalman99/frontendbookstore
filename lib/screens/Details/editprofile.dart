@@ -167,7 +167,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         backgroundColor: Colors.white,
       ),
       body: Container(
-        color: Colors.white, // Set the background color to white
+        color: Colors.white, 
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -187,7 +187,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Full Name Field
                 TextFormField(
                   controller: _fullNameController,
                   decoration: InputDecoration(
@@ -208,7 +207,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Email Field
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -233,7 +231,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Phone Number Field
                 TextFormField(
                   controller: _phoneNumberController,
                   decoration: InputDecoration(
@@ -258,7 +255,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Gender Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedGender,
                   decoration: InputDecoration(
@@ -284,7 +280,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Save Changes Button
                 ElevatedButton(
                   onPressed: _isLoading ? null : _saveProfile,
                   style: ElevatedButton.styleFrom(
