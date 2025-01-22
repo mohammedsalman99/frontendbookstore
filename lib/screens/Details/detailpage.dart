@@ -338,8 +338,8 @@ class _DetailPageState extends State<DetailPage> {
         throw Exception("Authentication token is missing. Please log in again.");
       }
 
-      print('Bearer Token: Bearer $token'); // Debug the token
-      print('Requesting URL: $readingHistoryUrl'); // Debug the URL
+      print('Bearer Token: Bearer $token'); 
+      print('Requesting URL: $readingHistoryUrl'); 
 
       final response = await http.post(
         Uri.parse(readingHistoryUrl),
@@ -774,15 +774,15 @@ class _DetailPageState extends State<DetailPage> {
           title: Text(
             "Detail Page",
             style: TextStyle(
-              color: Colors.black, // Text color
+              color: Colors.black, 
               fontFamily: 'SF-Pro-Text',
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.white, // Background color
-          iconTheme: IconThemeData(color: Colors.black), // Icon color
-          elevation: 0, // Optional: removes shadow for a flat AppBar
+          backgroundColor: Colors.white, 
+          iconTheme: IconThemeData(color: Colors.black), 
+          elevation: 0, 
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -794,15 +794,15 @@ class _DetailPageState extends State<DetailPage> {
           title: Text(
             "Detail Page",
             style: TextStyle(
-              color: Colors.black, // Text color
+              color: Colors.black,
               fontSize: 18,
               fontFamily: 'SF-Pro-Text',
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.white, // Background color
-          iconTheme: IconThemeData(color: Colors.black), // Icon color
-          elevation: 0, // Optional: removes shadow
+          backgroundColor: Colors.white, 
+          iconTheme: IconThemeData(color: Colors.black), 
+          elevation: 0, 
         ),
         body: Center(child: Text("Failed to load book details.")),
       );
@@ -813,18 +813,18 @@ class _DetailPageState extends State<DetailPage> {
         title: Text(
           "Detail Page",
           style: TextStyle(
-            color: Colors.black, // Text color
+            color: Colors.black, 
             fontSize: 18,
             fontFamily: 'SF-Pro-Text',
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.white, // Background color
-        iconTheme: IconThemeData(color: Colors.black), // Icon color
-        elevation: 0, // Optional: removes shadow
+        backgroundColor: Colors.white, 
+        iconTheme: IconThemeData(color: Colors.black),
+        elevation: 0, 
         actions: [
           IconButton(
-            icon: Icon(Icons.share, color: Colors.black), // Icon color
+            icon: Icon(Icons.share, color: Colors.black), 
             onPressed: () async {
               final sharableLink =
                   "https://Readme.com/detail?bookId=${widget.bookId}";
@@ -988,8 +988,8 @@ class _DetailPageState extends State<DetailPage> {
               Column(
                 children: [
                   Wrap(
-                    spacing: 73.0, // Spacing between buttons in the same row
-                    runSpacing: 22.0, // Spacing between rows (if needed)
+                    spacing: 73.0, 
+                    runSpacing: 22.0, 
                     alignment: WrapAlignment.center,
                     children: [
                       buildActionButton(
@@ -1044,7 +1044,6 @@ class _DetailPageState extends State<DetailPage> {
                         Icons.book,
                         "Read",
                             () async {
-                          // Check if the user has access to the book
                           bool hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
                           if (!hasAccess) {
                             Navigator.push(
@@ -1054,7 +1053,6 @@ class _DetailPageState extends State<DetailPage> {
                             return;
                           }
 
-                          // Ensure the book link is valid
                           if (bookData!['bookLink'] == null || bookData!['bookLink']!.isEmpty) {
                             _showAdvancedMessage(
                               "Error",
@@ -1065,10 +1063,7 @@ class _DetailPageState extends State<DetailPage> {
                           }
 
                           try {
-                            // Call incrementReadingHistory to update the backend
                             await incrementReadingHistory();
-
-                            // Open the book in the PDF viewer
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -1090,10 +1085,10 @@ class _DetailPageState extends State<DetailPage> {
 
                     ],
                   ),
-                  const SizedBox(height: 16.0), // Space between groups
+                  const SizedBox(height: 16.0), 
                   Wrap(
-                    spacing: 73.0, // Spacing between buttons in the same row
-                    runSpacing: 22.0, // Spacing between rows (if needed)
+                    spacing: 73.0,
+                    runSpacing: 22.0, 
                     alignment: WrapAlignment.center,
                     children: [
                       buildActionButton(
