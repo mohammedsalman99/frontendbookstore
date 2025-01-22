@@ -253,7 +253,7 @@ class _LatestScreenState extends State<LatestScreen> {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      ...buildRatingStars(rating, size: 14, color: Colors.amber), // Added color
+                      ...buildRatingStars(rating, size: 14, color: Colors.amber), 
                       const SizedBox(width: 4),
                       Text(
                         '${rating.toStringAsFixed(1)}',
@@ -391,13 +391,13 @@ class _LatestScreenState extends State<LatestScreen> {
                   const SizedBox(height: 6),
                   Text(
                     book['price'] != null
-                        ? '\$${book['price']}' // Display the price in dollars
-                        : 'Free', // Display "Free" if no price is available
+                        ? '\$${book['price']}' 
+                        : 'Free', 
                     style: TextStyle(
                       fontFamily: 'SF-Pro-Text',
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: book['price'] != null ? Colors.red : Colors.green, // Red for price, green for free
+                      color: book['price'] != null ? Colors.red : Colors.green, 
                     ),
                   ),
 
