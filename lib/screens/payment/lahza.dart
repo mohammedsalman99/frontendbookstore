@@ -5,13 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LahzaService {
   static const String _baseUrl = 'https://readme-backend-zdiq.onrender.com/api/v1';
 
-  // Retrieve authentication token
   static Future<String?> _getAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
 
-  // Build headers with authorization
   static Future<Map<String, String>> _buildHeaders() async {
     final token = await _getAuthToken();
     if (token == null) {
@@ -23,7 +21,6 @@ class LahzaService {
     };
   }
 
-  // Fetch visible subscription plans
   static Future<List<dynamic>> fetchPlans() async {
     const endpoint = '/subscription-plans/visible';
     final url = '$_baseUrl$endpoint';
@@ -32,7 +29,7 @@ class LahzaService {
       final headers = await _buildHeaders();
       final response = await http
           .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 10)); // Added timeout
+          .timeout(const Duration(seconds: 10)); 
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -45,7 +42,6 @@ class LahzaService {
     }
   }
 
-  // Subscribe to a subscription plan
   static Future<Map<String, dynamic>> subscribeToPlan(String planId) async {
     const endpoint = '/subscriptions/subscribe';
     final url = '$_baseUrl$endpoint';
@@ -68,7 +64,6 @@ class LahzaService {
     }
   }
 
-  // Check the status of a transaction
   static Future<Map<String, dynamic>> checkTransactionStatus(String transactionId) async {
     final endpoint = '/transactions/$transactionId';
     final url = '$_baseUrl$endpoint';
@@ -77,12 +72,11 @@ class LahzaService {
       final headers = await _buildHeaders();
       final response = await http
           .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 10)); // Added timeout
+          .timeout(const Duration(seconds: 10)); 
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // Extract durationInDays for better handling
         final durationInDays = data['transaction']?['subscriptionPeriod']?['durationInDays'];
         return {
           ...data,
@@ -96,7 +90,6 @@ class LahzaService {
     }
   }
 
-  // Create a new transaction
   static Future<Map<String, dynamic>> createTransaction(String planId, String paymentMethod) async {
     const endpoint = '/transactions';
     final url = '$_baseUrl$endpoint';
@@ -110,7 +103,7 @@ class LahzaService {
 
       final response = await http
           .post(Uri.parse(url), headers: headers, body: body)
-          .timeout(const Duration(seconds: 10)); // Added timeout
+          .timeout(const Duration(seconds: 10)); 
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return jsonDecode(response.body);
@@ -122,7 +115,6 @@ class LahzaService {
     }
   }
 
-  // Extract error message from response
   static String _extractErrorMessage(http.Response response) {
     try {
       final data = jsonDecode(response.body);
