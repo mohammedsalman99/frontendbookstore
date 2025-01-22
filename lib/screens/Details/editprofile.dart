@@ -158,122 +158,156 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
 
   @override
-  @override
   Widget build(BuildContext context) {
+    final Color primaryColor = const Color(0xFF5AA5B1);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Profile"),
+        backgroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: _changeProfilePicture,
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: _imageFile != null
-                      ? FileImage(_imageFile!) 
-                      : (_profilePictureUrl.startsWith('http')
-                      ? NetworkImage(_profilePictureUrl)
-                      : const AssetImage('assets/images/user_placeholder.png')) as ImageProvider,
+      body: Container(
+        color: Colors.white, // Set the background color to white
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: _changeProfilePicture,
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: _imageFile != null
+                        ? FileImage(_imageFile!)
+                        : (_profilePictureUrl.startsWith('http')
+                        ? NetworkImage(_profilePictureUrl)
+                        : const AssetImage('assets/images/user_placeholder.png')) as ImageProvider,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              TextFormField(
-                controller: _fullNameController,
-                decoration: const InputDecoration(
-                  labelText: "Full Name",
-                  border: OutlineInputBorder(),
+                // Full Name Field
+                TextFormField(
+                  controller: _fullNameController,
+                  decoration: InputDecoration(
+                    labelText: "Full Name",
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your full name";
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your full name";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
+                // Email Field
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your email";
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return "Please enter a valid email";
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your email";
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return "Please enter a valid email";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              TextFormField(
-                controller: _phoneNumberController,
-                decoration: const InputDecoration(
-                  labelText: "Phone Number",
-                  border: OutlineInputBorder(),
+                // Phone Number Field
+                TextFormField(
+                  controller: _phoneNumberController,
+                  decoration: InputDecoration(
+                    labelText: "Phone Number",
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your phone number";
+                    }
+                    if (!RegExp(r'^\+\d{10,15}$').hasMatch(value)) {
+                      return "Please enter a valid phone number";
+                    }
+                    return null;
+                  },
                 ),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your phone number";
-                  }
-                  if (!RegExp(r'^\+\d{10,15}$').hasMatch(value)) {
-                    return "Please enter a valid phone number";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              DropdownButtonFormField<String>(
-                value: _selectedGender, 
-                decoration: const InputDecoration(
-                  labelText: "Gender",
-                  border: OutlineInputBorder(),
+                // Gender Dropdown
+                DropdownButtonFormField<String>(
+                  value: _selectedGender,
+                  decoration: InputDecoration(
+                    labelText: "Gender",
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                  ),
+                  items: ['male', 'female', 'not specified']
+                      .map((gender) => DropdownMenuItem(
+                    value: gender,
+                    child: Text(gender[0].toUpperCase() + gender.substring(1)),
+                  ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedGender = value;
+                    });
+                  },
                 ),
-                items: ['male', 'female', 'not specified']
-                    .map((gender) => DropdownMenuItem(
-                  value: gender,
-                  child: Text(gender[0].toUpperCase() + gender.substring(1)), 
-                ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedGender = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              ElevatedButton(
-                onPressed: _isLoading ? null : _saveProfile, 
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                // Save Changes Button
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _saveProfile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                    "Save Changes",
+                    style: TextStyle(fontSize: 16,color:Colors.white),
+                  ),
                 ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                  "Save Changes",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
 
 }

@@ -182,58 +182,75 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: ListView(
         physics: const BouncingScrollPhysics(),
         children: [
           const SizedBox(height: 45),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Readme',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-              ), 
-            ),
-          ),
-          const SizedBox(height: 13),
-
+          // Search Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Theme.of(context).cardColor, 
+                borderRadius: BorderRadius.circular(30),
+                color: Theme.of(context).cardColor.withOpacity(0.9),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: TextField(
                       decoration: InputDecoration(
-                        hintText: 'Search book here...',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium, 
+                        hintText: 'Search for books, authors...',
+                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
-                  Icon(Icons.search, color: Theme.of(context).iconTheme.color), 
+                  InkWell(
+                    onTap: () {
+                      // Add search logic here
+                    },
+                    borderRadius: BorderRadius.circular(30),
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF5AA5B1), // Updated color for the search icon background
+                      ),
+                      child: Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 30),
 
+          // Categories Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Categories"),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 12), // Increased space
           isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : hasError
-              ? Center(child: Text('Failed to load categories'))
+              ? const Center(child: Text('Failed to load categories'))
               : Container(
             height: 160,
             child: ListView.builder(
@@ -251,54 +268,56 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 40), // Increased space between sections
+
+          // Reading History Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Reading History"),
           ),
-          SizedBox(height: 10),
-        isReadingHistoryLoading
-            ? const Center(child: CircularProgressIndicator())
-            : readingHistory.isEmpty
-            ? const Center(child: Text('No reading history available.'))
-            : Container(
-          height: 160,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: readingHistory.length,
-            itemBuilder: (context, index) {
-              final historyItem = readingHistory[index];
-              final book = historyItem['book'];
+          const SizedBox(height: 12),
+          isReadingHistoryLoading
+              ? const Center(child: CircularProgressIndicator())
+              : readingHistory.isEmpty
+              ? const Center(child: Text('No reading history available.'))
+              : Container(
+            height: 160,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: readingHistory.length,
+              itemBuilder: (context, index) {
+                final historyItem = readingHistory[index];
+                final book = historyItem['book'];
 
-              if (book != null) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: readingHistoryCard(
-                    book['title'] ?? 'Untitled',
-                    book['image'] ?? '',
-                    book['_id'] ?? '',
-                  ),
-                );
-              } else {
-                return const SizedBox.shrink(); 
-              }
-            },
+                if (book != null) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: readingHistoryCard(
+                      book['title'] ?? 'Untitled',
+                      book['image'] ?? '',
+                      book['_id'] ?? '',
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            ),
           ),
-        ),
+          const SizedBox(height: 40),
 
-        SizedBox(height: 20),
-
+          // Popular Books Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Popular Books"),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 12),
           isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : popularBooks.isEmpty
-              ? Center(child: Text('No popular books found'))
+              ? const Center(child: Text('No popular books found'))
               : Container(
-            height: 200,
+            height: 230,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: popularBooks.length,
@@ -307,17 +326,21 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          const SizedBox(height: 40),
+
+
+          // Trending Books Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: sectionHeader("Trending Books"),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 12),
           isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : trendingBooks.isEmpty
-              ? Center(child: Text('No trending books found'))
+              ? const Center(child: Text('No trending books found'))
               : Container(
-            height: 200,
+            height: 230,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: trendingBooks.length,
@@ -326,15 +349,16 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 40),
 
-
+          // Best Authors Section
           buildBestAuthorSection(),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
         ],
       ),
     );
   }
+
 
 
 
@@ -436,15 +460,17 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.bold,
-          ), 
+            fontSize: 16, // Reduced font size
+          ),
         ),
         const Spacer(),
-        Icon(Icons.arrow_forward, color: Theme.of(context).iconTheme.color), 
+        Icon(Icons.arrow_forward, color: Theme.of(context).iconTheme.color),
       ],
     );
   }
+
 
   Widget categoryCard(String title, String imageUrl, String categoryId) {
     return GestureDetector(
@@ -527,38 +553,41 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         width: 160,
-        height: 120,
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Theme.of(context).cardColor, 
-          border: Border.all(color: Theme.of(context).dividerColor, width: 1), 
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.1), 
-              offset: const Offset(0, 2),
-              blurRadius: 4,
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Book Image
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: Container(
-                height: 90,
+              child: CachedNetworkImage(
+                imageUrl: book['image'] ?? 'https://via.placeholder.com/150',
+                height: 100,
                 width: double.infinity,
-                child: Image.network(
-                  book['image'] ?? 'https://via.placeholder.com/150',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: Theme.of(context).colorScheme.error,
-                    child: const Icon(Icons.broken_image, color: Colors.grey),
-                  ),
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  height: 100,
+                  color: Colors.grey[300],
+                ),
+                errorWidget: (context, url, error) => Container(
+                  height: 100,
+                  color: Colors.grey,
+                  child: const Icon(Icons.error),
                 ),
               ),
             ),
+            // Book Details
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -566,30 +595,42 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     book['title'] ?? 'Unknown Title',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10,
-                    ), 
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'By ${(book['authors'] as List).map((e) => e['fullName']).join(", ")}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 8,
-                      color: Theme.of(context).hintColor, 
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
+                  Text(
+                    'By ${book['authors']?.first['fullName'] ?? 'Unknown Author'}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    book['price'] != null
+                        ? '\$${book['price']}'
+                        : 'Free', // Display "Free" if no price
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: book['price'] != null ? Colors.red : Colors.green, // Green for "Free"
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // Rating
                   Row(
                     children: List.generate(5, (index) {
                       return Icon(
                         Icons.star,
-                        size: 10,
-                        color: index < rating ? Colors.amber : Theme.of(context).dividerColor, 
+                        size: 14,
+                        color: index < rating ? Colors.amber : Colors.grey[300],
                       );
                     }),
                   ),
@@ -601,6 +642,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 
 
   Widget readingHistoryCard(String title, String imageUrl, String bookId) {

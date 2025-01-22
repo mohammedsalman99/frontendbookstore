@@ -179,7 +179,7 @@ class _ReportPageState extends State<ReportPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Report Book"),
-        backgroundColor: Color(0xFF5AA5B1),
+        backgroundColor: Colors.white,
         actions: [
           IconButton(
             icon: Icon(Icons.close),

@@ -205,19 +205,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
               size: isSelected ? 24 : 20,
               color: isSelected ? Colors.white : Colors.white70,
             ),
-            if (isSelected)
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: 'SF-Pro-Text',
-                    fontSize: 10,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'SF-Pro-Text',
+                  fontSize: 10,
+                  color: isSelected ? Colors.white : Colors.white70,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
+            ),
           ],
         ),
       ),

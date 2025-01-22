@@ -187,29 +187,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           child: Column(
                             children: [
                               TextFormField(
-                                controller: _usernameController,
-                                decoration: InputDecoration(
-                                  labelText: 'Username',
-                                  labelStyle: TextStyle(color: Colors.white70, fontSize: 11),
-                                  filled: true,
-                                  fillColor: Colors.white.withOpacity(0.2),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  prefixIcon: Icon(Icons.person, color: Colors.white70),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter a username';
-                                  }
-                                  return null;
-                                },
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              const SizedBox(height: 10),
-
-                              TextFormField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
                                   labelText: 'Email',
@@ -300,8 +277,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                                 onPressed: _signup,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF5AA5B1),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 50, vertical: 10),
+                                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -338,6 +314,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                             ],
                           ),
                         ),
+
                       ],
                     ),
                   ),

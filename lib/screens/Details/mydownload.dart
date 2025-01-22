@@ -62,7 +62,7 @@ class _MyDownloadsPageState extends State<MyDownloadsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Downloads"),
-        backgroundColor: const Color(0xFF5AA5B1),
+        backgroundColor: Colors.white,
         actions: [
           if (_isSelectionMode) ...[
             IconButton(

@@ -287,7 +287,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           IconButton(
             icon: Icon(
               Icons.settings,
-              color: isDarkMode ? Colors.white : Colors.black, 
+              color: isDarkMode ? Colors.white : Colors.white,
             ),
             onPressed: () {
               Navigator.push(
@@ -316,8 +316,9 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           : SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(height: 20), // Add space between AppBar and _buildProfileHeader
             _buildProfileHeader(),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             DefaultTabController(
               length: 2,
               child: Column(
@@ -328,8 +329,8 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
                     height: 300,
                     child: TabBarView(
                       children: [
-                        _buildHorizontalBooksTab(),
                         _buildHorizontalSubscriptionTab(),
+                        _buildHorizontalBooksTab(),
                       ],
                     ),
                   ),
@@ -403,61 +404,21 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
     );
   }
 
-
-
-
   Widget _buildCustomTabBar() {
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return TabBar(
+      indicatorColor: const Color(0xFF5AA5B1), // Accent color for the active tab
+      labelColor: const Color(0xFF5AA5B1),
+      unselectedLabelColor: Colors.grey,
+      labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontSize: 12),
+      tabs: const [
+        Tab(text: 'Subscriptions'),
+        Tab(text: 'Purchased Books'),
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey[800] : Colors.grey[200], 
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: isDarkMode
-                ? Colors.black.withOpacity(0.5) 
-                : Colors.black.withOpacity(0.1), 
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: TabBar(
-        indicator: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isDarkMode
-                ? [Colors.grey[700]!, Colors.grey[600]!] 
-                : [Color(0xFF5AA5B1), Color(0xFF87D1D3)], 
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        labelColor: isDarkMode ? Colors.black : Colors.white, 
-        unselectedLabelColor: isDarkMode ? Colors.grey[400] : Colors.grey[600], 
-        labelStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 14,
-        ),
-        tabs: const [
-          Tab(
-            icon: Icon(Icons.book, size: 30),
-            text: 'Books',
-          ),
-          Tab(
-            icon: Icon(Icons.subscriptions, size: 30),
-            text: 'Subscriptions',
-          ),
-        ],
-      ),
+      ],
     );
   }
+
 
 
 

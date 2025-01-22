@@ -59,7 +59,7 @@ class _MyFavoritesPageState extends State<MyFavoritesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("My Favorites"),
-        backgroundColor: Color(0xFF5AA5B1),
+        backgroundColor: Colors.white,
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())

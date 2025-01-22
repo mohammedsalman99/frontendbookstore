@@ -303,38 +303,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 ),
                               ),
                               const SizedBox(height: 8),
-
-                              const Text(
-                                "or connect with",
-                                style: TextStyle(
-                                  fontFamily: 'SF-Pro-Text',
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white70,
-                                  fontSize: 10,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    icon: Image.asset('assets/icons/google.png',
-                                        height: 40, color: Colors.white),
-                                    onPressed: () {},
-                                  ),
-                                  IconButton(
-                                    icon: Image.asset('assets/icons/facebook.png',
-                                        height: 40, color: Colors.white),
-                                    onPressed: () {},
-                                  ),
-                                  IconButton(
-                                    icon: Image.asset('assets/icons/apple.png',
-                                        height: 40, color: Colors.white),
-                                    onPressed: () {},
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                         ),

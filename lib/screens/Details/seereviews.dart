@@ -256,8 +256,13 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("See Reviews"),
-        backgroundColor: Color(0xFF5AA5B1),
+        title: Text(
+          "See Reviews",
+          style: TextStyle(color: Colors.black), // Text color
+        ),
+        backgroundColor: Colors.white, // Background color
+        iconTheme: IconThemeData(color: Colors.black), // Icon color
+        elevation: 0, // Optional: removes shadow
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -341,23 +346,45 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
                       SizedBox(height: 8),
                       Row(
                         children: [
-                          ElevatedButton(
+                          TextButton.icon(
                             onPressed: () {
                               _showUpdateReviewDialog(review, index);
                             },
-                            child: Text("Update"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF5AA5B1),
+                            icon: Icon(Icons.edit, color: Color(0xFF5AA5B1)),
+                            label: Text(
+                              "Update",
+                              style: TextStyle(color: Color(0xFF5AA5B1)),
+                            ),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              backgroundColor: Color(0xFFE0F7FA),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                           ),
                           SizedBox(width: 8),
-                          ElevatedButton(
+                          TextButton.icon(
                             onPressed: () {
                               deleteReview(widget.bookId, review['_id']);
                             },
-                            child: Text("Delete"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
+                            icon: Icon(Icons.delete, color: Colors.redAccent),
+                            label: Text(
+                              "Delete",
+                              style: TextStyle(color: Colors.redAccent),
+                            ),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              backgroundColor: Color(0xFFFFEBEE),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                           ),
                         ],
@@ -372,6 +399,7 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
       ),
     );
   }
+
 
   Widget buildRatingStars(double rating) {
     return Row(

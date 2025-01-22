@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/Details/summary.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'listen.dart';
 import 'report.dart';
 import 'writereview.dart';
 import 'seereviews.dart';
@@ -33,6 +35,83 @@ class _DetailPageState extends State<DetailPage> {
     loadFavoriteState();
     fetchBookDetails();
   }
+
+  Future<void> requestSummary(String bookId) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null) {
+      _showAdvancedMessage(
+        "Authentication Error",
+        "Please log in to request a summary.",
+        isError: true,
+      );
+      return;
+    }
+
+    final url = 'https://readme-backend-zdiq.onrender.com/api/v1/summary/books/$bookId/summary';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _showAdvancedMessage(
+          "Summary Requested",
+          data['message'],
+          isError: false,
+        );
+      } else {
+        _showAdvancedMessage(
+          "Error",
+          "Failed to request summary. Please try again.",
+          isError: true,
+        );
+      }
+    } catch (e) {
+      _showAdvancedMessage(
+        "Network Error",
+        "An error occurred. Please check your connection and try again.",
+        isError: true,
+      );
+    }
+  }
+
+  Future<String> getSummaryStatus(String bookId) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    if (token == null) {
+      return "Authentication token is missing. Please log in.";
+    }
+
+    final url = 'https://readme-backend-zdiq.onrender.com/api/v1/summary/books/$bookId/summary';
+
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['status'];
+      } else {
+        return "Failed to fetch summary status. Status: ${response.statusCode}";
+      }
+    } catch (e) {
+      return "Error occurred: $e";
+    }
+  }
+
+
 
   Future<bool> checkUserAccess(String bookId, {bool refreshDetails = false}) async {
     print("checkUserAccess: Started for bookId = $bookId, refreshDetails = $refreshDetails");
@@ -249,7 +328,7 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<void> incrementReadingHistory() async {
     final readingHistoryUrl =
-        'https://readme-backend-zdiq.onrender.com/api/v1/reading-history//books/${widget.bookId}';
+        'https://readme-backend-zdiq.onrender.com/api/v1/reading-history/books/${widget.bookId}';
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -258,6 +337,10 @@ class _DetailPageState extends State<DetailPage> {
       if (token == null) {
         throw Exception("Authentication token is missing. Please log in again.");
       }
+
+      print('Bearer Token: Bearer $token'); // Debug the token
+      print('Requesting URL: $readingHistoryUrl'); // Debug the URL
+
       final response = await http.post(
         Uri.parse(readingHistoryUrl),
         headers: {
@@ -271,12 +354,13 @@ class _DetailPageState extends State<DetailPage> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
-        if (data['success'] == true) {
+
+        if (data.containsKey('readingHistory')) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Reading history updated successfully!")),
+            const SnackBar(content: Text("Reading history updated successfully!")),
           );
         } else {
-          throw Exception("Failed to update reading history: ${data['message'] ?? 'Unknown error'}");
+          throw Exception("Unexpected response structure: ${response.body}");
         }
       } else {
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
@@ -690,15 +774,15 @@ class _DetailPageState extends State<DetailPage> {
           title: Text(
             "Detail Page",
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black, // Text color
               fontFamily: 'SF-Pro-Text',
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[850]
-              : Color(0xFF5AA5B1), 
+          backgroundColor: Colors.white, // Background color
+          iconTheme: IconThemeData(color: Colors.black), // Icon color
+          elevation: 0, // Optional: removes shadow for a flat AppBar
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -710,15 +794,15 @@ class _DetailPageState extends State<DetailPage> {
           title: Text(
             "Detail Page",
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black, // Text color
               fontSize: 18,
               fontFamily: 'SF-Pro-Text',
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[850]
-              : Color(0xFF5AA5B1), 
+          backgroundColor: Colors.white, // Background color
+          iconTheme: IconThemeData(color: Colors.black), // Icon color
+          elevation: 0, // Optional: removes shadow
         ),
         body: Center(child: Text("Failed to load book details.")),
       );
@@ -729,31 +813,21 @@ class _DetailPageState extends State<DetailPage> {
         title: Text(
           "Detail Page",
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black, // Text color
             fontSize: 18,
             fontFamily: 'SF-Pro-Text',
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey[850]
-            : Color(0xFF5AA5B1), 
+        backgroundColor: Colors.white, // Background color
+        iconTheme: IconThemeData(color: Colors.black), // Icon color
+        elevation: 0, // Optional: removes shadow
         actions: [
           IconButton(
-            icon: Icon(
-              isFavorited ? Icons.favorite : Icons.favorite_border,
-              color: Colors.white,
-            ),
+            icon: Icon(Icons.share, color: Colors.black), // Icon color
             onPressed: () async {
-              await toggleFavorite();
-              setState(() {});
-            },
-            tooltip: isFavorited ? "Remove from Favorites" : "Add to Favorites",
-          ),
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () async {
-              final sharableLink = "https://Readme.com/detail?bookId=${widget.bookId}";
+              final sharableLink =
+                  "https://Readme.com/detail?bookId=${widget.bookId}";
               await Clipboard.setData(ClipboardData(text: sharableLink));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Link copied to clipboard")),
@@ -762,6 +836,7 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ],
       ),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -782,12 +857,12 @@ class _DetailPageState extends State<DetailPage> {
                           height: 250,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.grey[800]
-                              : Colors.grey[200], 
+                              : Colors.grey[200],
                           child: Icon(
                             Icons.broken_image,
                             color: Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white70
-                                : Colors.grey, 
+                                : Colors.grey,
                           ),
                         );
                       },
@@ -822,7 +897,7 @@ class _DetailPageState extends State<DetailPage> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[900]
-                      : Colors.teal.shade50, 
+                      : Colors.teal.shade50,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: EdgeInsets.all(16),
@@ -837,7 +912,7 @@ class _DetailPageState extends State<DetailPage> {
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Colors.white
-                            : Colors.black87, 
+                            : Colors.black87,
                       ),
                     ),
                     SizedBox(height: 7),
@@ -860,7 +935,7 @@ class _DetailPageState extends State<DetailPage> {
                                 fontSize: 12,
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white
-                                    : Colors.black87, 
+                                    : Colors.black87,
                                 fontWeight: FontWeight.bold,
                               ),
                             );
@@ -889,7 +964,7 @@ class _DetailPageState extends State<DetailPage> {
                                 size: 16,
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white70
-                                    : Colors.grey), 
+                                    : Colors.grey),
                             SizedBox(width: 4),
                             Text(
                               "${bookData!['numberOfViews']}",
@@ -898,7 +973,7 @@ class _DetailPageState extends State<DetailPage> {
                                 fontSize: 14,
                                 color: Theme.of(context).brightness == Brightness.dark
                                     ? Colors.white
-                                    : Colors.white, 
+                                    : Colors.black,
                               ),
                             ),
                           ],
@@ -910,152 +985,222 @@ class _DetailPageState extends State<DetailPage> {
               ),
               SizedBox(height: 20),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Column(
                 children: [
-                  buildActionButton(
-                    bookData!['isFavorited'] == true
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    "Favorite",
-                        () async {
-                      await toggleFavorite();
-                    },
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.redAccent
-                        : Colors.white, 
+                  Wrap(
+                    spacing: 73.0, // Spacing between buttons in the same row
+                    runSpacing: 22.0, // Spacing between rows (if needed)
+                    alignment: WrapAlignment.center,
+                    children: [
+                      buildActionButton(
+                        (bookData!['isFavorited'] ?? false) ? Icons.favorite : Icons.favorite_border,
+                        "Favorite",
+                            () async {
+                          await toggleFavorite();
+                          setState(() {
+                            bookData!['isFavorited'] = !(bookData!['isFavorited'] ?? false);
+                          });
+                        },
+                        color: (bookData!['isFavorited'] ?? false)
+                            ? Colors.red
+                            : Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey
+                            : Colors.black,
+                      ),
+                      buildActionButton(
+                        Icons.download,
+                        "Download",
+                            () async {
+                          final hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
+                          if (!hasAccess) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SubscriptionPage(),
+                              ),
+                            );
+                            return;
+                          }
+                          try {
+                            await incrementDownload();
+                            _showAdvancedMessage(
+                              "Download Successful",
+                              "Your book has been added to downloads.",
+                              isError: false,
+                            );
+                          } catch (e) {
+                            _showAdvancedMessage(
+                              "Error",
+                              "Failed to download the book. Please try again later.",
+                              isError: true,
+                            );
+                          }
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.tealAccent
+                            : Colors.white,
+                      ),
+                      buildActionButton(
+                        Icons.book,
+                        "Read",
+                            () async {
+                          // Check if the user has access to the book
+                          bool hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
+                          if (!hasAccess) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SubscriptionPage()),
+                            );
+                            return;
+                          }
+
+                          // Ensure the book link is valid
+                          if (bookData!['bookLink'] == null || bookData!['bookLink']!.isEmpty) {
+                            _showAdvancedMessage(
+                              "Error",
+                              "The book link is unavailable. Please contact support.",
+                              isError: true,
+                            );
+                            return;
+                          }
+
+                          try {
+                            // Call incrementReadingHistory to update the backend
+                            await incrementReadingHistory();
+
+                            // Open the book in the PDF viewer
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PDFViewerPage(pdfUrl: bookData!['bookLink']),
+                              ),
+                            );
+                          } catch (e) {
+                            _showAdvancedMessage(
+                              "Error",
+                              "An error occurred while opening the book. Please try again.",
+                              isError: true,
+                            );
+                          }
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.blueAccent
+                            : Colors.white,
+                      ),
+
+                    ],
                   ),
-                  buildActionButton(
-                    Icons.download,
-                    "Download",
-                        () async {
-                      final hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
-
-                      if (!hasAccess) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubscriptionPage(),
-                          ),
-                        );
-                        return;
-                      }
-
-                      try {
-                        await incrementDownload();
-                        _showAdvancedMessage(
-                          "Download Successful",
-                          "Your book has been added to downloads.",
-                          isError: false,
-                        );
-                      } catch (e) {
-                        _showAdvancedMessage(
-                          "Error",
-                          "Failed to download the book. Please try again later.",
-                          isError: true,
-                        );
-                      }
-                    },
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.tealAccent
-                        : Colors.white, 
-                  ),
-                  buildActionButton(
-                    Icons.book,
-                    "Read",
-                        () async {
-                      print("Read Button: Checking access...");
-                      bool hasAccess = await checkUserAccess(bookData!['_id'], refreshDetails: true);
-
-                      print("Read Button: Access status = $hasAccess");
-                      print("Read Button: Current bookData = $bookData");
-
-                      if (!hasAccess) {
-                        print("Read Button: Access denied. Redirecting to subscription page...");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubscriptionPage(),
-                          ),
-                        );
-                        return;
-                      }
-
-                      if (bookData!['bookLink'] == null || bookData!['bookLink']!.isEmpty) {
-                        print("Read Button: Book link is null or empty after access check.");
-                        _showAdvancedMessage(
-                          "Error",
-                          "The book link is unavailable. Please contact support.",
-                          isError: true,
-                        );
-                        return;
-                      }
-
-                      try {
-                        print("Read Button: Access granted. Incrementing view count...");
-                        await incrementView();
-                        print("Read Button: Navigating to PDF viewer...");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PDFViewerPage(pdfUrl: bookData!['bookLink']),
-                          ),
-                        );
-                      } catch (e) {
-                        print("Read Button: Exception occurred while opening the book: $e");
-                        _showAdvancedMessage(
-                          "Error",
-                          "An error occurred while opening the book. Please try again.",
-                          isError: true,
-                        );
-                      }
-                    },
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.blueAccent
-                        : Colors.white, 
-                  ),
-                  buildActionButton(
-                    Icons.report,
-                    "Report",
-                        () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      String? token = prefs.getString('auth_token');
-
-                      if (token == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Authentication token is missing. Please log in again."),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                        return;
-                      }
-
-                      if (bookData != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ReportPage(
-                              bookId: bookData!['_id'],
-                              bookTitle: bookData!['title'],
+                  const SizedBox(height: 16.0), // Space between groups
+                  Wrap(
+                    spacing: 73.0, // Spacing between buttons in the same row
+                    runSpacing: 22.0, // Spacing between rows (if needed)
+                    alignment: WrapAlignment.center,
+                    children: [
+                      buildActionButton(
+                        Icons.text_snippet,
+                        "Summarize",
+                            () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          String? token = prefs.getString('auth_token');
+                          if (token == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Authentication Error: Please log in.")),
+                            );
+                            return;
+                          }
+                          final url =
+                              'https://readme-backend-zdiq.onrender.com/api/v1/summary/books/${widget.bookId}/summary';
+                          try {
+                            final response = await http.get(
+                              Uri.parse(url),
+                              headers: {'Authorization': 'Bearer $token'},
+                            );
+                            if (response.statusCode == 200) {
+                              final data = json.decode(response.body);
+                              final bookName = bookData?['title'] ?? "Unknown Book";
+                              final summaryText = data['summary'] ?? "No summary available.";
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SummaryPage(
+                                    bookName: bookName,
+                                    summaryText: summaryText,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Error: Failed to fetch summary.")),
+                              );
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Network Error: $e")),
+                            );
+                          }
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.tealAccent
+                            : Colors.white,
+                      ),
+                      buildActionButton(
+                        Icons.headphones,
+                        "Listen",
+                            () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ListenPage(bookId: widget.bookId),
                             ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Book details are missing."),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.orange
-                        : Colors.white, 
+                          );
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.tealAccent
+                            : Colors.white,
+                      ),
+                      buildActionButton(
+                        Icons.report,
+                        "Report",
+                            () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          String? token = prefs.getString('auth_token');
+                          if (token == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Authentication token is missing. Please log in again."),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                          if (bookData != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReportPage(
+                                  bookId: bookData!['_id'],
+                                  bookTitle: bookData!['title'],
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Book details are missing."),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.orange
+                            : Colors.white,
+                      ),
+                    ],
                   ),
                 ],
               ),
+
               SizedBox(height: 20),
 
               Text(
@@ -1066,7 +1211,7 @@ class _DetailPageState extends State<DetailPage> {
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
-                      : Colors.black87, 
+                      : Colors.black87,
                 ),
               ),
               SizedBox(height: 7),
@@ -1077,7 +1222,7 @@ class _DetailPageState extends State<DetailPage> {
                   fontSize: 13,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[300]
-                      : Colors.grey[700], 
+                      : Colors.grey[700],
                 ),
               ),
               SizedBox(height: 19),
@@ -1092,7 +1237,7 @@ class _DetailPageState extends State<DetailPage> {
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
-                          : Colors.black87, 
+                          : Colors.black87,
                     ),
                   ),
                   IconButton(
@@ -1100,7 +1245,7 @@ class _DetailPageState extends State<DetailPage> {
                       Icons.arrow_forward,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.tealAccent
-                          : Color(0xFF5AA5B1), 
+                          : Color(0xFF5AA5B1),
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -1125,7 +1270,7 @@ class _DetailPageState extends State<DetailPage> {
                       fontSize: 13,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.grey[300]
-                          : Colors.black, 
+                          : Colors.black,
                     ),
                   ),
                 ],

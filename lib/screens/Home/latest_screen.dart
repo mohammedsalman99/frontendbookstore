@@ -48,27 +48,21 @@ class _LatestScreenState extends State<LatestScreen> {
 
     List<dynamic> filteredBooks = displayedBooks
         .where((book) =>
-    book['title']
-        .toString()
-        .toLowerCase()
-        .contains(query.toLowerCase()) ||
-        book['author']
-            .toString()
-            .toLowerCase()
-            .contains(query.toLowerCase()))
+    book['title'].toString().toLowerCase().contains(query.toLowerCase()) ||
+        book['author'].toString().toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.white, 
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       appBar: AppBar(
         centerTitle: false,
-        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white, 
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
         elevation: 0,
         title: Text(
           'Latest',
           style: TextStyle(
             fontFamily: 'SF-Pro-Text',
-            color: isDarkMode ? Colors.white : Colors.black, 
+            color: isDarkMode ? Colors.white : Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -77,7 +71,8 @@ class _LatestScreenState extends State<LatestScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
-              icon: Icon(Icons.search, color: isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1)), 
+              icon: Icon(Icons.search,
+                  color: isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1)),
               onPressed: () {
                 showSearch(
                   context: context,
@@ -105,7 +100,7 @@ class _LatestScreenState extends State<LatestScreen> {
                     fontFamily: 'SF-Pro-Text',
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: isDarkMode ? Colors.white : Colors.black87, 
+                    color: isDarkMode ? Colors.white : Colors.black87,
                   ),
                 ),
                 Row(
@@ -122,8 +117,12 @@ class _LatestScreenState extends State<LatestScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isGridView
-                              ? (isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1))
-                              : (isDarkMode ? Colors.grey[800] : Colors.grey[300]),
+                              ? (isDarkMode
+                              ? Colors.tealAccent
+                              : Color(0xFF5AA5B1))
+                              : (isDarkMode
+                              ? Colors.grey[800]
+                              : Colors.grey[300]),
                         ),
                         child: Icon(Icons.grid_on, color: Colors.white),
                       ),
@@ -139,8 +138,12 @@ class _LatestScreenState extends State<LatestScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: !isGridView
-                              ? (isDarkMode ? Colors.tealAccent : Color(0xFF5AA5B1))
-                              : (isDarkMode ? Colors.grey[800] : Colors.grey[300]),
+                              ? (isDarkMode
+                              ? Colors.tealAccent
+                              : Color(0xFF5AA5B1))
+                              : (isDarkMode
+                              ? Colors.grey[800]
+                              : Colors.grey[300]),
                         ),
                         child: Icon(Icons.list, color: Colors.white),
                       ),
@@ -151,8 +154,10 @@ class _LatestScreenState extends State<LatestScreen> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              child: isGridView
+                  ? GridView.builder(
+                gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
@@ -162,6 +167,105 @@ class _LatestScreenState extends State<LatestScreen> {
                 itemBuilder: (context, index) {
                   return categoryCard(filteredBooks[index]);
                 },
+              )
+                  : ListView.builder(
+                itemCount: filteredBooks.length,
+                itemBuilder: (context, index) {
+                  return listCard(filteredBooks[index]);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget listCard(dynamic book) {
+    double rating = book['rating'] != null
+        ? double.tryParse(book['rating'].toString()) ?? 0.0
+        : 0.0;
+
+    String authors = book['authors'] != null && book['authors'] is List
+        ? (book['authors'] as List)
+        .map((author) => author['fullName'].toString())
+        .join(", ")
+        : "Unknown Author";
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailPage(bookId: book['_id']),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Theme.of(context).cardColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                book['image'] ?? 'https://via.placeholder.com/150',
+                height: 80,
+                width: 60,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book['title'] ?? 'Unknown Title',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'By $authors',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      ...buildRatingStars(rating, size: 14, color: Colors.amber), // Added color
+                      const SizedBox(width: 4),
+                      Text(
+                        '${rating.toStringAsFixed(1)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                ],
               ),
             ),
           ],
@@ -286,17 +390,17 @@ class _LatestScreenState extends State<LatestScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    book['free'] == true
-                        ? 'Free'
-                        : '₹ ${book['price'] ?? 'Unknown'}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    book['price'] != null
+                        ? '\$${book['price']}' // Display the price in dollars
+                        : 'Free', // Display "Free" if no price is available
+                    style: TextStyle(
+                      fontFamily: 'SF-Pro-Text',
                       fontSize: 11,
-                      color: book['free'] == true
-                          ? Colors.green 
-                          : Colors.red, 
+                      fontWeight: FontWeight.bold,
+                      color: book['price'] != null ? Colors.red : Colors.green, // Red for price, green for free
                     ),
                   ),
+
                   const SizedBox(height: 6),
                   Row(
                     children: [
@@ -589,13 +693,13 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   }
 
 
-  List<Widget> buildRatingStars(double rating, {double size = 18}) {
+  List<Widget> buildRatingStars(double rating, {double size = 18, Color color = Colors.amber}) {
     List<Widget> stars = [];
     for (int i = 0; i < 5; i++) {
       if (i < rating) {
-        stars.add(Icon(Icons.star, color: Colors.amber, size: size));
+        stars.add(Icon(Icons.star, color: color, size: size));
       } else {
-        stars.add(Icon(Icons.star_border, color: Colors.amber, size: size));
+        stars.add(Icon(Icons.star_border, color: color, size: size));
       }
     }
     return stars;

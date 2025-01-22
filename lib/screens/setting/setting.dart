@@ -285,7 +285,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black, 
+        backgroundColor: Color(0xFF5AA5B1),
         title: Text(
           'Settings',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
