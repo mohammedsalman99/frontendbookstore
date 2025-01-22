@@ -316,7 +316,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
           : SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20), // Add space between AppBar and _buildProfileHeader
+            const SizedBox(height: 20), 
             _buildProfileHeader(),
             const SizedBox(height: 20),
             DefaultTabController(
@@ -406,7 +406,7 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
 
   Widget _buildCustomTabBar() {
     return TabBar(
-      indicatorColor: const Color(0xFF5AA5B1), // Accent color for the active tab
+      indicatorColor: const Color(0xFF5AA5B1), 
       labelColor: const Color(0xFF5AA5B1),
       unselectedLabelColor: Colors.grey,
       labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
