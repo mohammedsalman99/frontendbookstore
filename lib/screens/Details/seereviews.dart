@@ -258,11 +258,11 @@ class _SeeReviewsPageState extends State<SeeReviewsPage> {
       appBar: AppBar(
         title: Text(
           "See Reviews",
-          style: TextStyle(color: Colors.black), // Text color
+          style: TextStyle(color: Colors.black), 
         ),
-        backgroundColor: Colors.white, // Background color
-        iconTheme: IconThemeData(color: Colors.black), // Icon color
-        elevation: 0, // Optional: removes shadow
+        backgroundColor: Colors.white, 
+        iconTheme: IconThemeData(color: Colors.black), 
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
