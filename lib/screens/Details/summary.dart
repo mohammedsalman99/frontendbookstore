@@ -17,13 +17,10 @@ class SummaryPage extends StatelessWidget {
     required this.summaryText,
   }) : super(key: key);
 
-  // Function to generate a PDF as Uint8List for display
   Future<Uint8List> generatePdf() async {
     final pdf = pw.Document();
 
-    // Split long text into chunks for pagination
-    final summaryChunks = summaryText.split('\n'); // Splitting by line breaks
-
+    final summaryChunks = summaryText.split('\n'); 
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -46,7 +43,6 @@ class SummaryPage extends StatelessWidget {
               ),
             ),
             pw.SizedBox(height: 10),
-            // Add the chunks of text as paragraphs
             ...summaryChunks.map((chunk) => pw.Text(
               chunk,
               style: pw.TextStyle(fontSize: 14),
@@ -182,7 +178,6 @@ class SummaryPage extends StatelessWidget {
 
 
 
-// Function to request a summary for a book
 Future<void> requestSummary(BuildContext context, String bookId) async {
   final prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('auth_token');
@@ -231,7 +226,6 @@ Future<void> requestSummary(BuildContext context, String bookId) async {
   }
 }
 
-// Function to get the summary status
 Future<String> getSummaryStatus(BuildContext context, String bookId) async {
   final prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('auth_token');
@@ -269,7 +263,6 @@ Future<String> getSummaryStatus(BuildContext context, String bookId) async {
   }
 }
 
-// Example button to trigger summary request and navigate to the SummaryPage
 Widget buildSummaryButton(BuildContext context, String bookId) {
   return ElevatedButton(
     onPressed: () async {
