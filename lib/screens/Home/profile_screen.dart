@@ -7,6 +7,7 @@ import '../Details/mydownload.dart';
 import '../Details/myfavorits.dart';
 import '../auth/login.dart';
 import '../setting/setting.dart';
+import '../Details/detailpage.dart';
 
 class AdvancedProfileScreen extends StatefulWidget {
   const AdvancedProfileScreen({Key? key}) : super(key: key);
@@ -435,39 +436,73 @@ class _AdvancedProfileScreenState extends State<AdvancedProfileScreen> {
       child: Row(
         children: purchasedBooks.map((purchase) {
           final book = purchase['book'];
-          return Card(
-            margin: const EdgeInsets.only(right: 10),
-            child: Container(
-              width: 120,
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.network(
-                    book['image'] ?? 'https://example.com/placeholder.png',
-                    height: 100,
-                    width: 80,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.broken_image, size: 100);
-                    },
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    book['title'] ?? 'Unknown Title',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+          return GestureDetector(
+            onTap: () {
+              // Navigate to the DetailPage with the book's ID
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailPage(bookId: book['_id']), // Replace with actual DetailPage
+                ),
+              );
+            },
+            child: Card(
+              margin: const EdgeInsets.only(right: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 3,
+              child: Container(
+                width: 120,
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Book Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        book['image'] ?? 'https://example.com/placeholder.png',
+                        height: 100,
+                        width: 80,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 100,
+                            width: 80,
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                          );
+                        },
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    book['authors']?.first['fullName'] ?? 'Unknown Author',
-                    style: const TextStyle(fontSize: 9, color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    // Book Title
+                    Text(
+                      book['title'] ?? 'Unknown Title',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 3),
+                    // Author Name
+                    Text(
+                      book['authors']?.first['fullName'] ?? 'Unknown Author',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ),
           );

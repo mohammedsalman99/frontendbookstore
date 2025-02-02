@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/Details/summary.dart';
@@ -114,81 +115,52 @@ class _DetailPageState extends State<DetailPage> {
 
 
   Future<bool> checkUserAccess(String bookId, {bool refreshDetails = false}) async {
-    print("checkUserAccess: Started for bookId = $bookId, refreshDetails = $refreshDetails");
-
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
     if (token == null) {
-      print("checkUserAccess: Token is null");
-      print(
-          "Authentication Error: Please log in to verify access."
-      );
       Navigator.pushReplacementNamed(context, '/login');
       return false;
     }
 
     try {
-      print("checkUserAccess: Token used = \${token.substring(0, 5)}*****");
-      print("checkUserAccess: Sending request to purchase-status endpoint...");
       final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/purchase-status'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      print("checkUserAccess: Response status code = \${response.statusCode}");
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print("checkUserAccess: Full Response = \${response.body}");
 
         if (data['isPurchased'] == true || data['isFree'] == true) {
-          print("checkUserAccess: Access granted (purchased or free)");
           if (refreshDetails) {
-            print("checkUserAccess: Refreshing book details after access granted...");
             await fetchBookDetails();
           }
           return true;
         }
 
         if (data['hasSubscriptionAccess'] == true) {
-          print("checkUserAccess: User has subscription access.");
           if (refreshDetails) {
-            print("checkUserAccess: Fetching subscription-based book link...");
             await fetchSubscriptionBookLink(bookId, token);
           }
           return true;
         }
 
         if (data['hasSubscriptionAccess'] == false) {
-          print("checkUserAccess: Manual subscription check needed...");
           final subscriptionActive = await checkSubscriptionStatus();
           if (subscriptionActive) {
-            print("checkUserAccess: Subscription is active but not reflected in response. Granting access.");
             return true;
           }
         }
 
-        print("checkUserAccess: Access denied (purchase or subscription required)");
-        print(
-            "Purchase Required: You need to purchase this book or have an active subscription."
-        );
         return false;
       } else if (response.statusCode == 401) {
-        print("checkUserAccess: Unauthorized (401). Token may be expired.");
-        print(
-            "Authentication Error: Your session has expired. Please log in again."
-        );
         Navigator.pushReplacementNamed(context, '/login');
         return false;
       } else {
-        print("checkUserAccess: Unexpected response status = \${response.statusCode}");
         throw Exception("Unexpected status code: \${response.statusCode}");
       }
     } catch (e) {
-      print("checkUserAccess: Exception occurred: $e");
-      print(
-          "Error: An error occurred while verifying access. Please try again later."
-      );
       return false;
     }
   }
@@ -197,46 +169,35 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<void> fetchSubscriptionBookLink(String bookId, String token) async {
     try {
-      print("fetchSubscriptionBookLink: Sending request to protected endpoint...");
       final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/$bookId/protected'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      print("fetchSubscriptionBookLink: Response status code = ${response.statusCode}");
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print("fetchSubscriptionBookLink: Response data = $data");
 
         if (data.containsKey('book') && data['book']['bookLink'] != null) {
           setState(() {
             bookData!['bookLink'] = data['book']['bookLink'];
           });
-          print("fetchSubscriptionBookLink: Updated bookLink = ${bookData!['bookLink']}");
-        } else {
-          print("fetchSubscriptionBookLink: Error - bookLink missing in response.");
         }
-      } else {
-        print("fetchSubscriptionBookLink: Error - Unexpected status code = ${response.statusCode}");
       }
     } catch (e) {
-      print("fetchSubscriptionBookLink: Exception occurred: $e");
-      print("Error: An error occurred while fetching the subscription book link. Please try again later.");
+      // Handle exception if needed
     }
   }
 
+
   Future<void> fetchPurchasedBookLink(String bookId, String token) async {
     try {
-      print("fetchPurchasedBookLink: Sending request to purchased endpoint...");
       final response = await http.get(
         Uri.parse('https://readme-backend-zdiq.onrender.com/api/v1/books/purchased'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      print("fetchPurchasedBookLink: Response status code = \${response.statusCode}");
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print("fetchPurchasedBookLink: Response data = \$data");
 
         final purchasedBook = data['purchases']?.firstWhere(
                 (purchase) => purchase['book']['_id'] == bookId,
@@ -246,18 +207,13 @@ class _DetailPageState extends State<DetailPage> {
           setState(() {
             bookData!['bookLink'] = purchasedBook['book']['bookLink'];
           });
-          print("fetchPurchasedBookLink: Updated bookLink = \${bookData!['bookLink']}");
-        } else {
-          print("fetchPurchasedBookLink: Error - Book not found in purchased list.");
         }
-      } else {
-        print("fetchPurchasedBookLink: Error - Unexpected status code = \${response.statusCode}");
       }
     } catch (e) {
-      print("fetchPurchasedBookLink: Exception occurred: $e");
-      print("Error: An error occurred while fetching the purchased book link. Please try again later.");
+      // Handle exception if needed
     }
   }
+
 
 
 
@@ -338,9 +294,6 @@ class _DetailPageState extends State<DetailPage> {
         throw Exception("Authentication token is missing. Please log in again.");
       }
 
-      print('Bearer Token: Bearer $token'); 
-      print('Requesting URL: $readingHistoryUrl'); 
-
       final response = await http.post(
         Uri.parse(readingHistoryUrl),
         headers: {
@@ -349,16 +302,11 @@ class _DetailPageState extends State<DetailPage> {
         },
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
 
         if (data.containsKey('readingHistory')) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Reading history updated successfully!")),
-          );
+          // Successfully updated reading history
         } else {
           throw Exception("Unexpected response structure: ${response.body}");
         }
@@ -366,10 +314,7 @@ class _DetailPageState extends State<DetailPage> {
         throw Exception("Error: ${response.statusCode}, ${response.reasonPhrase}");
       }
     } catch (e) {
-      print('Error during reading history update: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error updating reading history: $e")),
-      );
+      // Handle exception if needed
     }
   }
 
@@ -455,7 +400,6 @@ class _DetailPageState extends State<DetailPage> {
     String? token = prefs.getString('auth_token');
 
     if (token == null) {
-      print("Authentication Error: Please log in to proceed.");
       return false;
     }
 
@@ -478,13 +422,11 @@ class _DetailPageState extends State<DetailPage> {
           return await checkSubscriptionStatus();
         }
 
-        print("Purchase Required: You need to purchase this book or have an active subscription.");
         return false;
       } else {
         throw Exception("Error: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error: Failed to check purchase status. Please try again.");
       return false;
     }
   }
@@ -495,7 +437,6 @@ class _DetailPageState extends State<DetailPage> {
     String? token = prefs.getString('auth_token');
 
     if (token == null) {
-      print("Authentication Error: Please log in to check your subscription status.");
       return false;
     }
 
@@ -507,29 +448,20 @@ class _DetailPageState extends State<DetailPage> {
         },
       );
 
-      print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
         if (data['subscription']['status'] == 'active') {
-          print("Subscription is active.");
           return true;
         } else {
-          print("Subscription is inactive or expired.");
           return false;
         }
       } else if (response.statusCode == 401) {
-        print("Authentication Error: Your session has expired. Please log in again.");
         return false;
       } else {
-        print("Unexpected error: ${response.statusCode}");
         return false;
       }
     } catch (e) {
-      print("Error occurred: $e");
-      print("Failed to check subscription status. Please try again.");
       return false;
     }
   }
@@ -697,12 +629,10 @@ class _DetailPageState extends State<DetailPage> {
 
   Future<void> fetchBookDetails() async {
     try {
-      print("fetchBookDetails: Sending request to /protected endpoint...");
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('auth_token');
 
       if (token == null) {
-        print("fetchBookDetails: Authentication token is missing.");
         throw Exception("Please log in to view book details.");
       }
 
@@ -713,25 +643,19 @@ class _DetailPageState extends State<DetailPage> {
         },
       );
 
-      print("fetchBookDetails: Response status code = ${response.statusCode}");
-      print("fetchBookDetails: Response body = ${response.body}");
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
         if (data.containsKey('book')) {
           bookData = data['book'];
-          print("fetchBookDetails: Book data updated = $bookData");
 
           final hasAccess = data['hasAccess'] ?? false;
 
           if (hasAccess) {
             if (bookData!['bookLink'] == null || bookData!['bookLink'].isEmpty) {
-              print("fetchBookDetails: Access granted but bookLink is missing.");
               await fetchSubscriptionBookLink(widget.bookId, token);
             }
           } else {
-            print("fetchBookDetails: Access denied. User must purchase or subscribe.");
             throw Exception("Access denied. Please purchase or subscribe.");
           }
 
@@ -739,26 +663,15 @@ class _DetailPageState extends State<DetailPage> {
             isLoading = false;
           });
         } else {
-          print("fetchBookDetails: Error - 'book' key missing in response.");
           throw Exception("Invalid response: 'book' key is missing.");
         }
       } else {
-        print("fetchBookDetails: Unexpected response status code = ${response.statusCode}");
         throw Exception("Failed to fetch book details. Status: ${response.statusCode}");
       }
     } catch (e) {
-      print("fetchBookDetails: Exception occurred: $e");
-
       setState(() {
         isLoading = false;
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error fetching book details: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
@@ -774,15 +687,15 @@ class _DetailPageState extends State<DetailPage> {
           title: Text(
             "Detail Page",
             style: TextStyle(
-              color: Colors.black, 
+              color: Colors.black,
               fontFamily: 'SF-Pro-Text',
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.white, 
-          iconTheme: IconThemeData(color: Colors.black), 
-          elevation: 0, 
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+          elevation: 0,
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -800,9 +713,9 @@ class _DetailPageState extends State<DetailPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.white, 
-          iconTheme: IconThemeData(color: Colors.black), 
-          elevation: 0, 
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+          elevation: 0,
         ),
         body: Center(child: Text("Failed to load book details.")),
       );
@@ -813,18 +726,18 @@ class _DetailPageState extends State<DetailPage> {
         title: Text(
           "Detail Page",
           style: TextStyle(
-            color: Colors.black, 
+            color: Colors.black,
             fontSize: 18,
             fontFamily: 'SF-Pro-Text',
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Colors.white, 
+        backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
-        elevation: 0, 
+        elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.share, color: Colors.black), 
+            icon: Icon(Icons.share, color: Colors.black),
             onPressed: () async {
               final sharableLink =
                   "https://Readme.com/detail?bookId=${widget.bookId}";
@@ -950,7 +863,7 @@ class _DetailPageState extends State<DetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          bookData!['free'] ? "Free" : '₹ ${bookData!['price']}',
+                          bookData!['free'] ? "Free" : '\$${bookData!['price']}',
                           style: TextStyle(
                             fontFamily: 'SF-Pro-Text',
                             fontSize: 16,
@@ -988,8 +901,8 @@ class _DetailPageState extends State<DetailPage> {
               Column(
                 children: [
                   Wrap(
-                    spacing: 73.0, 
-                    runSpacing: 22.0, 
+                    spacing: 73.0,
+                    runSpacing: 22.0,
                     alignment: WrapAlignment.center,
                     children: [
                       buildActionButton(
@@ -1085,10 +998,10 @@ class _DetailPageState extends State<DetailPage> {
 
                     ],
                   ),
-                  const SizedBox(height: 16.0), 
+                  const SizedBox(height: 16.0),
                   Wrap(
                     spacing: 73.0,
-                    runSpacing: 22.0, 
+                    runSpacing: 22.0,
                     alignment: WrapAlignment.center,
                     children: [
                       buildActionButton(

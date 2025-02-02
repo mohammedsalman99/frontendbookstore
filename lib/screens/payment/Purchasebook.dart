@@ -184,7 +184,7 @@ class _PurchaseBookPageState extends State<PurchaseBookPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Purchase Book"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.white,
       ),
       body: Center(
         child: isLoading
@@ -193,9 +193,9 @@ class _PurchaseBookPageState extends State<PurchaseBookPage> {
           onPressed: createTransaction,
           child: const Text("Pay Now"),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            textStyle: const TextStyle(fontSize: 16),
+            backgroundColor: Color(0xFF5AA5B1),
+            padding:  EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            textStyle:  TextStyle(fontSize: 16,color: Colors.white),
           ),
         ),
       ),

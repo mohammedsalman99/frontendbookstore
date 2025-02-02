@@ -96,15 +96,7 @@ class _VerificationPageState extends State<VerificationPage> {
         MaterialPageRoute(builder: (context) => Home()),
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Verification successful!',
-            style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
+
     } else {
       _showError("Invalid verification code");
     }

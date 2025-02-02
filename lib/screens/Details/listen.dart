@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // For shared preferences
 
 class ListenPage extends StatefulWidget {
   final String bookId;
@@ -19,8 +20,6 @@ class _ListenPageState extends State<ListenPage> {
   Duration _audioDuration = Duration.zero;
   Duration _currentPosition = Duration.zero;
   String? _cachedAudioUrl;
-
-  final String userToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3M2I3NTRiNmUyYjMxNmNhZWUxNGQ4YyIsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE3MzcwMjk5NjYsImV4cCI6MTc0NDgwNTk2Nn0.PgyFFAMoZhsoEek4nwxwtgcUjmkDjnIT59zsJHwEhD8";
 
   @override
   void initState() {
@@ -42,6 +41,12 @@ class _ListenPageState extends State<ListenPage> {
     });
   }
 
+  /// Retrieve the token from SharedPreferences
+  Future<String?> getUserToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
+
   Future<void> fetchAndCacheAudio() async {
     setState(() {
       _isLoading = true;
@@ -50,8 +55,24 @@ class _ListenPageState extends State<ListenPage> {
     final url =
         'https://readme-backend-zdiq.onrender.com/api/v1/summary/books/${widget.bookId}/summary/audio';
 
+    print("Fetching audio from URL: $url");
+
     try {
+      // Fetch the token dynamically
+      final userToken = await getUserToken();
+      if (userToken == null) {
+        print("Authentication token is missing");
+        _showError("Authentication failed. Please log in again.");
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      print("Using token: $userToken");
+
       if (_cachedAudioUrl != null) {
+        print("Using cached audio URL: $_cachedAudioUrl");
         await _audioPlayer.setAudioSource(
           AudioSource.uri(
             Uri.parse(_cachedAudioUrl!),
@@ -64,9 +85,11 @@ class _ListenPageState extends State<ListenPage> {
           _isAudioReady = true;
           _isLoading = false;
         });
-        return; 
+        print("Audio loaded from cache");
+        return;
       }
 
+      print("Making GET request to fetch audio");
       final response = await http.get(
         Uri.parse(url),
         headers: {
@@ -74,10 +97,13 @@ class _ListenPageState extends State<ListenPage> {
         },
       );
 
-      print("Response Headers: ${response.headers}");
-      print("Response Body: ${response.body}");
+      print("Response status code: ${response.statusCode}");
+      print("Response headers: ${response.headers}");
+      print("Response body: ${response.body}");
 
       if (response.statusCode == 200 && response.headers['content-type'] == 'audio/mpeg') {
+        print("Audio successfully fetched from server");
+
         setState(() {
           _cachedAudioUrl = url;
         });
@@ -86,7 +112,7 @@ class _ListenPageState extends State<ListenPage> {
           AudioSource.uri(
             Uri.parse(url),
             headers: {
-              'Authorization': 'Bearer $userToken', 
+              'Authorization': 'Bearer $userToken',
             },
           ),
         );
@@ -94,25 +120,28 @@ class _ListenPageState extends State<ListenPage> {
         setState(() {
           _isAudioReady = true;
         });
+        print("Audio successfully loaded into the player");
       } else if (response.statusCode == 401) {
+        print("Authentication failed: Invalid or expired token");
         _showError("Authentication failed. Please log in again.");
       } else {
+        print("Unexpected response: ${response.statusCode} - ${response.body}");
         throw Exception("Unexpected content type or audio not available");
       }
     } catch (e) {
+      print("Error occurred during fetch: $e");
       _showError("An error occurred: $e");
     } finally {
       setState(() {
         _isLoading = false;
       });
+      print("Fetch operation completed");
     }
   }
-
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
-
   @override
   void dispose() {
     _audioPlayer.dispose();
@@ -217,8 +246,8 @@ class _ListenPageState extends State<ListenPage> {
                     ),
                     child: Icon(
                       (processingState == ProcessingState.completed || !isPlaying)
-                          ? Icons.play_arrow 
-                          : Icons.pause, 
+                          ? Icons.play_arrow
+                          : Icons.pause,
                       size: 40,
                       color: Colors.white,
                     ),
@@ -252,13 +281,13 @@ class _ListenPageState extends State<ListenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Text(
           "Listening to Summary",
           style: TextStyle(
-            color: Colors.black, 
+            color: Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -274,7 +303,7 @@ class _ListenPageState extends State<ListenPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularProgressIndicator(
-                color: Color(0xFF5AA5B1), 
+                color: Color(0xFF5AA5B1),
                 strokeWidth: 4,
               ),
               SizedBox(height: 20),
@@ -309,7 +338,7 @@ class _ListenPageState extends State<ListenPage> {
                 ),
                 child: Icon(
                   Icons.library_books,
-                  color: Colors.white, 
+                  color: Colors.white,
                   size: 120,
                 ),
               ),
@@ -339,7 +368,7 @@ class _ListenPageState extends State<ListenPage> {
               Text(
                 "Audio Not Available",
                 style: TextStyle(
-                  color: Color(0xFF5AA5B1), 
+                  color: Color(0xFF5AA5B1),
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -356,7 +385,7 @@ class _ListenPageState extends State<ListenPage> {
               SizedBox(height: 16),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF5AA5B1), 
+                  backgroundColor: Color(0xFF5AA5B1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
@@ -371,7 +400,7 @@ class _ListenPageState extends State<ListenPage> {
                 child: Text(
                   "Retry",
                   style: TextStyle(
-                    color: Colors.white, 
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

@@ -16,6 +16,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+  String? _errorMessage;
+
 
   late AnimationController _animationController;
 
@@ -86,29 +88,26 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             MaterialPageRoute(builder: (context) => Home()),
           );
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                'Login successful!',
-                style: TextStyle(fontFamily: 'SF-Pro-Text', fontWeight: FontWeight.w400),
-              ),
-              backgroundColor: Colors.green,
-            ),
-          );
         } else {
-          final error = jsonDecode(response.body)['error'] ?? 'Login failed';
+          final error = jsonDecode(response.body)['error'] ?? 'Incorrect username or password.';
           print("Login Error: $error");
-          _showError(error);
+
+          setState(() {
+            _errorMessage = error; // Set the error message to be displayed
+          });
         }
       } catch (e) {
         setState(() {
           _isLoading = false;
         });
         print("Exception occurred: $e");
-        _showError('An error occurred. Please try again.');
+        setState(() {
+          _errorMessage = 'An error occurred. Please try again.'; // Set a generic error message
+        });
       }
     }
   }
+
 
 
   @override
@@ -200,6 +199,28 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           key: _formKey,
                           child: Column(
                             children: [
+                              if (_errorMessage != null) // Error message above the form
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.shade50,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: Colors.red),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.error_outline, color: Colors.red),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          _errorMessage!,
+                                          style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               TextFormField(
                                 controller: _emailController,
                                 decoration: InputDecoration(
@@ -209,7 +230,21 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none,
+                                    borderSide: BorderSide(
+                                      color: _errorMessage != null ? Colors.red : Colors.transparent,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: _errorMessage != null ? Colors.red : Colors.transparent,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: _errorMessage != null ? Colors.red : Colors.blue,
+                                    ),
                                   ),
                                   prefixIcon: const Icon(Icons.email, color: Colors.white70),
                                 ),
@@ -225,7 +260,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 style: const TextStyle(color: Colors.white),
                               ),
                               const SizedBox(height: 14),
-
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: !_isPasswordVisible,
@@ -236,14 +270,26 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   fillColor: Colors.white.withOpacity(0.2),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none,
+                                    borderSide: BorderSide(
+                                      color: _errorMessage != null ? Colors.red : Colors.transparent,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: _errorMessage != null ? Colors.red : Colors.transparent,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: _errorMessage != null ? Colors.red : Colors.blue,
+                                    ),
                                   ),
                                   prefixIcon: const Icon(Icons.lock, color: Colors.white70),
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _isPasswordVisible
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
+                                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                                       color: Colors.white70,
                                     ),
                                     onPressed: _togglePasswordVisibility,
@@ -260,15 +306,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 style: const TextStyle(color: Colors.white),
                               ),
                               const SizedBox(height: 20),
-
                               _isLoading
                                   ? const CircularProgressIndicator(color: Colors.white)
                                   : ElevatedButton(
                                 onPressed: _login,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF5AA5B1),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 50, vertical: 10),
+                                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -284,7 +328,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 ),
                               ),
                               const SizedBox(height: 12),
-
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
